@@ -24,24 +24,9 @@ function bootUp(config) {
 		tool.setHTTPServer(masterHTTPServer);
 
 		tool.createSlaveSocketChannels();
-	}
-	else if (config.type === "slave"){
+	} else if (config.type === "slave") {
 		tool = new Slave(config);
 		tool.connectToMasterSocketServer();
 		tool.sendDataToMaster("Hello");
 	}
 }
-
-let Compute = require('@google-cloud/compute');
-const compute = new Compute({
-	projectId: 'iron-crane-239115',
-	keyFilename: 'GCPKeyFile.json'
-});
-compute.getZones(function(err, zones) {
-	// `zones` is an array of `Zone` objects.
-	for (let zone of zones){
-		console.log(zone.name);
-	}
-	let zone0 = zones[0];
-	zone0.
-});
