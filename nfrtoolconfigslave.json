@@ -1,0 +1,11 @@
+{
+  "type" : "slave",
+  "region" : "usawest",
+  "token" : "testest",
+  "master" : {
+    "ipaddress" : "localhost",
+    "gcpip" : "35.229.40.47",
+    "port" : "3000",
+    "endpoint" : "/socket"
+  }
+}
