@@ -1,3 +1,5 @@
 .idea
 testMultiThread
 node-modules
+nfrtoolconfigmaster.json
+nfrtoolconfigslave.json
