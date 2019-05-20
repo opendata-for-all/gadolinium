@@ -3,3 +3,4 @@ testMultiThread
 node-modules
 nfrtoolconfigmaster.json
 nfrtoolconfigslave.json
+master/GoogleCloudManagement.GCPKeyFile.json
