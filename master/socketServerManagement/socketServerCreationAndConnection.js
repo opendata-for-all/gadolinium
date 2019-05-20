@@ -13,20 +13,6 @@ let createSocketServer = (httpServer) => {
 	return socketServer;
 };
 
-let createChannelForSlave = (slave, callback) => {
-	// socketServer.of('/' + slave.name).on('connection', (client) => {
-	// 	let authorized = false;
-	// 	if (client.handshake.query.name === slave.name) {
-	// 		authorized = true;
-	// 	}
-	// 	if (authorized) {
-	// 		callback(slave, client)
-	// 	} else {
-	// 		client.disconnect();
-	// 	}
-	// })
-};
-
 let createChannel = (webClientCallback, slaveCallback) => {
 	socketServer.on('connection', (client) => {
 		let authorized = false;
@@ -71,7 +57,6 @@ let emitAPIStatusUpdate = () => {
 
 module.exports = {
 	createSocketServer: createSocketServer,
-	createChannelForSlave: createChannelForSlave,
 	createChannel: createChannel,
 	emitAPIStatusUpdate: emitAPIStatusUpdate
 };

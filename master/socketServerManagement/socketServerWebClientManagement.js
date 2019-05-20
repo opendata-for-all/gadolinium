@@ -1,7 +1,7 @@
 let APIStatusFunc = require('../APIStatus/functions');
 let GCPFunc = require('../GoogleCloudManagement/functions');
 let socketServerFunc = require('./socketServerCreationAndConnection');
-
+let socketServerSlaveManagement = require('./socketServerSlaveManagement');
 let createAPIStatusRequest = (webClient) => {
 	webClient.on('APIStatus', (callback) => { //TODO In test
 		callback(APIStatus.getAPIStatus());
@@ -22,8 +22,10 @@ let createAddingServerToTest = (webclient) => {
 		let apiId = data.apiId;
 		let servers = createServerInstance(serverList, apiId);
 		updateAPIStatusWithNewServers(APIStatus, servers, apiId);
+		for (let server in servers) {
+			socketServerSlaveManagement.addSlaveToBootingSlaveList(server, apiId);
+		}
 		socketServerFunc.emitAPIStatusUpdate();
-		socketServerFunc.createChannelForSlave()
 	})
 };
 
@@ -39,21 +41,20 @@ let createServerInstance = (serverList, apiId) => {
 		let randomZone = gcpServerList[server].zones[Math.floor(Math.random() * gcpServerList[server].zones.length)];
 		let regionName = `${server}-${randomZone}`;
 		let vmName = `api-${apiId}-${regionName}`;
-		servers[server] = {
-			region : regionName,
-			zone : randomZone,
-			location : gcpServerList[server].location,
-			status : "Booting up",
-			progress : 1,
-			totalProgress : 1
+		servers[vmName] = {
+			region: regionName,
+			zone: randomZone,
+			location: gcpServerList[server].location,
+			status: "Booting up",
+			progress: 1,
+			totalProgress: 1
 		};
-
 		GCPFunc.createVM(regionName, vmName);
 	}
 	return servers;
 };
 
 module.exports = {
-	createAPIStatusRequest : createAPIStatusRequest,
-	createAddingServerToTest : createAddingServerToTest
+	createAPIStatusRequest: createAPIStatusRequest,
+	createAddingServerToTest: createAddingServerToTest
 }

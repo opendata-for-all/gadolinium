@@ -1,6 +1,7 @@
 let APIStatus = require('./APIStatus/APIStatus').APIStatus;
 let socketServerCreationAndConnection = require('./socketServerManagement/socketServerCreationAndConnection');
 let socketServerWebClientManagement = require('./socketServerManagement/socketServerWebClientManagement');
+let socketServerSlaveManagement = require('./socketServerManagement/socketServerSlaveManagement');
 
 let expressCreation = require('./expressManagement/expressCreation');
 let expressEndpoint = require('./expressManagement/expressEndpoint');
@@ -23,9 +24,7 @@ socketServerCreationAndConnection.createChannel(
 	},
 	(slaveName, socketClient) => {
 		services.socketSlaves[slaveName] = socketClient;
+		socketServerSlaveManagement.serverBootedUp(socketClient, slaveName);
 	});
 
-socketServerCreationAndConnection.createChannelForSlave((slave, socketClient) => {
-	services.socketSlaves[slave.name] = socketClient;
-});
 expressCreation.launchHTTPServer(httpServer, 8080);
