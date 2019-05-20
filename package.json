@@ -1,11 +1,10 @@
 {
-  "name": "test",
+  "name": "gadolinium2",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "master/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start" : "node nfrtooltesting.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
@@ -13,11 +12,18 @@
   "dependencies": {
     "@google-cloud/compute": "^0.12.0",
     "axios": "^0.18.0",
+    "cookie-parser": "^1.4.4",
     "express": "^4.16.4",
+    "googleapis": "^39.2.0",
     "loadtest": "^3.0.7",
+    "morgan": "^1.9.1",
+    "pug": "^2.0.3",
     "socket.io": "^2.2.0",
     "socket.io-client": "latest",
-    "websocket": "^1.0.28"
+    "swagger-parser": "^6.0.5",
+    "websocket": "^1.0.28",
+    "http-errors": "latest",
+    "google-auth-library": "latest"
   },
   "devDependencies": {
     "net-ping": "^1.2.3"
