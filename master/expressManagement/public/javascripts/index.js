@@ -47,7 +47,7 @@ let isAPIStatusInitialized = () => {
 	return APIStatus !== null;
 };
 
-let client = io('http://localhost:8080/', {
+let client = io('/', {
 	query: {
 		token: "webclient"
 	}

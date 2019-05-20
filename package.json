@@ -4,7 +4,9 @@
   "description": "",
   "main": "master/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "master" : "node index.js \"master\"",
+    "slave" : "node index.js \"slave\""
   },
   "keywords": [],
   "author": "",
