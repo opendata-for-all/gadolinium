@@ -6,9 +6,7 @@ let slavesBooting = {
 };
 
 let addSlaveToBootingSlaveList = (slaveName, apidId) => {
-	slavesBooting[slaveName] = {
-		apiId: apidId
-	};
+	slavesBooting[slaveName] = apidId;
 };
 
 let serverBootedUp = (slaveClient, serverName) => {

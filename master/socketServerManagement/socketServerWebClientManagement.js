@@ -30,7 +30,9 @@ let createAddingServerToTest = (webclient) => {
 };
 
 let updateAPIStatusWithNewServers = (APIStatus, servers, apiId) => {
-	APIStatus[apiId].servers = servers;
+	for (let server in servers) {
+		APIStatus[apiId].servers[server] = servers[server];
+	}
 	APIStatusFunc.writeAPIStatus(APIStatus);
 };
 
