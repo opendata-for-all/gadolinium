@@ -23,7 +23,13 @@ Array.prototype.equals = function (array) {
 		}
 	}
 	return true;
-}
+};
+
+Array.prototype.remove = (item) => {
+	let index = this.indexOf(item);
+	if(index > -1) this.splice(index, 1)
+};
+
 // // Hide method from for-in loops
 // Object.defineProperty(Array.prototype, "equals", {enumerable: false});
 //
