@@ -10,6 +10,8 @@ let services = {};
 services.socketSlaves = {};
 services.webClients = [];
 
+socketServerSlaveManagement.addSlavesThatAreBootingOrTesting();
+
 let app = expressCreation.createApp(APIStatus);
 let httpServer = expressCreation.createHTTPServer(app);
 expressEndpoint.createEndpoints(app);
@@ -24,7 +26,11 @@ socketServerCreationAndConnection.createChannel(
 	},
 	(slaveName, socketClient) => {
 		services.socketSlaves[slaveName] = socketClient;
-		socketServerSlaveManagement.serverBootedUp(socketClient, slaveName);
+		socketServerSlaveManagement.slaveConnected(socketClient, slaveName);
+		socketServerSlaveManagement.handleDisconnection(socketClient, slaveName, (reason) => {
+			if(reason === "vmDeleted"){
+				delete services.socketSlaves[slaveName]
+			};
+		});
 	});
-
 expressCreation.launchHTTPServer(httpServer, 8080);
