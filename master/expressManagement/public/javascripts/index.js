@@ -2,6 +2,7 @@ let APIStatus = null;
 let gcpServers = null;
 let apiSelected = null;
 let serversSelected = [];
+let testServersSelected = [];
 
 let inputOpenAPIJSON = document.getElementById('openapijsonfile');
 

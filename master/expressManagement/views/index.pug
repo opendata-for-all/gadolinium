@@ -6,18 +6,18 @@ block content
     .container-fluid(id="application")
         .row
             .list-group.col-sm#apiDiv
-                #addAPIDiv.mb-3
-                    a.list-group-item.list-group-item-info
+                #addAPIDiv.mb-3(role="button")
+                    a.list-group-item.list-group-item-info(data-toggle="modal" data-target="#apiSelectionModal")
                         .row
                             .col-10 Add an API to test
-                            i.material-icons-round.col-1(data-toggle="modal" data-target="#apiSelectionModal") add
+                            i.material-icons-round.col-1 add
                     //a(class="list-group-item list-group-item-action" id="api" + api.id + "" onclick="clickOnApi(\"" + api.id + "\")")= api.name
             .list-group.col-sm#serverDiv
                 #addServerDiv.mb-3(style="display : none")
-                    a.list-group-item.list-group-item-info
+                    a.list-group-item.list-group-item-info(data-toggle="modal" data-target="#serverSelectionModal" onclick="prepareModalForServerSelection()" role="button")
                         .row
                             .col-10 Add a new server to test from
-                            i.col-1.material-icons(data-toggle="modal" data-target="#serverSelectionModal" onclick="prepareModalForServerSelection()") add
+                            i.col-1.material-icons-round add
 
     // Modal
     #apiSelectionModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='exampleModalLabel', aria-hidden='true')
@@ -40,14 +40,14 @@ block content
                                 label.custom-file-label(for="customFile")
                 .modal-footer
                     button.btn.btn-secondary(type='button', data-dismiss='modal') Close
-                    button.btn.btn-primary(type='button') Save changes
+                    button.btn.btn-primary(type='button') Add API
 
     // Modal
     #serverSelectionModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='exampleModalLabel', aria-hidden='true')
         .modal-dialog(role='document')
             .modal-content
                 .modal-header
-                    h5.modal-title Add a new API to test
+                    h5.modal-title Add a new server to test from
                     button.close(type='button', data-dismiss='modal', aria-label='Close')
                         span(aria-hidden='true')
                             i.material-icons-round close
@@ -66,3 +66,33 @@ block content
                 .modal-footer
                     button.btn.btn-secondary(type='button', data-dismiss='modal') Close
                     button.btn.btn-primary#submitServers(type='button' disabled='' data-dismiss='modal' onclick="submitServerForAPITest()") Test the API
+
+    #testSelectionModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='exampleModalLabel', aria-hidden='true')
+        .modal-dialog(role='document')
+            .modal-content
+                .modal-header
+                    h5.modal-title Create a test
+                    button.close(type='button', data-dismiss='modal', aria-label='Close')
+                        span(aria-hidden='true')
+                            i.material-icons-round close
+                .modal-body
+                    form#testCreationForm
+                        .col
+                            .row
+                                p Performance test
+                            .row
+                                .col.form-group
+                                    label(for="testRange") Time range
+                                    .form-control#testRange(placeholder="Enter range")
+                                .col.form-group
+                                    label(for="testNumber") Number of test
+                                    .form-control#testNumber(placeholder="Enter number")
+                            .row.list-group#testServerSelection
+                                - for(let i=0; i<zoneNames.length; i++)
+                                    - let zoneName = zoneNames[i];
+                                    - let zone = zones[i];
+                                        button.list-group-item.list-group-item-action.btn-outline(type='button' onclick='apiTestServerSelected(this)' gcpregion=zoneName)=zone.location
+                .modal-footer
+                    button.btn.btn-secondary(type='button', data-dismiss='modal') Close
+                    button.btn.btn-primary#submitTests(type='button' disabled='' data-dismiss='modal' onclick="submitTestToServers()") Test the API
+

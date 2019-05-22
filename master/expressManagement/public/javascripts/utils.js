@@ -25,7 +25,7 @@ Array.prototype.equals = function (array) {
 	return true;
 };
 
-Array.prototype.remove = (item) => {
+Array.prototype.remove = function (item) {
 	let index = this.indexOf(item);
 	if(index > -1) this.splice(index, 1)
 };
