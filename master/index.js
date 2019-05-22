@@ -1,4 +1,4 @@
-let APIStatus = require('./APIStatus/APIStatus').APIStatus;
+let APIStatusFunc = require('./APIStatus/functions');
 let socketServerCreationAndConnection = require('./socketServerManagement/socketServerCreationAndConnection');
 let socketServerWebClientManagement = require('./socketServerManagement/socketServerWebClientManagement');
 let socketServerSlaveManagement = require('./socketServerManagement/socketServerSlaveManagement');
@@ -12,7 +12,7 @@ services.webClients = [];
 
 socketServerSlaveManagement.addSlavesThatAreBootingOrTesting();
 
-let app = expressCreation.createApp(APIStatus);
+let app = expressCreation.createApp(APIStatusFunc.getAPIStatus());
 let httpServer = expressCreation.createHTTPServer(app);
 expressEndpoint.createEndpoints(app);
 
@@ -23,6 +23,17 @@ socketServerCreationAndConnection.createChannel(
 		services.webClients.push(webclient);
 		socketServerWebClientManagement.createAPIStatusRequest(webclient);
 		socketServerWebClientManagement.createAddingServerToTest(webclient);
+		socketServerWebClientManagement.createServerDeletion(webclient, (response) => {
+			if(response.status === 200){
+				delete services.socketSlaves[response];
+			}
+		})
+		socketServerWebClientManagement.createSendTestToSlaves(webclient, (data, APIStatus) => {
+			let apiId = data.apiId;
+			let slaveName = data.serverId;
+			console.log("callback");
+			services.socketSlaves[slaveName].emit('testApi', {apiId : apiId, api : APIStatus[apiId]});
+		});
 	},
 	(slaveName, socketClient) => {
 		services.socketSlaves[slaveName] = socketClient;
@@ -32,5 +43,6 @@ socketServerCreationAndConnection.createChannel(
 				delete services.socketSlaves[slaveName]
 			};
 		});
+		socketServerSlaveManagement.slaveTesting(socketClient, slaveName);
 	});
 expressCreation.launchHTTPServer(httpServer, 8080);
