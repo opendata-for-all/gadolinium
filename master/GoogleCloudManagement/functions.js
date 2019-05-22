@@ -18,7 +18,7 @@ let getGoogleAuth = async () => {
 // 	.then(console.log)
 // 	.catch(console.error);
 
-async function createVM(zone, vmName) {
+const createVM = async (zone, vmName) => {
 	let {auth, client} = await getGoogleAuth();
 	const templateName = `gadolinium-template`;
 	const projectId = await auth.getProjectId();
@@ -26,18 +26,38 @@ async function createVM(zone, vmName) {
 	const sourceInstanceTemplate = `projects/${projectId}/global/instanceTemplates/${templateName}`;
 	const url = `https://www.googleapis.com/compute/v1/projects/${projectId}/zones/${zone}/instances?sourceInstanceTemplate=${sourceInstanceTemplate}`;
 
-	// return await client.request({
-	// 	url: url,
-	// 	method: 'post',
-	// 	data: {name: vmName}
-	// });
-}
+	return await client.request({
+		url: url,
+		method: 'post',
+		data: {name: vmName}
+	});
+};
 
+const deleteVM = async (zone, vmName) => {
+	let {auth, client} = await getGoogleAuth();
+	const projectId = await auth.getProjectId();
+
+	const url = `https://www.googleapis.com/compute/v1/projects/${projectId}/zones/${zone}/instances/${vmName}`;
+
+	try{
+		return await client.request({
+			url: url,
+			method: 'delete',
+			data: {name: vmName}
+		});
+	} catch (e) {
+		return {
+			status : e.code,
+			errors : e.errors
+		};
+	}
+};
 function getListOfZones() {
 	return regionList;
 }
 
 module.exports = {
 	createVM: createVM,
+	deleteVM : deleteVM,
 	getListOfZones: getListOfZones
 };
