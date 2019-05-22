@@ -70,9 +70,25 @@ let handleDisconnection = (slaveClient, slaveName, slaveCallback) => {
 	})
 };
 
+let slaveTesting = (slaveClient, slaveName) => {
+	slaveClient.on('testProgress', (data) => {
+		console.log('testProgress');
+		let APIStatus = APIStatusFunc.getAPIStatus();
+		let apiId = data.apiId;
+		let serverId = data.slaveName;
+
+		APIStatus[apiId].servers[serverId].status = "Testing";
+		APIStatus[apiId].servers[serverId].progress = data.progress;
+		APIStatus[apiId].servers[serverId].totalProgress = data.totalProgress;
+		APIStatusFunc.writeAPIStatus(APIStatus);
+		socketServerFunc.emitAPIStatusUpdate();
+	})
+};
+
 module.exports = {
 	slaveConnected: slaveConnected,
 	addSlaveToBootingSlaveList: addSlaveToBootingSlaveList,
 	addSlavesThatAreBootingOrTesting: addSlavesThatAreBootingOrTesting,
 	handleDisconnection: handleDisconnection,
+	slaveTesting: slaveTesting
 };
