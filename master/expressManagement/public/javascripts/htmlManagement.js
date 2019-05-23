@@ -225,6 +225,9 @@ let refreshApiElement = (apiId, api) => {
 
 let updateApiElement = (apiId, api) => {
 	apisDom[apiId].pName.innerText = api.name;
+	apisDom[apiId].progressBar.element.style.width = api.progress /api.totalProgress * 100 + '%';
+	apisDom[apiId].progressBar.element.setAttribute('aria-valuenow', api.progress)
+
 };
 
 let getApiProgressAndTotalProgress = (apiId, api) => {
@@ -532,6 +535,7 @@ let deleteOldServer = (serverId) => {
 };
 
 let updateAPIStatusElement = (apiId, oldApi, newApi) => {
+
 	let oldServersIds = Object.keys(oldApi.servers);
 	let newServersIds = Object.keys(newApi.servers);
 	if (newServersIds.length > oldServersIds.length) {
