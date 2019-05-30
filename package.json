@@ -5,8 +5,9 @@
   "main": "master/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "master" : "node index.js \"master\"",
-    "slave" : "node index.js \"slave\""
+    "master": "node index.js \"master\"",
+    "slave": "node index.js \"slave\"",
+    "afterInstall": "node pug-rule-insert.js"
   },
   "keywords": [],
   "author": "",
@@ -15,19 +16,21 @@
     "@google-cloud/compute": "^0.12.0",
     "axios": "^0.18.0",
     "cookie-parser": "^1.4.4",
+    "cors": "^2.8.5",
     "express": "^4.16.4",
+    "google-auth-library": "latest",
     "googleapis": "^39.2.0",
+    "http-errors": "latest",
     "loadtest": "^3.0.7",
     "morgan": "^1.9.1",
-    "pug": "^2.0.3",
     "socket.io": "^2.2.0",
     "socket.io-client": "latest",
     "swagger-parser": "^6.0.5",
-    "websocket": "^1.0.28",
-    "http-errors": "latest",
-    "google-auth-library": "latest"
+    "websocket": "^1.0.28"
   },
   "devDependencies": {
-    "net-ping": "^1.2.3"
+    "net-ping": "^1.2.3",
+    "pug": "^2.0.3",
+    "pug-loader": "^2.4.0"
   }
 }
