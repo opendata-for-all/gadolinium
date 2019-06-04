@@ -110,6 +110,7 @@ class OpenAPIJSONParser {
 
 		let setUpHttpRequest = (reqType, reqObj, url, definitionObject) => {
 			let configObj = {};
+			configObj.operationId = reqObj.operationId;
 			configObj.method = reqType;
 			configObj.headers = {};
 			configObj.params = {};

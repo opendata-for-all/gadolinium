@@ -5,8 +5,8 @@
   "main": "master/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "master": "node index.js \"master\"",
-    "slave": "node index.js \"slave\"",
+    "master": "node index.js \\\"master\\\"",
+    "slave": "node index.js \\\"slave\\\"",
     "afterInstall": "node pug-rule-insert.js"
   },
   "keywords": [],
@@ -17,6 +17,7 @@
     "axios": "^0.18.0",
     "cookie-parser": "^1.4.4",
     "cors": "^2.8.5",
+    "dns": "^0.2.2",
     "express": "^4.16.4",
     "google-auth-library": "latest",
     "googleapis": "^39.2.0",

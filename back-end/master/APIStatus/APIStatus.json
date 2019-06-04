@@ -1,0 +1,566 @@
+{
+  "APIStatus": [
+    {
+      "id": 1,
+      "name": "petstore.swagger.io",
+      "httpRequests": [
+        {
+          "operationId": "addPet",
+          "method": "post",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "params": {},
+          "url": "https://petstore.swagger.io/v2/pet",
+          "data": {
+            "name": "79xTTd6dM1uM",
+            "photoUrls": [
+              ""
+            ]
+          }
+        },
+        {
+          "operationId": "updatePet",
+          "method": "put",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "params": {},
+          "url": "https://petstore.swagger.io/v2/pet",
+          "data": {
+            "name": "Os1haXn9UZVj",
+            "photoUrls": [
+              ""
+            ]
+          }
+        },
+        {
+          "operationId": "findPetsByStatus",
+          "method": "get",
+          "headers": {},
+          "params": {},
+          "url": "https://petstore.swagger.io/v2/pet/findByStatus"
+        },
+        {
+          "operationId": "findPetsByTags",
+          "method": "get",
+          "headers": {},
+          "params": {},
+          "url": "https://petstore.swagger.io/v2/pet/findByTags"
+        },
+        {
+          "operationId": "getPetById",
+          "method": "get",
+          "headers": {},
+          "params": {},
+          "url": "https://petstore.swagger.io/v2/pet/66"
+        },
+        {
+          "operationId": "updatePetWithForm",
+          "method": "post",
+          "headers": {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          "params": {},
+          "url": "https://petstore.swagger.io/v2/pet/14"
+        },
+        {
+          "operationId": "deletePet",
+          "method": "delete",
+          "headers": {},
+          "params": {},
+          "url": "https://petstore.swagger.io/v2/pet/56"
+        },
+        {
+          "operationId": "uploadFile",
+          "method": "post",
+          "headers": {
+            "Content-Type": "multipart/form-data"
+          },
+          "params": {},
+          "url": "https://petstore.swagger.io/v2/pet/91/uploadImage"
+        },
+        {
+          "operationId": "getInventory",
+          "method": "get",
+          "headers": {},
+          "params": {},
+          "url": "https://petstore.swagger.io/v2/store/inventory"
+        },
+        {
+          "operationId": "placeOrder",
+          "method": "post",
+          "headers": {},
+          "params": {},
+          "url": "https://petstore.swagger.io/v2/store/order",
+          "data": {}
+        },
+        {
+          "operationId": "getOrderById",
+          "method": "get",
+          "headers": {},
+          "params": {},
+          "url": "https://petstore.swagger.io/v2/store/order/9"
+        },
+        {
+          "operationId": "deleteOrder",
+          "method": "delete",
+          "headers": {},
+          "params": {},
+          "url": "https://petstore.swagger.io/v2/store/order/50"
+        },
+        {
+          "operationId": "createUser",
+          "method": "post",
+          "headers": {},
+          "params": {},
+          "url": "https://petstore.swagger.io/v2/user",
+          "data": {}
+        },
+        {
+          "operationId": "createUsersWithArrayInput",
+          "method": "post",
+          "headers": {},
+          "params": {},
+          "url": "https://petstore.swagger.io/v2/user/createWithArray",
+          "data": {}
+        },
+        {
+          "operationId": "createUsersWithListInput",
+          "method": "post",
+          "headers": {},
+          "params": {},
+          "url": "https://petstore.swagger.io/v2/user/createWithList",
+          "data": {}
+        },
+        {
+          "operationId": "loginUser",
+          "method": "get",
+          "headers": {},
+          "params": {
+            "username": "BmX8meQWXX",
+            "password": "dEok56SObP"
+          },
+          "url": "https://petstore.swagger.io/v2/user/login"
+        },
+        {
+          "operationId": "logoutUser",
+          "method": "get",
+          "headers": {},
+          "params": {},
+          "url": "https://petstore.swagger.io/v2/user/logout"
+        },
+        {
+          "operationId": "getUserByName",
+          "method": "get",
+          "headers": {},
+          "params": {},
+          "url": "https://petstore.swagger.io/v2/user/RRF9a1MRig"
+        },
+        {
+          "operationId": "updateUser",
+          "method": "put",
+          "headers": {},
+          "params": {},
+          "url": "https://petstore.swagger.io/v2/user/C3c5prlO37",
+          "data": {}
+        },
+        {
+          "operationId": "deleteUser",
+          "method": "delete",
+          "headers": {},
+          "params": {},
+          "url": "https://petstore.swagger.io/v2/user/kRB4SZBwAO"
+        }
+      ],
+      "servers": [
+        {
+          "name": "api-1-asia-northeast1-a",
+          "type": "instant",
+          "region": "asia-northeast1",
+          "zone": "asia-northeast1-a",
+          "location": "Tokyo, Japan",
+          "status": "Tests completed",
+          "progress": 20,
+          "totalProgress": 20
+        },
+        {
+          "name": "api-1-asia-south1-a",
+          "type": "instant",
+          "region": "asia-south1",
+          "zone": "asia-south1-a",
+          "location": "Mumbai, India",
+          "status": "Booting up",
+          "progress": 1,
+          "totalProgress": 1
+        },
+        {
+          "name": "api-1-australia-southeast1-a",
+          "type": "instant",
+          "region": "australia-southeast1",
+          "zone": "australia-southeast1-a",
+          "location": "Sydney, Australia",
+          "status": "Tests completed",
+          "progress": 20,
+          "totalProgress": 20
+        }
+      ],
+      "progress": 41,
+      "totalProgress": 41
+    },
+    {
+      "id": 0,
+      "name": "petstore.swagger.io",
+      "httpRequests": [
+        {
+          "operationId": "addPet",
+          "method": "post",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "params": {},
+          "url": "https://petstore.swagger.io/v2/pet",
+          "data": {
+            "name": "9SGLd9D99AOu",
+            "photoUrls": [
+              ""
+            ]
+          }
+        },
+        {
+          "operationId": "updatePet",
+          "method": "put",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "params": {},
+          "url": "https://petstore.swagger.io/v2/pet",
+          "data": {
+            "name": "U4vVjvnAZMgC",
+            "photoUrls": [
+              ""
+            ]
+          }
+        },
+        {
+          "operationId": "findPetsByStatus",
+          "method": "get",
+          "headers": {},
+          "params": {},
+          "url": "https://petstore.swagger.io/v2/pet/findByStatus"
+        },
+        {
+          "operationId": "findPetsByTags",
+          "method": "get",
+          "headers": {},
+          "params": {},
+          "url": "https://petstore.swagger.io/v2/pet/findByTags"
+        },
+        {
+          "operationId": "getPetById",
+          "method": "get",
+          "headers": {},
+          "params": {},
+          "url": "https://petstore.swagger.io/v2/pet/9"
+        },
+        {
+          "operationId": "updatePetWithForm",
+          "method": "post",
+          "headers": {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          "params": {},
+          "url": "https://petstore.swagger.io/v2/pet/95"
+        },
+        {
+          "operationId": "deletePet",
+          "method": "delete",
+          "headers": {},
+          "params": {},
+          "url": "https://petstore.swagger.io/v2/pet/45"
+        },
+        {
+          "operationId": "uploadFile",
+          "method": "post",
+          "headers": {
+            "Content-Type": "multipart/form-data"
+          },
+          "params": {},
+          "url": "https://petstore.swagger.io/v2/pet/79/uploadImage"
+        },
+        {
+          "operationId": "getInventory",
+          "method": "get",
+          "headers": {},
+          "params": {},
+          "url": "https://petstore.swagger.io/v2/store/inventory"
+        },
+        {
+          "operationId": "placeOrder",
+          "method": "post",
+          "headers": {},
+          "params": {},
+          "url": "https://petstore.swagger.io/v2/store/order",
+          "data": {}
+        },
+        {
+          "operationId": "getOrderById",
+          "method": "get",
+          "headers": {},
+          "params": {},
+          "url": "https://petstore.swagger.io/v2/store/order/5"
+        },
+        {
+          "operationId": "deleteOrder",
+          "method": "delete",
+          "headers": {},
+          "params": {},
+          "url": "https://petstore.swagger.io/v2/store/order/37"
+        },
+        {
+          "operationId": "createUser",
+          "method": "post",
+          "headers": {},
+          "params": {},
+          "url": "https://petstore.swagger.io/v2/user",
+          "data": {}
+        },
+        {
+          "operationId": "createUsersWithArrayInput",
+          "method": "post",
+          "headers": {},
+          "params": {},
+          "url": "https://petstore.swagger.io/v2/user/createWithArray",
+          "data": {}
+        },
+        {
+          "operationId": "createUsersWithListInput",
+          "method": "post",
+          "headers": {},
+          "params": {},
+          "url": "https://petstore.swagger.io/v2/user/createWithList",
+          "data": {}
+        },
+        {
+          "operationId": "loginUser",
+          "method": "get",
+          "headers": {},
+          "params": {
+            "username": "SLK4AVwVHi",
+            "password": "G1okICL7KJ"
+          },
+          "url": "https://petstore.swagger.io/v2/user/login"
+        },
+        {
+          "operationId": "logoutUser",
+          "method": "get",
+          "headers": {},
+          "params": {},
+          "url": "https://petstore.swagger.io/v2/user/logout"
+        },
+        {
+          "operationId": "getUserByName",
+          "method": "get",
+          "headers": {},
+          "params": {},
+          "url": "https://petstore.swagger.io/v2/user/EH58JLPsj5"
+        },
+        {
+          "operationId": "updateUser",
+          "method": "put",
+          "headers": {},
+          "params": {},
+          "url": "https://petstore.swagger.io/v2/user/sgZgjTBPJy",
+          "data": {}
+        },
+        {
+          "operationId": "deleteUser",
+          "method": "delete",
+          "headers": {},
+          "params": {},
+          "url": "https://petstore.swagger.io/v2/user/U3P0vYSuNL"
+        }
+      ],
+      "servers": [],
+      "progress": 0,
+      "totalProgress": 0
+    },
+    {
+      "id": 2,
+      "name": "petstore.swagger.io",
+      "httpRequests": [
+        {
+          "operationId": "addPet",
+          "method": "post",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "params": {},
+          "url": "https://petstore.swagger.io/v2/pet",
+          "data": {
+            "name": "IsY6UyWBS6Pi",
+            "photoUrls": [
+              ""
+            ]
+          }
+        },
+        {
+          "operationId": "updatePet",
+          "method": "put",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "params": {},
+          "url": "https://petstore.swagger.io/v2/pet",
+          "data": {
+            "name": "LmIBlFjuajIZ",
+            "photoUrls": [
+              ""
+            ]
+          }
+        },
+        {
+          "operationId": "findPetsByStatus",
+          "method": "get",
+          "headers": {},
+          "params": {},
+          "url": "https://petstore.swagger.io/v2/pet/findByStatus"
+        },
+        {
+          "operationId": "findPetsByTags",
+          "method": "get",
+          "headers": {},
+          "params": {},
+          "url": "https://petstore.swagger.io/v2/pet/findByTags"
+        },
+        {
+          "operationId": "getPetById",
+          "method": "get",
+          "headers": {},
+          "params": {},
+          "url": "https://petstore.swagger.io/v2/pet/98"
+        },
+        {
+          "operationId": "updatePetWithForm",
+          "method": "post",
+          "headers": {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          "params": {},
+          "url": "https://petstore.swagger.io/v2/pet/2"
+        },
+        {
+          "operationId": "deletePet",
+          "method": "delete",
+          "headers": {},
+          "params": {},
+          "url": "https://petstore.swagger.io/v2/pet/85"
+        },
+        {
+          "operationId": "uploadFile",
+          "method": "post",
+          "headers": {
+            "Content-Type": "multipart/form-data"
+          },
+          "params": {},
+          "url": "https://petstore.swagger.io/v2/pet/24/uploadImage"
+        },
+        {
+          "operationId": "getInventory",
+          "method": "get",
+          "headers": {},
+          "params": {},
+          "url": "https://petstore.swagger.io/v2/store/inventory"
+        },
+        {
+          "operationId": "placeOrder",
+          "method": "post",
+          "headers": {},
+          "params": {},
+          "url": "https://petstore.swagger.io/v2/store/order",
+          "data": {}
+        },
+        {
+          "operationId": "getOrderById",
+          "method": "get",
+          "headers": {},
+          "params": {},
+          "url": "https://petstore.swagger.io/v2/store/order/8"
+        },
+        {
+          "operationId": "deleteOrder",
+          "method": "delete",
+          "headers": {},
+          "params": {},
+          "url": "https://petstore.swagger.io/v2/store/order/37"
+        },
+        {
+          "operationId": "createUser",
+          "method": "post",
+          "headers": {},
+          "params": {},
+          "url": "https://petstore.swagger.io/v2/user",
+          "data": {}
+        },
+        {
+          "operationId": "createUsersWithArrayInput",
+          "method": "post",
+          "headers": {},
+          "params": {},
+          "url": "https://petstore.swagger.io/v2/user/createWithArray",
+          "data": {}
+        },
+        {
+          "operationId": "createUsersWithListInput",
+          "method": "post",
+          "headers": {},
+          "params": {},
+          "url": "https://petstore.swagger.io/v2/user/createWithList",
+          "data": {}
+        },
+        {
+          "operationId": "loginUser",
+          "method": "get",
+          "headers": {},
+          "params": {
+            "username": "GaSwl8415C",
+            "password": "m0HYYzaObv"
+          },
+          "url": "https://petstore.swagger.io/v2/user/login"
+        },
+        {
+          "operationId": "logoutUser",
+          "method": "get",
+          "headers": {},
+          "params": {},
+          "url": "https://petstore.swagger.io/v2/user/logout"
+        },
+        {
+          "operationId": "getUserByName",
+          "method": "get",
+          "headers": {},
+          "params": {},
+          "url": "https://petstore.swagger.io/v2/user/f3I8dNKp9l"
+        },
+        {
+          "operationId": "updateUser",
+          "method": "put",
+          "headers": {},
+          "params": {},
+          "url": "https://petstore.swagger.io/v2/user/g7Un5gVOcS",
+          "data": {}
+        },
+        {
+          "operationId": "deleteUser",
+          "method": "delete",
+          "headers": {},
+          "params": {},
+          "url": "https://petstore.swagger.io/v2/user/ZYb90vV0qa"
+        }
+      ],
+      "servers": [],
+      "progress": 0,
+      "totalProgress": 0
+    }
+  ]
+}

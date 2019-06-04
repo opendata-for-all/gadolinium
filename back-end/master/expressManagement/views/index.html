@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head><title></title>
+    <script src="/javascripts/socket.io.js"></script>
+    <script src="/javascripts/utils.js"></script>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <link href="https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Two+Tone|Material+Icons+Round|Material+Icons+Sharp"
+          rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+            integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+            crossorigin="anonymous"></script>
+    <!--script(src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js", integrity="sha384-xrRywqdh3PHs8keKZN+8zzc5TX0GRTLCcmivcbNJWm2rs5C8PRhcEn3czEjhAO9o", crossorigin="anonymous")    script(src="/javascripts/socket.io.js")-->
+    <script src="/javascripts/htmlManagement.js"></script>
+    <script src="/javascripts/index.js"></script>
+</head>
+<body><h1>Gadolinium</h1>
+<div class="container-fluid" id="application">
+    <div class="row">
+        <div class="list-group col-sm" id="apiDiv">
+            <div class="mb-3" id="addAPIDiv" role="button"><a class="list-group-item list-group-item-info"
+                                                              data-toggle="modal" data-target="#apiSelectionModal">
+                <div class="row">
+                    <div class="col-10">Add an API to test</div>
+                    <i class="material-icons-round col-1">add</i></div>
+            </a>
+                <!--a(class="list-group-item list-group-item-action" id="api" + api.id + "" onclick="clickOnApi(\"" + api.id + "\")")= api.name-->
+            </div>
+        </div>
+        <div class="list-group col-sm" id="serverDiv">
+            <div class="mb-3" id="addServerDiv" style="display : none"><a class="list-group-item list-group-item-info"
+                                                                          data-toggle="modal"
+                                                                          data-target="#serverSelectionModal"
+                                                                          onclick="prepareModalForServerSelection()"
+                                                                          role="button">
+                <div class="row">
+                    <div class="col-10">Add a new server to test from</div>
+                    <i class="col-1 material-icons-round">add</i></div>
+            </a></div>
+        </div>
+    </div>
+</div><!-- Modal-->
+<div class="modal fade" id="apiSelectionModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header"><h5 class="modal-title">Add a new API to test</h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i
+                        class="material-icons-round">close</i></span></button>
+            </div>
+            <div class="modal-body"><!-- for zone in zoneList--><!--    p= zone-->
+                <div class="row">
+                    <div class="col align-middle text-center"><p>Add a JSON</p></div>
+                    <div class="col">
+                        <div class="custom-file"><input class="custom-file-input" type="file" id="customFile"
+                                                        onchange="openFile(event)"><label class="custom-file-label"
+                                                                                          for="customFile"></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>
+                <button class="btn btn-primary" type="button">Add API</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="serverSelectionModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true"></div><!-- Modal.modal-dialog(role='document')
+    .modal-content
+        .modal-header
+            h5.modal-title Add a new API to test
+            button.close(type='button', data-dismiss='modal', aria-label='Close')
+                span(aria-hidden='true')
+                    i.material-icons-round close
+        .modal-body
+            // for zone in zoneList
+            //    p= zone
+            .row.scroll-area
+                .col.align-middle.text-center
+                    .list-group#GCPServers
+                        - let zoneNames = Object.keys(zoneList);
+                        - let zones = Object.values(zoneList);
+                        - for(let i=0; i<zoneNames.length; i++)
+                            - let zoneName = zoneNames[i];
+                            - let zone = zones[i];
+                                button.list-group-item.list-group-item-action.btn-outline(type='button' onclick='serverSelected(this)' gcpregion=zoneName)=zone.location
+        .modal-footer
+            button.btn.btn-secondary(type='button', data-dismiss='modal') Close
+            button.btn.btn-primary#submitServers(type='button' disabled='' data-dismiss='modal' onclick="submitServerForAPITest()") Test the API-->
+</body>
+</html>

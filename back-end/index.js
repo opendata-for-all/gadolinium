@@ -1,6 +1,6 @@
 if(process.argv[1] === "master"){
-	require('./master/index');
+	require('./back-end/master/index');
 }
 else if(process.argv[1] === "slave"){
-	require('./slave/index');
+	require('./back-end/slave/index');
 }

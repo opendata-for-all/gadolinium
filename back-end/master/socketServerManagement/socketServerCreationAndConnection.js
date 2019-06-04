@@ -20,7 +20,7 @@ let createChannel = (webClientCallback, slaveCallback) => {
 		if (client.handshake.query.token === "webclient") {
 			console.log("Webclient joined");
 			client.join('webclient');
-			socketServer.to('webclient').emit('APIStatus', APIStatus);
+			emitAPIStatusUpdate();
 			webClientCallback(client);
 		} else if (client.handshake.query.token === "slave") {
 			let authorizedNames = getAuthorizedNames(APIStatus);
@@ -43,10 +43,9 @@ let createChannel = (webClientCallback, slaveCallback) => {
 let getAuthorizedNames = () => {
 	let authorizedNames = [];
 	let APIStatus = APIStatusFunc.getAPIStatus();
-	let apis = Object.values(APIStatus);
-	for (let api of apis) {
-		authorizedNames.push(...Object.keys(api.servers));
-	}
+	APIStatus.forEach((api) => {
+		api.servers.forEach((server) => authorizedNames.push(server.name));
+	});
 	return authorizedNames;
 };
 

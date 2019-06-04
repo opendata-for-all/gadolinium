@@ -1,21 +1,22 @@
 let io = require('socket.io-client');
+let performanceTestFunc = require('./performanceTestFunc');
 let region = process.argv[2];
-let instanceName = process.argv[3];
-// let instanceName = "api-1-europe-north1-a";
+// let instanceName = process.argv[3];
+let instanceName = "api-1-asia-northeast1-a";
 let masterConfig = require('./gadolinium-master');
 
-let socket = io(`ws://${masterConfig.ipaddress}:${masterConfig.port}`, {
-	query : {
-		token : 'slave',
-		name : instanceName
-	}
-});
-// let socket = io(`ws://localhost:8080`, {
-// 	query: {
-// 		token: 'slave',
-// 		name: instanceName
+// let socket = io(`ws://${masterConfig.ipaddress}:${masterConfig.port}`, {
+// 	query : {
+// 		token : 'slave',
+// 		name : instanceName
 // 	}
 // });
+let socket = io(`ws://localhost:8080`, {
+	query: {
+		token: 'slave',
+		name: instanceName
+	}
+});
 
 socket.on('connect', () => {
 	console.log("Connected to Master");
@@ -37,4 +38,8 @@ socket.on('testApi', (data) => {
 		if (i === 20) clearInterval(interval);
 	}, 5000);
 
+});
+
+socket.on('instantTest', (api) => {
+	performanceTestFunc.instantTest(socket, api);
 });

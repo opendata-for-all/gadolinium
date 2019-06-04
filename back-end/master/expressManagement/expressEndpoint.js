@@ -33,27 +33,15 @@ let createOpenAPIJSONEndpoint = (app) => {
 			let httpRequest = await OpenAPIJSONParser.parse(openAPIJSON);
 			newApi.host = openAPIJSON.host;
 			newApi.httpRequests = httpRequest;
-			console.log(newApi);
+			APIStatusFunc.addApi(newApi);
+			socketFunc.emitAPIStatusUpdate();
 			res.status(200).send({
 				message: "The file is correct"
 			});
-			addAPIToAPIStatus(newApi);
-			socketFunc.emitAPIStatusUpdate();
 		} catch (e) {
-			res.status(400).send(e.message);
+			res.send({status : 400, message : e.message});
 		}
 	})
-};
-
-let addAPIToAPIStatus = (newApi) => {
-	let APIStatus = APIStatusFunc.getAPIStatus();
-	let id = Object.keys(APIStatus).length + 1;
-	APIStatus[id] = {
-		name : newApi.host,
-		httpRequests : newApi.httpRequests,
-		servers : {}
-	};
-	APIStatusFunc.writeAPIStatus(APIStatus);
 };
 
 module.exports = {

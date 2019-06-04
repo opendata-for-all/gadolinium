@@ -63,7 +63,7 @@ const submitTestToServers = () => {
 	let serversId = testServersSelected.map(getServerIdFromRegion);
 	let testFormData = {
 		apiId : apiSelected,
-		serversId : serversId
+		serversName : serversId
 	};
 	client.emit('testForm', testFormData);
 };
