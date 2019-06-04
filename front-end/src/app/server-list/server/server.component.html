@@ -1,0 +1,17 @@
+<a (click)="serverSelected()" [class.list-group-item-danger]="type==='instant'"
+   [class.list-group-item-warning]="type==='planned'" class="list-group-item list-group-item-warning">
+  <div>
+    <div class="row">
+      <div class="col"><p> {{location}}</p></div>
+      <div class="col"><p>{{status}}</p></div>
+      <div aria-controls="collapseapi-1-southamerica-east1-c" aria-expanded="false" class="col-1" data-toggle="show"
+           href="#show" role="button"><i class="material-icons-round" onclick="collapseIconClicked(this)">keyboard_arrow_down</i>
+      </div>
+    </div>
+    <div id="progressBarapi-1-southamerica-east1-c">
+      <!--.progress-bar.progress-bar-striped.progress-bar-animated.bg-info(role='progressbar', [aria-valuenow]="progress", aria-valuemin='0', aria-valuemax='20', style='width: 100%')-->
+      <ngb-progressbar [animated]="true" [striped]="true" [value]="progress / totalProgress * 100"></ngb-progressbar>
+    </div>
+    <app-server-collapse [show]="showCollapse"></app-server-collapse>
+  </div>
+</a>

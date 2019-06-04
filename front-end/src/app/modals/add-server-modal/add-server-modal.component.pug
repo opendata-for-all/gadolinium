@@ -1,0 +1,12 @@
+.modal-header
+  h4#modal-title.modal-title Add servers to test
+  button.close(type='button', aria-label='Close button', aria-describedby='modal-title', (click)="modal.dismiss('Cross click')")
+    span(aria-hidden='true') ×
+.modal-body
+  .row.scroll-area
+    .col.align-middle.text-center
+      .list-group#GCPServers(*ngFor="let server of addablePlannedTestServers")
+        .list-group-item.list-group-item-action.btn-outline((click)='serverSelected(server)', [ngClass]="{selected: setClassNames(server)}") {{server.location}}
+.modal-footer
+  button.btn.btn-outline-secondary(type='button', (click)="modal.dismiss('cancel click')") Cancel
+  button.btn.btn-danger(type='button', ngbautofocus='', (click)="createPlannedTestServers()") Ok

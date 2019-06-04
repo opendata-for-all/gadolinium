@@ -1,0 +1,14 @@
+a.list-group-item.list-group-item-warning((click)="serverSelected()", [class.list-group-item-warning]="type==='planned'", [class.list-group-item-danger]="type==='instant'")
+  div
+    .row
+      .col
+        p  {{location}}
+      .col
+        p {{status}}
+      .col-1(data-toggle='show', role='button', href='#show', aria-expanded='false', aria-controls='collapseapi-1-southamerica-east1-c')
+        i.material-icons-round(onclick='collapseIconClicked(this)') keyboard_arrow_down
+    #progressBarapi-1-southamerica-east1-c
+      //.progress-bar.progress-bar-striped.progress-bar-animated.bg-info(role='progressbar', [aria-valuenow]="progress", aria-valuemin='0', aria-valuemax='20', style='width: 100%')
+      ngb-progressbar([value]="progress / totalProgress * 100", [striped]="true", [animated]="true")
+    app-server-collapse([show]="showCollapse")
+

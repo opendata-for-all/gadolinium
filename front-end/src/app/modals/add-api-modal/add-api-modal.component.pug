@@ -1,0 +1,15 @@
+.modal-header
+  h4#modal-title.modal-title Add an API
+  button.close(type='button', aria-label='Close button', aria-describedby='modal-title', (click)="modal.dismiss('Cross click')")
+    span(aria-hidden='true') ×
+.modal-body
+  .row
+    .col.align-middle.text-center
+      p Add a JSON
+    .col
+      div.custom-file
+        input.custom-file-input(type="file" id="customFile", (change)="openJSONFile($event)")
+        label.custom-file-label(for="customFile")
+.modal-footer
+  button.btn.btn-outline-secondary(type='button', (click)="modal.dismiss('cancel click')") Cancel
+  button.btn.btn-danger(type='button', ngbautofocus='', (click)="modal.close('Ok click')") Ok

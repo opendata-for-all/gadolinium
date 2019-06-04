@@ -1,0 +1,5 @@
+<a (click)="apiSelected()" class="list-group-item list-group-item-action list-group-item-success">
+  <div class="col"><p>{{name}}</p></div>
+  <ngb-progressbar [animated]="true" [striped]="true" [value]="progress / totalProgress * 100"></ngb-progressbar>
+  <app-api-collapse [apiId]="id" [show]="show"></app-api-collapse>
+</a>

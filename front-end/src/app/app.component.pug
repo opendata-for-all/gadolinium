@@ -1,0 +1,17 @@
+h1 {{title}}
+.container-fluid(id="application")
+  .row
+    .col#apiDiv
+      .mb-3(role="button")
+        .list-group-item.list-group-item-info((click)="openAddApiModal()")
+          .row
+            .col-10 Add an API to test
+            i.material-icons-round.col-1 add
+      app-api-list
+    .col#serverDiv
+      .mb-3(role="button", *ngIf="apiSelected !== null")
+        .list-group-item.list-group-item-info((click)="openAddServerModal()")
+          .row
+            .col-10 Add a server to test the selected API
+            i.material-icons-round.col-1 add
+      app-server-list

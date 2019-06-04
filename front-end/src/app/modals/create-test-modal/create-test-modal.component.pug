@@ -1,0 +1,30 @@
+.modal-header
+  h4#modal-title.modal-title Create test
+  button.close(type='button', aria-label='Close button', aria-describedby='modal-title', (click)="modal.dismiss('Cross click')")
+    span(aria-hidden='true') ×
+.modal-body
+  .row
+    .col
+      .row
+        p Performance test
+      .row
+        .col.form-group
+          label(for="testRange") Time range
+          .form-control#testRange(placeholder="Enter range")
+        .col.form-group
+          label(for="testNumber") Number of test
+          .form-control#testNumber(placeholder="Enter number")
+      ngb-tabset(justify="justified")
+        ngb-tab(title="Planned")
+          ng-template(ngbTabContent='')
+            .list-group.scroll-area(*ngFor="let server of plannedTestServers")
+              .list-group-item.list-group-item-action.btn-outline((click)='plannedTestServerSelected(server)', [ngClass]="{selected: setClassNames(server)}") {{server.location}}
+        ngb-tab(title="Instant", (click)="setTestType('instant')")
+          ng-template(ngbTabContent='')
+            .list-group.scroll-area(*ngFor="let server of gcpServers")
+              .list-group-item.list-group-item-action.btn-outline((click)='gcpServerSelected(server)', [ngClass]="{selected: setClassNames(server)}") {{server.location}}
+
+
+.modal-footer
+  button.btn.btn-outline-secondary(type='button', (click)="modal.dismiss('cancel click')") Cancel
+  button.btn.btn-danger(type='button', ngbautofocus='', (click)="createTests()") Ok
