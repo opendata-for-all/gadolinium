@@ -18,7 +18,7 @@ import {PerformanceChartComponent} from './charts/performance-chart/performance-
 
 const config: SocketIoConfig = {
   // url: 'localhost:8080', options: {
-  url: 'localhost:80', options: {
+  url: ':80/', options: {
     query: {
       token: 'webclient'
     }
