@@ -1,6 +1,7 @@
 let fs = require('fs');
 let path = require('path');
 let GCPFunc = require('../GoogleCloudManagement/functions');
+let performPingTest = require('../../slave/performanceTestFunc').performPingTest;
 
 let getAPIStatus = () => {
 	let APIStatus = fs.readFileSync(path.join(__dirname, 'APIStatus.json'));
@@ -28,21 +29,52 @@ let updateAPIProgress = (APIStatus) => {
 let getNewApiId = (APIStatus) => {
 	let apiIds = APIStatus.map((api) => api.id);
 	for (let i = 0; i <= Math.max(...apiIds) + 1; i++) {
-		if(!apiIds.includes(i)) return i;
+		if (!apiIds.includes(i)) return i;
 	}
 };
 
-let addApi = (newApi) => {
+let getOperationTestsObject = (httpRequests) => {
+	let operationTests = [];
+	httpRequests.reduce((obj, httpRequest) => {
+		return obj.concat([{
+			operationId: httpRequest.operationId,
+			parameters: httpRequest.params
+		}])
+	}, operationTests);
+	return operationTests;
+};
+
+let prepareOpenAPIExtensionObject = async (host, httpRequests) => {
+	let obj = {};
+	let acceptICMP = await performPingTest(host);
+	obj.performance = {
+		testCount: 0,
+		latency: {
+			mean: null,
+			min: null,
+			max: null
+		},
+		operationTests: getOperationTestsObject(httpRequests)
+	};
+	obj.availability = {
+		acceptICMP: acceptICMP
+	};
+	return obj;
+};
+
+let addApi = async (newApi) => {
 	let APIStatus = getAPIStatus();
 	let id = getNewApiId(APIStatus);
-	APIStatus.push({
+	let apiObj = {
 		id: id,
 		name: newApi.host,
 		httpRequests: newApi.httpRequests,
 		servers: [],
 		progress: 0,
 		totalProgress: 0
-	});
+	};
+	apiObj["x-Gadolinium"]= await prepareOpenAPIExtensionObject(newApi.host, newApi.httpRequests),
+	APIStatus.push(apiObj);
 	writeAPIStatus(APIStatus);
 };
 
@@ -116,7 +148,7 @@ let updateServerInfos = (apiId, serverName, newServer) => {
 			});
 			return true;
 		}
-	})
+	});
 	writeAPIStatus(APIStatus)
 };
 
