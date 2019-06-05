@@ -1,9 +1,15 @@
 let axios = require('axios');
-let ping = require('net-ping');
+let ping = require('node-http-ping');
 let dns = require('dns');
 const loadtest = require('loadtest');
 
-let axiosRequest = async (httpRequest, requestPerSecond, maxRequests) => {
+let performPingTest = async (host) => {
+	return await ping(host)
+		.then(time => true)
+		.catch(() => false);
+};
+
+let performanceTest = async (httpRequest, requestPerSecond, maxRequests) => {
 	// const options = {
 	// 	url: method.url,
 	// 	maxRequests: 10,
@@ -21,13 +27,14 @@ let axiosRequest = async (httpRequest, requestPerSecond, maxRequests) => {
 			httpRequest.test.avgSuccess = 1 - (result.totalErrors / result.totalRequests);
 			httpRequest.test.meanLatency = result.meanLatencyMs;
 			resolve(result);
-			console.log(result);
+			// console.log(result);
 		});
 	})
 };
 
 let createOpenAPIExtensionObject = (httpRequest) => {
 	//TODO OPEN API EXTENSION PROPOSAL
+	console.log(httpRequest);
 	httpRequest.test = {};
 	httpRequest.test.performanceRecords = [];
 	httpRequest.test.successabilityRecords = [];
@@ -36,7 +43,7 @@ let createOpenAPIExtensionObject = (httpRequest) => {
 
 let performTestOnEachPath = async (httpRequests) => {
 	for (let httpRequest of httpRequests) {
-		await axiosRequest(httpRequest);
+		await performanceTest(httpRequest);
 	}
 };
 
@@ -49,7 +56,7 @@ let instantTest = async (socketClient, api) => {
 	for (let i = 0; i < httpRequests.length; i++) {
 		let httpRequest = httpRequests[i];
 		createOpenAPIExtensionObject(httpRequest);
-		await axiosRequest(httpRequest, 1, 1);
+		await performanceTest(httpRequest, 1, 1);
 		api.progress++;
 		if (api.progress === api.totalProgress) {
 			api.progressStatus = "Tests completed"
@@ -67,6 +74,7 @@ let performTests = async (api) => {
 };
 
 module.exports = {
+	performPingTest: performPingTest,
 	instantTest: instantTest,
 	performTests: performTests,
 };
