@@ -10,7 +10,9 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "postinstall": "node ./ng-add-pug-loader.js"
+    "postinstall": "node ./ng-add-pug-loader.js",
+    "pug-it": "pug src",
+    "pug-it:w": "pug src -P -w"
   },
   "private": true,
   "dependencies": {
@@ -25,13 +27,16 @@
     "@angular/platform-browser-dynamic": "~7.2.0",
     "@angular/router": "~7.2.0",
     "@ng-bootstrap/ng-bootstrap": "^4.1.3",
+    "chart.js": "^2.8.0",
     "core-js": "^2.5.4",
+    "express": "latest",
     "ng-cli-pug-loader": "^0.1.7",
+    "ng2-charts": "^2.3.0",
     "ngx-socket-io": "latest",
     "rxjs": "~6.3.3",
     "tslib": "^1.9.0",
-    "zone.js": "~0.8.26",
-    "express": "latest"
+    "yarn": "^1.16.0",
+    "zone.js": "~0.8.26"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.13.0",
