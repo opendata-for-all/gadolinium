@@ -14,10 +14,11 @@ import {ServerCollapseComponent} from './server-list/server/server-collapse/serv
 import {AddApiModalComponent} from './modals/add-api-modal/add-api-modal.component';
 import {CreateTestModalComponent} from './modals/create-test-modal/create-test-modal.component';
 import {AddServerModalComponent} from './modals/add-server-modal/add-server-modal.component';
-
+import {PerformanceChartComponent} from './charts/performance-chart/performance-chart.component';
 
 const config: SocketIoConfig = {
-  url: 'localhost:8080', options: {
+  // url: 'localhost:8080', options: {
+  url: 'localhost:80', options: {
     query: {
       token: 'webclient'
     }
@@ -36,6 +37,7 @@ const config: SocketIoConfig = {
     AddApiModalComponent,
     AddServerModalComponent,
     CreateTestModalComponent,
+    PerformanceChartComponent,
   ],
   imports: [
     SocketIoModule.forRoot(config),
