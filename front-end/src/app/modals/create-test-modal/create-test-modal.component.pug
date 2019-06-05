@@ -17,7 +17,7 @@
       ngb-tabset(justify="justified")
         ngb-tab(title="Planned")
           ng-template(ngbTabContent='')
-            .list-group.scroll-area(*ngFor="let server of plannedTestServers")
+            .list-group.scroll-area50(*ngFor="let server of plannedTestServers")
               .list-group-item.list-group-item-action.btn-outline((click)='plannedTestServerSelected(server)', [ngClass]="{selected: setClassNames(server)}") {{server.location}}
         ngb-tab(title="Instant", (click)="setTestType('instant')")
           ng-template(ngbTabContent='')

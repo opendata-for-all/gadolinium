@@ -3,7 +3,7 @@
   button.close(type='button', aria-label='Close button', aria-describedby='modal-title', (click)="modal.dismiss('Cross click')")
     span(aria-hidden='true') ×
 .modal-body
-  .row.scroll-area
+  .row.scroll-area75
     .col.align-middle.text-center
       .list-group#GCPServers(*ngFor="let server of addablePlannedTestServers")
         .list-group-item.list-group-item-action.btn-outline((click)='serverSelected(server)', [ngClass]="{selected: setClassNames(server)}") {{server.location}}

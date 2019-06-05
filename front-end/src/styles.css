@@ -1,1 +1,23 @@
 /* You can add global styles to this file, and also import other style files */
+body {
+  padding: 50px;
+}
+
+.selected {
+  background-color: #8eb095;
+}
+
+.notSelected {
+}
+
+.scroll-area75 {
+  width: 100%;
+  max-height: 75vh;
+  overflow-y: scroll;
+}
+
+.scroll-area50 {
+  width: 100%;
+  max-height: 50vh;
+  overflow-y: scroll;
+}

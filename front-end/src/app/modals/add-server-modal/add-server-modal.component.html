@@ -1,18 +1,18 @@
 <div class="modal-header"><h4 class="modal-title" id="modal-title">Add servers to test</h4>
-  <button class="close" type="button" aria-label="Close button" aria-describedby="modal-title"
-          (click)="modal.dismiss('Cross click')"><span aria-hidden="true">×</span></button>
+  <button (click)="modal.dismiss('Cross click')" aria-describedby="modal-title" aria-label="Close button" class="close"
+          type="button"><span aria-hidden="true">×</span></button>
 </div>
 <div class="modal-body">
-  <div class="row scroll-area">
+  <div class="row scroll-area75">
     <div class="col align-middle text-center">
-      <div class="list-group" id="GCPServers" *ngFor="let server of addablePlannedTestServers">
-        <div class="list-group-item list-group-item-action btn-outline" (click)="serverSelected(server)"
-             [ngClass]="{selected: setClassNames(server)}">{{server.location}}</div>
+      <div *ngFor="let server of addablePlannedTestServers" class="list-group" id="GCPServers">
+        <div (click)="serverSelected(server)" [ngClass]="{selected: setClassNames(server)}"
+             class="list-group-item list-group-item-action btn-outline">{{server.location}}</div>
       </div>
     </div>
   </div>
 </div>
 <div class="modal-footer">
-  <button class="btn btn-outline-secondary" type="button" (click)="modal.dismiss('cancel click')">Cancel</button>
-  <button class="btn btn-danger" type="button" ngbautofocus="" (click)="createPlannedTestServers()">Ok</button>
+  <button (click)="modal.dismiss('cancel click')" class="btn btn-outline-secondary" type="button">Cancel</button>
+  <button (click)="createPlannedTestServers()" class="btn btn-danger" ngbautofocus="" type="button">Ok</button>
 </div>
