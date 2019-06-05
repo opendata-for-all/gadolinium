@@ -18,10 +18,7 @@ let createEndpoints = (app) => {
 
 let createDefaultEndpoint = (app) => {
 	app.get('/', async (req, res, next) => {
-		res.render('index', {
-			title: "I'm a master !",
-			zoneList : listOfServers
-		})
+		res.sendFile('index.html');
 	});
 };
 
@@ -33,7 +30,7 @@ let createOpenAPIJSONEndpoint = (app) => {
 			let httpRequest = await OpenAPIJSONParser.parse(openAPIJSON);
 			newApi.host = openAPIJSON.host;
 			newApi.httpRequests = httpRequest;
-			APIStatusFunc.addApi(newApi);
+			await APIStatusFunc.addApi(newApi);
 			socketFunc.emitAPIStatusUpdate();
 			res.status(200).send({
 				message: "The file is correct"
