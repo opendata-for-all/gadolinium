@@ -20,7 +20,7 @@ let onDeleteServer = (webClient, callback) => {
 		let apiId = data.apiId;
 		let serverName = data.serverName;
 		let zone = data.zone;
-		APIStatusFunc.deleteServer(apiId, serverName);
+		let response = APIStatusFunc.deleteServer(apiId, serverName);
 		socketServerFunc.emitAPIStatusUpdate();
 		response.then((response) => {
 			if (response.status === 200) {
