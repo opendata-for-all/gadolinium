@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Api} from '../models/api';
-import {APIStatusService} from '../api-status.service';
+import {OpenAPI} from '../models/OpenAPI';
+import {APIStatusService} from '../services/api-status.service';
 import {Subscription} from 'rxjs';
 import {Server} from '../models/server';
 
@@ -11,8 +11,8 @@ import {Server} from '../models/server';
 })
 export class ApiListComponent implements OnInit, OnDestroy {
 
-  apiList: Api[];
-  selectedApi: Api;
+  apiList: OpenAPI[];
+  selectedApi: OpenAPI;
   selectedServer: Server;
 
   private apiList$: Subscription;

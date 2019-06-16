@@ -1,9 +1,9 @@
-<div [className]="show ? 'show' : 'collapse'" id="collapse">
+<div id="collapse" [className]="show ? 'show' : 'collapse'">
   <div class="card-body">
     <div class="row justify-content-around">
-      <button (click)="openCreateTestModal()" class="btn btn-outline-info col-3">Create test</button>
+      <button class="btn btn-outline-info col-3" (click)="openCreateTestModal()">Create test</button>
       <button class="btn btn-outline-info col-3" disabled="">Download tests</button>
-      <button (click)="deleteApi()" class="btn btn-outline-danger col-5">
+      <button class="btn btn-outline-danger col-5" (click)="deleteApi()">
         <div class="row justify-content-center">
           <div class="col-3">Delete</div>
           <i class="material-icons-round col-1">delete_forever</i></div>

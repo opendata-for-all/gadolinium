@@ -1,7 +1,7 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {APIStatusService} from '../../api-status.service';
+import {APIStatusService} from '../../services/api-status.service';
 import {Subscription} from 'rxjs';
-import {Api} from '../../models/api';
+import {OpenAPI} from '../../models/OpenAPI';
 
 @Component({
   selector: 'app-api',
@@ -10,7 +10,7 @@ import {Api} from '../../models/api';
 })
 export class ApiComponent implements OnInit, OnDestroy {
 
-  @Input() api: Api;
+  @Input() api: OpenAPI;
   id: string;
   name: string;
   progress: number;

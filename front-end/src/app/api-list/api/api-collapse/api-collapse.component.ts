@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {APIStatusService} from '../../../api-status.service';
+import {APIStatusService} from '../../../services/api-status.service';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {CreateTestModalComponent} from '../../../modals/create-test-modal/create-test-modal.component';
 
