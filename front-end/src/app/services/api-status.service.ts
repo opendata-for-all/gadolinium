@@ -1,19 +1,19 @@
 import {Socket} from 'ngx-socket-io';
 import {Injectable} from '@angular/core';
-import {Api} from './models/api';
+import {OpenAPI} from '../models/OpenAPI';
 import {Subject} from 'rxjs';
-import {Server} from './models/server';
-import {GCPServers} from './models/GCPServers';
-import {GCPServer} from './models/GCPServer';
+import {Server} from '../models/server';
+import {GCPServers} from '../models/GCPServers';
+import {GCPServer} from '../models/GCPServer';
 
 @Injectable({
   providedIn: 'root'
 })
 export class APIStatusService {
 
-  private apiList: Api[];
+  private apiList: OpenAPI[];
   private selectedApiId: string;
-  private selectedApi: Api;
+  private selectedApi: OpenAPI;
   private selectedServer: Server;
   private selectedAddableServers: GCPServer[];
   private plannedTestServers: Server[];
@@ -21,9 +21,9 @@ export class APIStatusService {
   private selectedPlannedTestServers: Server[];
   private selectedGCPServers: GCPServer[];
 
-  private apiListSource: Subject<Api[]> = new Subject();
+  private apiListSource: Subject<OpenAPI[]> = new Subject();
   apiList$ = this.apiListSource.asObservable();
-  private selectedApiSource: Subject<Api> = new Subject();
+  private selectedApiSource: Subject<OpenAPI> = new Subject();
   selectedApi$ = this.selectedApiSource.asObservable();
   private selectedServerSource: Subject<Server> = new Subject();
   selectedServer$ = this.selectedServerSource.asObservable();
@@ -70,7 +70,7 @@ export class APIStatusService {
     this.selectedGCPServers$.subscribe((servers) => this.selectedGCPServers = servers);
   }
 
-  apiSelected(api: Api) {
+  apiSelected(api: OpenAPI) {
     this.selectedApiSource.next(api);
   }
 
@@ -80,9 +80,9 @@ export class APIStatusService {
   }
 
   deleteApi(apiId: string) {
-    this.selectedApiSource.next({id: '', name: '', progress: 0, servers: [], totalProgress: 0});
+    // this.selectedApiSource.next(null);
     this.socket.emit('deleteApi', apiId);
-    console.log('Api deleted');
+    console.log('OpenAPI deleted');
   }
 
   deleteServer() {
