@@ -1,5 +1,7 @@
 export const GCPServers = [
     {
+      continent: 'Asia',
+      regional: 'Asia East',
       region: 'asia-east1',
       zones: [
         'a',
@@ -9,6 +11,8 @@ export const GCPServers = [
       location: 'Changhua County, Taiwan'
     },
     {
+      continent: 'Asia',
+      regional: 'Asia East',
       region: 'asia-east2',
       zones: [
         'a',
@@ -18,6 +22,8 @@ export const GCPServers = [
       location: 'Hong Kong'
     },
     {
+      continent: 'Asia',
+      regional: 'Asia North East',
       region:
         'asia-northeast1',
       zones: [
@@ -28,6 +34,8 @@ export const GCPServers = [
       location: 'Tokyo, Japan'
     },
     {
+      continent: 'Asia',
+      regional: 'Asia North East',
       region: 'asia-northeast2',
       zones: [
         'a',
@@ -37,6 +45,8 @@ export const GCPServers = [
       location: 'Osaka, Japan'
     },
     {
+      continent: 'Asia',
+      regional: 'Asia South',
       region:
         'asia-south1',
       zones: [
@@ -47,6 +57,8 @@ export const GCPServers = [
       location: 'Mumbai, India'
     },
     {
+      continent: 'Asia',
+      regional: 'Asia South East',
       region:
         'asia-southeast1',
       zones: [
@@ -57,6 +69,8 @@ export const GCPServers = [
       location: 'Jurong West, Singapore'
     },
     {
+      continent: 'Asia',
+      regional: 'Asia South East',
       region:
         'australia-southeast1',
       zones: [
@@ -67,6 +81,8 @@ export const GCPServers = [
       location: 'Sydney, Australia'
     },
     {
+      continent: 'Europe',
+      regional: 'Europe North',
       region:
         'europe-north1',
       zones: [
@@ -77,6 +93,8 @@ export const GCPServers = [
       location: 'Hamina, Finland'
     },
     {
+      continent: 'Europe',
+      regional: 'Europe West',
       region:
         'europe-west1',
       zones: [
@@ -87,6 +105,8 @@ export const GCPServers = [
       location: 'St. Ghislain, Belgium'
     },
     {
+      continent: 'Europe',
+      regional: 'Europe West',
       region:
         'europe-west2',
       zones: [
@@ -97,6 +117,8 @@ export const GCPServers = [
       location: 'London, England, UK'
     },
     {
+      continent: 'Europe',
+      regional: 'Europe West',
       region:
         'europe-west3',
       zones: [
@@ -107,6 +129,8 @@ export const GCPServers = [
       location: 'Frankfurt, Germany'
     },
     {
+      continent: 'Europe',
+      regional: 'Europe West',
       region:
         'europe-west4',
       zones: [
@@ -117,6 +141,8 @@ export const GCPServers = [
       location: 'Eemshaven, Netherlands'
     },
     {
+      continent: 'Europe',
+      regional: 'Europe West',
       region:
         'europe-west6',
       zones: [
@@ -127,6 +153,8 @@ export const GCPServers = [
       location: 'Zürich, Switzerland'
     },
     {
+      continent: 'North America',
+      regional: 'North America North East',
       region:
         'northamerica-northeast1',
       zones: [
@@ -137,6 +165,8 @@ export const GCPServers = [
       location: 'Montréal, Québec, Canada'
     },
     {
+      continent: 'South America',
+      regional: 'South America East',
       region:
         'southamerica-east1',
       zones: [
@@ -147,6 +177,8 @@ export const GCPServers = [
       location: 'São Paulo, Brazil'
     },
     {
+      continent: 'USA',
+      regional: 'USA Central',
       region:
         'us-central1',
       zones: [
@@ -158,6 +190,8 @@ export const GCPServers = [
       location: 'Council Bluffs, Iowa, USA'
     },
     {
+      continent: 'USA',
+      regional: 'USA East',
       region:
         'us-east1',
       zones: [
@@ -168,6 +202,8 @@ export const GCPServers = [
       location: 'Moncks Corner, South Carolina, USA'
     },
     {
+      continent: 'USA',
+      regional: 'USA East',
       region:
         'us-east4',
       zones: [
@@ -177,6 +213,8 @@ export const GCPServers = [
       ],
       location: 'Ashburn, Northern Virginia, USA'
     }, {
+    continent: 'USA',
+    regional: 'USA West',
       region:
         'us-west1',
       zones: [
@@ -187,6 +225,8 @@ export const GCPServers = [
       location: 'The Dalles, Oregon, USA'
     },
     {
+      continent: 'USA',
+      regional: 'USA West',
       region:
         'us-west2',
       zones: [
