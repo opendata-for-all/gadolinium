@@ -1,0 +1,14 @@
+label Uptime
+.input-group.mb-3
+  .input-group-prepend
+    span#uptimeRepLabel.input-group-text(#span) Number of repetitions
+  input#repetitions.form-control(#input, type='number', placeholder='Type a number...', aria-describedby='uptimeRepLabel', [attr.disabled]="isValidFile ? null : ''")
+.input-group.mb-3
+  .input-group-prepend
+    span#uptimeDurationLabel.input-group-text(#span) Interval between tests
+  .row.mx-auto
+    ngx-duration-picker#duration(#duration, [(value)]="period.iso8601format", [options]="{ showPreview : false}", (valueChange)="periodChanged()",[disabled]="isValidFile ? null : ''")
+.input-group.mb-3
+  .input-group-prepend
+    span.input-group-text Total duration
+  .form-control(aria-describedby='latencyRepLabel', [attr.disabled]="true") {{ totalDuration | durationFromMilliseconds | durationToFormat:" yy 'years' MM 'months' dd 'days' hh 'hours' mm 'minutes' ss 'seconds'" }}

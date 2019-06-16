@@ -1,0 +1,17 @@
+.modal-header
+  h4#modal-title.modal-title Add an API
+  button.close(type='button', aria-label='Close button', aria-describedby='modal-title', (click)="modal.dismiss('Cross click')")
+    span(aria-hidden='true') ×
+.modal-body.scroll-area75
+  form.col([formGroup]='openApiForm', (ngSubmit)='onSubmitForm()')
+    .form-group
+      app-file-upload(formControlName="file")
+    .form-group
+      app-input-latency(formControlName="latency")
+    .form-group
+      app-input-uptime(formControlName="uptime")
+    .form-group
+      app-input-zone
+.modal-footer
+  button.btn.btn-outline-secondary(type='button', (click)="modal.dismiss('cancel click')") Cancel
+  button.btn.btn-danger(#modalSubmit, type='button', ngbautofocus='', (click)="onSubmitForm()") Ok

@@ -1,0 +1,10 @@
+label Zones
+ngb-tabset(justify="fill")
+  ngb-tab(title="Latency")
+    ng-template(ngbTabContent)
+      .list-group.scroll-area50(*ngFor="let server of gcpServers")
+        .list-group-item.list-group-item-action.btn-outline(#latenceServer, (click)='latencyServerSelected(server)', [ngClass]="{selected: latencyRegionsSelection.includes(server)}", [class.disabled]="!isValidFile") {{server.continent}} - {{server.location}}
+  ngb-tab(title="Uptime")
+    ng-template(ngbTabContent)
+      .list-group.scroll-area(*ngFor="let server of gcpServers")
+        .list-group-item.list-group-item-action.btn-outline(#uptimeServer, (click)='uptimeServerSelected(server)', [ngClass]="{selected: uptimeLocationSelection.includes(server)}", [class.disabled]="!isValidFile") {{server.regional}} - {{server.location}}
