@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
-import {APIStatusService} from '../../api-status.service';
+import {APIStatusService} from '../../services/api-status.service';
 import {GCPServer} from '../../models/GCPServer';
 import {Subscription} from 'rxjs';
 

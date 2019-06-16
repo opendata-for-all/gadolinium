@@ -6,14 +6,14 @@
   .row
     .col
       .row
-        p Performance test
+        label.text-center Latency test
       .row
-        .col.form-group
-          label(for="testRange") Time range
-          .form-control#testRange(placeholder="Enter range")
-        .col.form-group
-          label(for="testNumber") Number of test
-          .form-control#testNumber(placeholder="Enter number")
+        p {{ latencyString }}
+    .col
+      .row
+        p Uptime test
+      .row
+        p {{ uptimeString }}
       ngb-tabset(justify="justified")
         ngb-tab(title="Planned")
           ng-template(ngbTabContent='')

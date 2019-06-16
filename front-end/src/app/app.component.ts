@@ -1,11 +1,11 @@
 import {Component} from '@angular/core';
 import {Socket} from 'ngx-socket-io';
-import {APIStatusService} from './api-status.service';
-import {Api} from './models/api';
+import {APIStatusService} from './services/api-status.service';
+import {OpenAPI} from './models/OpenAPI';
 import {Server} from './models/server';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {AddApiModalComponent} from './modals/add-api-modal/add-api-modal.component';
 import {AddServerModalComponent} from './modals/add-server-modal/add-server-modal.component';
+import {AddOpenAPITestComponent} from './modals/add-open-apitest/add-open-apitest.component';
 
 @Component({
   selector: 'app-root',
@@ -14,7 +14,7 @@ import {AddServerModalComponent} from './modals/add-server-modal/add-server-moda
 })
 export class AppComponent {
   title = 'Gadolinium';
-  apiSelected: Api = null;
+  apiSelected: OpenAPI = null;
   serverSelected: Server = null;
 
   constructor(private socket: Socket, private apiStatusService: APIStatusService, private modalService: NgbModal) {
@@ -22,9 +22,8 @@ export class AppComponent {
     this.apiStatusService.selectedServer$.subscribe((server) => this.serverSelected = server);
   }
 
-
   openAddApiModal() {
-    this.modalService.open(AddApiModalComponent, {size: 'lg'});
+    this.modalService.open(AddOpenAPITestComponent, {size: 'lg'});
   }
 
   openAddServerModal() {

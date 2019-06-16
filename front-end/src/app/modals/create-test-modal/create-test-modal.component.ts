@@ -1,9 +1,10 @@
 import {Component, OnInit} from '@angular/core';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {Server} from '../../models/server';
-import {APIStatusService} from '../../api-status.service';
+import {APIStatusService} from '../../services/api-status.service';
 import {Subscription} from 'rxjs';
 import {GCPServer} from '../../models/GCPServer';
+import {ISO8601Duration, OpenAPI} from '../../models/OpenAPI';
 
 @Component({
   selector: 'app-create-test-modal',
@@ -12,12 +13,14 @@ import {GCPServer} from '../../models/GCPServer';
 })
 export class CreateTestModalComponent implements OnInit {
 
+  api: OpenAPI;
   testType: string;
   plannedTestServers: Server[];
   gcpServers: GCPServer[];
   alreadySelectedPlannedTestServers: Server[];
   alreadySelectedGCPServers: GCPServer[];
 
+  apiSub: Subscription;
   plannedTestServersSub: Subscription;
   alreadySelectedPlannedTestServersSub: Subscription;
   alreadySelectedGCPServersSub: Subscription;
@@ -31,6 +34,7 @@ export class CreateTestModalComponent implements OnInit {
     this.alreadySelectedGCPServersSub = this.apiService.selectedGCPServers$.subscribe(
       (servers) => this.alreadySelectedGCPServers = servers);
     this.plannedTestServersSub = this.apiService.plannedTestServers$.subscribe((servers) => this.plannedTestServers = servers);
+    this.apiSub = this.apiService.selectedApi$.subscribe(api => this.api = api);
   }
 
   ngOnInit() {
@@ -66,6 +70,16 @@ export class CreateTestModalComponent implements OnInit {
       this.apiService.createInstantTest();
     }
     this.modal.close();
+  }
+
+  get latencyString(): string {
+    // @ts-ignore
+    return this.api.testConfig.latency.repetitions + ' tests for a period of ' + ISO8601Duration.durationString(this.api.testConfig.latency.interval.iso8601format);
+  }
+
+  get uptimeString(): string {
+    // @ts-ignore
+    return this.api.testConfig.uptime.repetitions + ' tests for a period of ' + ISO8601Duration.durationString(this.api.testConfig.uptime.interval.iso8601format);
   }
 
   setTestType(type: string) {

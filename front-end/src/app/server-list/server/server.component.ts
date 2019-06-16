@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Server} from '../../models/server';
-import {APIStatusService} from '../../api-status.service';
+import {APIStatusService} from '../../services/api-status.service';
 
 @Component({
   selector: 'app-server',
@@ -30,7 +30,6 @@ export class ServerComponent implements OnInit {
     this.progress = this.server.progress;
     this.totalProgress = this.server.totalProgress;
     this.type = this.server.type;
-    console.log(this.server);
   }
 
   serverSelected() {

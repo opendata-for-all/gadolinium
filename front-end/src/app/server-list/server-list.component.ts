@@ -1,8 +1,8 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Server} from '../models/server';
-import {APIStatusService} from '../api-status.service';
+import {APIStatusService} from '../services/api-status.service';
 import {Subscription} from 'rxjs';
-import {Api} from '../models/api';
+import {OpenAPI} from '../models/OpenAPI';
 
 @Component({
   selector: 'app-server-list',
@@ -11,7 +11,7 @@ import {Api} from '../models/api';
 })
 export class ServerListComponent implements OnInit, OnDestroy {
 
-  selectedApi: Api;
+  selectedApi: OpenAPI;
   serverList: Server[];
   selectedServer: Server;
 
@@ -22,7 +22,6 @@ export class ServerListComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.selectedApi = {id: '', name: '', progress: 0, servers: [], totalProgress: 0};
     this.selectedApi$ = this.apiService.selectedApi$.subscribe((api) => {
       this.serverList = api.servers;
       this.selectedApi = api;

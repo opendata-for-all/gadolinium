@@ -1,33 +1,31 @@
 <div class="modal-header"><h4 class="modal-title" id="modal-title">Create test</h4>
-  <button (click)="modal.dismiss('Cross click')" aria-describedby="modal-title" aria-label="Close button" class="close"
-          type="button"><span aria-hidden="true">×</span></button>
+  <button class="close" type="button" aria-label="Close button" aria-describedby="modal-title"
+          (click)="modal.dismiss('Cross click')"><span aria-hidden="true">×</span></button>
 </div>
 <div class="modal-body">
   <div class="row">
     <div class="col">
-      <div class="row"><p>Performance test</p></div>
-      <div class="row">
-        <div class="col form-group"><label for="testRange">Time range</label>
-          <div class="form-control" id="testRange" placeholder="Enter range"></div>
-        </div>
-        <div class="col form-group"><label for="testNumber">Number of test</label>
-          <div class="form-control" id="testNumber" placeholder="Enter number"></div>
-        </div>
-      </div>
+      <div class="row"><label class="text-center">Latency test</label></div>
+      <div class="row"><p>{{ latencyString }}</p></div>
+    </div>
+    <div class="col">
+      <div class="row"><p>Uptime test</p></div>
+      <div class="row"><p>{{ uptimeString }}</p></div>
       <ngb-tabset justify="justified">
         <ngb-tab title="Planned">
           <ng-template ngbTabContent="">
-            <div *ngFor="let server of plannedTestServers" class="list-group scroll-area50">
-              <div (click)="plannedTestServerSelected(server)" [ngClass]="{selected: setClassNames(server)}"
-                   class="list-group-item list-group-item-action btn-outline">{{server.location}}</div>
+            <div class="list-group scroll-area50" *ngFor="let server of plannedTestServers">
+              <div class="list-group-item list-group-item-action btn-outline"
+                   (click)="plannedTestServerSelected(server)"
+                   [ngClass]="{selected: setClassNames(server)}">{{server.location}}</div>
             </div>
           </ng-template>
         </ngb-tab>
-        <ngb-tab (click)="setTestType('instant')" title="Instant">
+        <ngb-tab title="Instant" (click)="setTestType('instant')">
           <ng-template ngbTabContent="">
-            <div *ngFor="let server of gcpServers" class="list-group scroll-area">
-              <div (click)="gcpServerSelected(server)" [ngClass]="{selected: setClassNames(server)}"
-                   class="list-group-item list-group-item-action btn-outline">{{server.location}}</div>
+            <div class="list-group scroll-area" *ngFor="let server of gcpServers">
+              <div class="list-group-item list-group-item-action btn-outline" (click)="gcpServerSelected(server)"
+                   [ngClass]="{selected: setClassNames(server)}">{{server.location}}</div>
             </div>
           </ng-template>
         </ngb-tab>
@@ -36,6 +34,6 @@
   </div>
 </div>
 <div class="modal-footer">
-  <button (click)="modal.dismiss('cancel click')" class="btn btn-outline-secondary" type="button">Cancel</button>
-  <button (click)="createTests()" class="btn btn-danger" ngbautofocus="" type="button">Ok</button>
+  <button class="btn btn-outline-secondary" type="button" (click)="modal.dismiss('cancel click')">Cancel</button>
+  <button class="btn btn-danger" type="button" ngbautofocus="" (click)="createTests()">Ok</button>
 </div>
