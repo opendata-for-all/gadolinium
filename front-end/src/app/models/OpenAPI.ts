@@ -1,13 +1,23 @@
 import {Server} from './server';
 import {parse, toSeconds} from 'iso8601-duration';
 
+export class HTTPRequest {
+  operationId: string;
+  method: string;
+  url: string;
+  data: any;
+  testResults: any;
+}
+
 export class OpenAPI {
   id: string;
   name: string;
   progress: number;
   totalProgress: number;
+  httpRequests: HTTPRequest[];
   servers: Server[];
   testConfig: OpenAPITestConfig;
+  uptimeResults: any;
 }
 
 export class OpenAPITestConfig {

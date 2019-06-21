@@ -7,6 +7,7 @@ export class Server {
   progress: number;
   totalProgress: number;
   type: string;
+  regional: any;
 
   // fromAPIStatus(server: any) {
   //   this.name = server.name;
