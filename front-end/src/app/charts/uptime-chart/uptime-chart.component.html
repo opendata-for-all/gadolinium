@@ -1,0 +1,12 @@
+<ngb-tabset [justify]="'fill'" [destroyOnHide]="false">
+  <ngb-tab title="Global">
+    <ng-template ngbTabContent="ngbTabContent">
+      <app-uptime-donut-chart></app-uptime-donut-chart>
+    </ng-template>
+  </ngb-tab>
+  <ngb-tab title="Per zone">
+    <ng-template ngbTabContent="ngbTabContent">
+      <app-uptime-multipart-progress-bar></app-uptime-multipart-progress-bar>
+    </ng-template>
+  </ngb-tab>
+</ngb-tabset>
