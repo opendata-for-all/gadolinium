@@ -7,7 +7,7 @@ label Uptime
   .input-group-prepend
     span#uptimeDurationLabel.input-group-text(#span) Interval between tests
   .row.mx-auto
-    ngx-duration-picker#duration(#duration, [(value)]="period.iso8601format", [options]="{ showPreview : false}", (valueChange)="periodChanged()",[disabled]="isValidFile ? null : ''")
+    ngx-duration-picker#duration(#interval, [(value)]="period.iso8601format", [options]="{ showPreview : false}", (valueChange)="periodChanged()",[disabled]="isValidFile ? null : ''")
 .input-group.mb-3
   .input-group-prepend
     span.input-group-text Total duration

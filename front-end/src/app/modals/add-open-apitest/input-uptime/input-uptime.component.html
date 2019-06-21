@@ -1,0 +1,20 @@
+<label>Uptime</label>
+<div class="input-group mb-3">
+  <div class="input-group-prepend"><span class="input-group-text" id="uptimeRepLabel" #span="#span">Number of repetitions</span>
+  </div>
+  <input class="form-control" id="repetitions" #input="#input" type="number" placeholder="Type a number..."
+         aria-describedby="uptimeRepLabel" [attr.disabled]="isValidFile ? null : ''"/></div>
+<div class="input-group mb-3">
+  <div class="input-group-prepend"><span class="input-group-text" id="uptimeDurationLabel" #span="#span">Interval between tests</span>
+  </div>
+  <div class="row mx-auto">
+    <ngx-duration-picker id="duration" #interval="#interval" [(value)]="period.iso8601format"
+                         [options]="{ showPreview : false}" (valueChange)="periodChanged()"
+                         [disabled]="isValidFile ? null : ''"></ngx-duration-picker>
+  </div>
+</div>
+<div class="input-group mb-3">
+  <div class="input-group-prepend"><span class="input-group-text">Total duration</span></div>
+  <div class="form-control" aria-describedby="latencyRepLabel"
+       [attr.disabled]="true">{{ totalDuration | durationFromMilliseconds | durationToFormat:" yy 'years' MM 'months' dd 'days' hh 'hours' mm 'minutes' ss 'seconds'" }}</div>
+</div>
