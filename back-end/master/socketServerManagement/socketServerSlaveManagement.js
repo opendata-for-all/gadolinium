@@ -32,44 +32,6 @@ let addSlavesThatAreBootingOrTesting = () => {
 	});
 };
 
-let addSlaveToDeleteList = (slaveName) => {
-	slavesToDelete.push(slaveName);
-};
-
-let addSlaveToBootingSlaveList = (slaveName, apiId) => {
-	let APIStatus = APIStatusFunc.getAPIStatus();
-	APIStatus.some((api) => {
-		if (api.id === apiId) {
-			slavesBooting[slaveName] = api;
-			return true;
-		}
-	})
-};
-
-let addSlaveToTestSlaveList = (slaveName, apiId, type) => {
-	let APIStatus = APIStatusFunc.getAPIStatus();
-	APIStatus.some((api) => {
-		if (api.id === apiId) {
-			if (type === "instant") {
-				instantSlaves[slaveName] = api;
-			} else if (type === "planned") {
-				plannedSlaves[slaveName] = api;
-			}
-			return true;
-		}
-	})
-};
-
-let addSlaveToInstantTestSlaveList = (slaveName, apiId) => {
-	let APIStatus = APIStatusFunc.getAPIStatus();
-	APIStatus.some((api) => {
-		if (api.id === apiId) {
-			instantSlaves[slaveName] = api;
-			return true;
-		}
-	})
-};
-
 let slaveConnected = (slaveClient, slaveName) => {
 	let api;
 	if ((api = instantSlaves[slaveName])) {
@@ -114,16 +76,83 @@ let handleDisconnection = (slaveClient, slaveName, slaveCallback) => {
 };
 
 let slaveTesting = (slaveClient, slaveName) => {
-	slaveClient.on('testProgression', (testApiObject) => {
-		console.log(`API ${testApiObject.apiId} - Server ${testApiObject.slaveName} : Test ${testApiObject.progress} on ${testApiObject.totalProgress} completed.`);
-		let apiId = testApiObject.apiId;
-		let serverId = testApiObject.slaveName;
-		APIStatusFunc.updateServerInfos(apiId, serverId, {
-			status: testApiObject.progressStatus,
-			progress: testApiObject.progress,
-			totalProgress: testApiObject.totalProgress
-		});
+	slaveClient.on('testProgression', (results) => {
+		console.log(`API ${results.apiId} - Server ${slaveName} : Test ${results.progress} on ${results.totalProgress} completed.`);
+		let apiId = results.apiId;
+		if (slavesTesting.has(slaveName)) {
+			if (latencySlaves.has(slaveName)) {
+				let httpRequestId = results.httpRequestIndex;
+				let testResult = results.testResults;
+				APIStatusFunc.updateOperationTestResults(apiId, slaveName, httpRequestId, testResult);
+			} else if (uptimeSlaves.has(slaveName)) {
+				let isApiUp = results.up;
+				let date = results.date;
+				APIStatusFunc.recordAPIUpTime(apiId, slaveName, isApiUp, date);
+			}
+			APIStatusFunc.applyFunctionToOneServer(apiId, slaveName, (server) => server.progress++);
+		}
 		socketServerFunc.emitAPIStatusUpdate();
+
+	});
+
+	slaveClient.on('repetitionFinished', (obj) => {
+		let apiId = obj.apiId;
+		if (masterHandledSlaves.has(slaveName)) {
+			if (slavesTesting.has(slaveName)) {
+				console.log('Repetition finished for ' + slaveName);
+				if (APIStatusFunc.isLastTest(apiId, slaveName)) {
+					//It was the last test, so it is time to delete the slave VM.
+					console.log('Test completed for ' + slaveName);
+					slavesTesting.delete(slaveName);
+					APIStatusFunc.terminateServer(apiId, slaveName);
+				} else {
+					//It is not the last test, so launch a counter of the correct duration to launch the next test
+					APIStatusFunc.applyFunctionToOneServer(apiId, slaveName, server => {
+						server.repetitionsRemaining--;
+					});
+					let server = APIStatusFunc.getServer(apiId, slaveName);
+					let interval;
+					if (latencySlaves.has(slaveName)) {
+						interval = APIStatusFunc.getLatencyInterval(apiId);
+					} else if (uptimeSlaves.has(slaveName)) {
+						interval = APIStatusFunc.getUptimeInterval(apiId);
+					}
+					GCPFunc.turnVM(false, server.zone, server.name);
+					setTimeout(() => {
+						GCPFunc.turnVM(true, server.zone, server.name);
+					}, interval);
+					console.log("Slave " + slaveName + " restarting in " + interval / 60000 + ' minutes');
+				}
+			}
+		} else if (slaveHandledSlaves.has(slaveName)) {
+			if (APIStatusFunc.isLastTest(apiId, slaveName)) {
+				//It was the last test, so it is time to delete the slave VM.
+				console.log('Test completed for ' + slaveName);
+				slavesTesting.delete(slaveName);
+				APIStatusFunc.terminateServer(apiId, slaveName);
+			} else {
+				let interval;
+				//It is not the last test, so launch a counter of the correct duration to launch the next test
+				APIStatusFunc.applyFunctionToOneServer(apiId, slaveName, server => {
+					server.repetitionsRemaining--;
+				});
+				if (latencySlaves.has(slaveName)) {
+					interval = APIStatusFunc.getLatencyInterval(apiId);
+				} else if (uptimeSlaves.has(slaveName)) {
+					interval = APIStatusFunc.getUptimeInterval(apiId);
+				}
+				console.log("Slave " + slaveName + " restarting in " + interval / 60000 + ' minutes');
+			}
+		}
+	});
+
+	slaveClient.on('completeTestFinished', (obj) => {
+		let apiId = obj.apiId;
+		if (slaveHandledSlaves.has(slaveName) && slavesTesting.has(slaveName)) {
+			slavesTesting.delete(slaveName);
+			APIStatusFunc.terminateServer(apiId, slaveName);
+			socketServerFunc.emitAPIStatusUpdate();
+		}
 	})
 };
 

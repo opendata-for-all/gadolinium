@@ -12,7 +12,7 @@ services.webClients = [];
 
 Array.prototype.remove = function (item) {
 	let index = this.indexOf(item);
-	if(index > -1) this.splice(index, 1)
+	if (index > -1) this.splice(index, 1)
 };
 
 socketServerSlaveManagement.addSlavesThatAreBootingOrTesting();
@@ -29,11 +29,10 @@ socketServerCreationAndConnection.createChannel(
 		socketServerWebClientManagement.onAPIStatus(webclient);
 		socketServerWebClientManagement.onAddTestServer(webclient);
 		socketServerWebClientManagement.onDeleteServer(webclient, (response) => {
-			if (response.status === 200) {
-				delete services.socketSlaves[response];
-			}
+			delete services.socketSlaves[response];
 		});
-		socketServerWebClientManagement.createApiDeletion(webclient, () => {});
+		socketServerWebClientManagement.createApiDeletion(webclient, () => {
+		});
 		socketServerWebClientManagement.createPlannedTestForSlaves(webclient, (data, APIStatus) => {
 			let apiId = data.apiId;
 			let slaveName = data.serverId;

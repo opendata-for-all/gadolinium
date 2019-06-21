@@ -71,7 +71,8 @@ let addApi = async (newApi) => {
 		httpRequests: newApi.httpRequests,
 		servers: [],
 		progress: 0,
-		totalProgress: 0
+		totalProgress: 0,
+		uptimeResults: {},
 	};
 	apiObj["x-Gadolinium"]= await prepareOpenAPIExtensionObject(newApi.host, newApi.httpRequests),
 	APIStatus.push(apiObj);
@@ -119,19 +120,7 @@ let deleteServer = (apiId, serverName) => {
 };
 
 let updateServerStatus = (apiId, serverName, status) => {
-	let APIStatus = getAPIStatus();
-	APIStatus.some((api) => {
-		if (api.id === apiId) {
-			api.servers.forEach((server) => {
-				if (server.name === serverName) {
-					server.status = status;
-					return true;
-				}
-			});
-			return true;
-		}
-	});
-	writeAPIStatus(APIStatus)
+	applyFunctionToOneServer(apiId, serverName, server => server.status = status);
 };
 
 let updateServerInfos = (apiId, serverName, newServer) => {
@@ -150,6 +139,143 @@ let updateServerInfos = (apiId, serverName, newServer) => {
 		}
 	});
 	writeAPIStatus(APIStatus)
+};
+
+let initializeServerState = (apiId, serverName, testType, handlingType) => {
+	let APIStatus = getAPIStatus();
+	APIStatus.some((api) => {
+		if (api.id === apiId) {
+			return api.servers.some((server) => {
+				if (server.name === serverName) {
+					// server.status = "Testing...";
+					server.progress = 0;
+					if (server.testType === 'latency') {
+						server.totalProgress = api.httpRequests.length * api.testConfig[server.testType].repetitions;
+					} else if (server.testType === 'uptime') {
+						server.totalProgress = api.testConfig[server.testType].repetitions;
+					}
+					if (handlingType === "masterHandled") {
+						server.repetitionsRemaining = api.testConfig[server.testType].repetitions;
+					}
+					return true;
+				}
+			});
+		}
+	});
+	writeAPIStatus(APIStatus);
+};
+
+let updateOperationTestResults = (apiId, slaveName, httpRequestIndex, testResult) => {
+	let APIStatus = getAPIStatus();
+	APIStatus.some((api) => {
+		if (api.id === apiId) {
+			if (api.httpRequests[httpRequestIndex] && api.httpRequests[httpRequestIndex].testResults) {
+				let testRecords = api.httpRequests[httpRequestIndex].testResults[slaveName];
+				testRecords.latencyRecords.push(...testResult.latencyRecords);
+				testRecords.totalTest = testRecords.latencyRecords.length;
+				// testRecords.avgSuccess = 1;// TODO What is success ?
+				testRecords.meanLatency = testRecords.latencyRecords.reduce((accum, record) => {
+					return accum + record.latencyMs;
+				}, 0) / testRecords.totalTest;
+			} else {
+				api.httpRequests[httpRequestIndex].testResults = {};
+				api.httpRequests[httpRequestIndex].testResults[slaveName] = testResult;
+			}
+			return true;
+		}
+	});
+	writeAPIStatus(APIStatus);
+};
+
+let isLastTest = (apiId, serverId) => {
+	let isLastTest = false;
+	let APIStatus = getAPIStatus();
+	APIStatus.some((api) => {
+		if (api.id === apiId) {
+			return api.servers.some((server) => {
+				if (server.name === serverId) {
+					isLastTest = (server.repetitionsRemaining === 1);
+				}
+			})
+		}
+	});
+	writeAPIStatus(APIStatus);
+	return isLastTest;
+};
+
+let getLatencyInterval = (apiId) => {
+	let intervalInMilli;
+	let APIStatus = getAPIStatus();
+	APIStatus.some((api) => {
+		if (api.id === apiId) {
+			return intervalInMilli = Duration.fromISO(api.testConfig.latency.interval.iso8601format).valueOf();
+		}
+	});
+	return intervalInMilli;
+};
+
+let getUptimeInterval = (apiId) => {
+	let intervalInMilli;
+	let APIStatus = getAPIStatus();
+	APIStatus.some((api) => {
+		if (api.id === apiId) {
+			return intervalInMilli = Duration.fromISO(api.testConfig.uptime.interval.iso8601format).valueOf();
+		}
+	});
+	return intervalInMilli;
+};
+
+let getAPI = (apiId) => {
+	let APIStatus = getAPIStatus();
+	let apiR;
+	APIStatus.some(api => api.id === apiId ? apiR = api : false);
+	return apiR;
+};
+
+let getServer = (apiId, serverName) => {
+	let serverR;
+	let api = getAPI(apiId);
+	api.servers.some((server) => {
+		if (server.name === serverName) {
+			return serverR = server;
+		}
+	});
+	return serverR;
+};
+
+let terminateServer = (apiId, serverName) => {
+	applyFunctionToOneServer(apiId, serverName, (server) => {
+		server.status = "Test completed";
+	})
+};
+
+let applyFunctionToOneServer = (apiId, serverName, fn) => {
+	let APIStatus = getAPIStatus();
+	APIStatus.some(api => {
+		if (api.id === apiId) {
+			api.servers.some(server => {
+				if (server.name === serverName) {
+					fn(server);
+				}
+			})
+		}
+	});
+	writeAPIStatus(APIStatus);
+};
+
+let recordAPIUpTime = (apiId, serverName, isApiUp, date) => {
+	let APIStatus = getAPIStatus();
+	APIStatus.some(api => {
+		if (api.id === apiId) {
+			if (api.uptimeResults[serverName]) {
+				api.uptimeResults[serverName].push({date: date, state: isApiUp});
+			} else {
+				api.uptimeResults[serverName] = [];
+				api.uptimeResults[serverName].push({date: date, state: isApiUp});
+			}
+		}
+	});
+	writeAPIStatus(APIStatus);
 };
 
 module.exports = {
