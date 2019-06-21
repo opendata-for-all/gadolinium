@@ -1,4 +1,5 @@
 let OpenAPIJSONParser = require('../Parsers/OpenAPIJSONParser');
+let PetStoreParser = require('../Parsers/PetStoreParser');
 let GoogleCloudManagement = require('../GoogleCloudManagement/functions');
 let APIStatusFunc = require('../APIStatus/functions');
 let socketFunc = require('../socketServerManagement/socketServerCreationAndConnection');
@@ -30,7 +31,7 @@ let createOpenAPIJSONEndpoint = (app) => {
 			let httpRequest = await OpenAPIJSONParser.parse(openAPIJSON);
 			newApi.host = openAPIJSON.host;
 			newApi.httpRequests = httpRequest;
-			await APIStatusFunc.addApi(newApi);
+			let newApiId = await APIStatusFunc.addApi(newApi);
 			socketFunc.emitAPIStatusUpdate();
 			res.status(200).send({
 				message: "The file is correct"
