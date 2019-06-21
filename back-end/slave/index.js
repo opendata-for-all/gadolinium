@@ -19,12 +19,6 @@ let socket = io(`ws://${masterConfig.ipaddress}:${masterConfig.port}`, {
 
 socket.on('connect', () => {
 	console.log("Connected to Master");
-	// setTimeout(() => {
-	// 	socket.disconnect('reason');
-	// 	setTimeout(() => {
-	// 		socket.connect();
-	// 	}, 5000);
-	// }, 5000)
 });
 
 socket.on('testApi', (data) => {
@@ -37,8 +31,16 @@ socket.on('testApi', (data) => {
 		if (i === 20) clearInterval(interval);
 	}, 5000);
 
+socket.on('masterHandledTest', async ({api, testType}) => {
+	console.log('masterHandledTest');
+	let results = {};
+	results.testResults = await performanceTestFunc[testType].singleTest(socket, api);
+	socket.emit('repetitionFinished', {apiId : api.id});
 });
 
-socket.on('instantTest', (api) => {
-	performanceTestFunc.instantTest(socket, api);
+socket.on('slaveHandledTest', async ({api, testType}) => {
+	console.log('slaveHandledTest');
+	console.log('Test type : ' + testType);
+	await performanceTestFunc.multipleTests(socket, api, testType);
+
 });
