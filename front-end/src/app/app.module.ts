@@ -14,9 +14,6 @@ import {ServerListComponent} from './server-list/server-list.component';
 import {ServerComponent} from './server-list/server/server.component';
 import {ApiCollapseComponent} from './api-list/api/api-collapse/api-collapse.component';
 import {ServerCollapseComponent} from './server-list/server/server-collapse/server-collapse.component';
-import {CreateTestModalComponent} from './modals/create-test-modal/create-test-modal.component';
-import {AddServerModalComponent} from './modals/add-server-modal/add-server-modal.component';
-import {PerformanceChartComponent} from './charts/performance-chart/performance-chart.component';
 import {AddOpenAPITestComponent} from './modals/add-open-apitest/add-open-apitest.component';
 import {FileUploadComponent} from './modals/add-open-apitest/file-upload/file-upload.component';
 import {FileUploadService} from './modals/add-open-apitest/file-upload/file-upload.service';
@@ -24,6 +21,13 @@ import {InputLatencyComponent} from './modals/add-open-apitest/input-latency/inp
 import {InputUptimeComponent} from './modals/add-open-apitest/input-uptime/input-uptime.component';
 import {DurationPickerModule} from 'ngx-duration-picker';
 import {InputZoneComponent} from './modals/add-open-apitest/input-zone/input-zone.component';
+import {LatencyChartComponent} from './charts/latency-chart/latency-chart.component';
+import {UptimeChartComponent} from './charts/uptime-chart/uptime-chart.component';
+import {UptimeDonutChartComponent} from './charts/uptime-chart/uptime-donut-chart/uptime-donut-chart.component';
+import {UptimeMultipartProgressBarComponent} from './charts/uptime-chart/uptime-multipart-progress-bar/uptime-multipart-progress-bar.component';
+import {LatencyOperationsTimeByZonesComponent} from './charts/latency-chart/latency-operations-time-by-zones/latency-operations-time-by-zones.component';
+import {LatencyTimeByOperationsOverTimeComponent} from './charts/latency-chart/latency-time-by-operations-over-time/latency-time-by-operations-over-time.component';
+import {LatencyTimeByZonesOverTimeComponent} from './charts/latency-chart/latency-time-by-zones-over-time/latency-time-by-zones-over-time.component';
 
 const config: SocketIoConfig = {
   url: 'localhost:8080', options: {
@@ -43,14 +47,18 @@ const config: SocketIoConfig = {
     ServerListComponent,
     ApiCollapseComponent,
     ServerCollapseComponent,
-    AddServerModalComponent,
-    CreateTestModalComponent,
-    PerformanceChartComponent,
     AddOpenAPITestComponent,
     FileUploadComponent,
     InputLatencyComponent,
     InputUptimeComponent,
     InputZoneComponent,
+    LatencyChartComponent,
+    UptimeChartComponent,
+    UptimeDonutChartComponent,
+    UptimeMultipartProgressBarComponent,
+    LatencyOperationsTimeByZonesComponent,
+    LatencyTimeByOperationsOverTimeComponent,
+    LatencyTimeByZonesOverTimeComponent,
   ],
   imports: [
     SocketIoModule.forRoot(config),
@@ -64,7 +72,7 @@ const config: SocketIoConfig = {
   ],
   providers: [APIStatusService, FileUploadService, NgbModal],
   bootstrap: [AppComponent],
-  entryComponents: [AddServerModalComponent, CreateTestModalComponent, AddOpenAPITestComponent]
+  entryComponents: [AddOpenAPITestComponent]
 })
 export class AppModule {
 }
