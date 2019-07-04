@@ -1,5 +1,6 @@
 let OpenAPIJSONParser = require('../Parsers/OpenAPIJSONParser');
 let PetStoreParser = require('../Parsers/PetStoreParser');
+let FakeAPIParser = require('../Parsers/FakeAPIParser');
 let GoogleCloudManagement = require('../GoogleCloudManagement/functions');
 let APIStatusFunc = require('../APIStatus/functions');
 let socketFunc = require('../socketServerManagement/socketServerCreationAndConnection');
@@ -28,7 +29,17 @@ let createOpenAPIJSONEndpoint = (app) => {
 		let newApi = {};
 		let openAPIJSON = req.body;
 		try {
-			let httpRequest = await OpenAPIJSONParser.parse(openAPIJSON);
+			const openAPIJSON = JSON.parse(req.files.file.data.toString('utf8'));
+			let httpRequest;
+			if (openAPIJSON.host === 'petstore.swagger.io') {
+				httpRequest = await PetStoreParser.parse(openAPIJSON);
+			} else if (openAPIJSON.host === 'localhost:8082') {
+				httpRequest = await FakeAPIParser.parse(openAPIJSON);
+			} else if (openAPIJSON.host === 'stevenbucaille.com') {
+				httpRequest = await FakeAPIParser.parse(openAPIJSON);
+			} else {
+				httpRequest = await OpenAPIJSONParser.parse(openAPIJSON);
+			}
 			newApi.host = openAPIJSON.host;
 			newApi.httpRequests = httpRequest;
 			let newApiId = await APIStatusFunc.addApi(newApi);
