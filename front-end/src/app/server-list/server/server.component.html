@@ -1,16 +1,18 @@
-<a (click)="serverSelected()" [class.list-group-item-danger]="type==='instant'"
-   [class.list-group-item-warning]="type==='planned'" class="list-group-item list-group-item-warning">
+<a class="list-group-item list-group-item" (click)="serverSelected()"
+   [class.list-group-item-primary]="server.testType==='latency'"
+   [class.list-group-item-info]="server.testType==='uptime'">
   <div>
     <div class="row">
-      <div class="col"><p> {{location}}</p></div>
-      <div class="col"><p>{{status}}</p></div>
-      <div aria-controls="collapseapi-1-southamerica-east1-c" aria-expanded="false" class="col-1" data-toggle="show"
-           href="#show" role="button"><i class="material-icons-round" onclick="collapseIconClicked(this)">keyboard_arrow_down</i>
+      <div class="col"><p> {{server.location}}</p></div>
+      <div class="col"><p>{{server.status}}</p></div>
+      <div class="col-1"><i class="material-icons-round" onclick="collapseIconClicked(this)">keyboard_arrow_down</i>
       </div>
     </div>
-    <div id="progressBarapi-1-southamerica-east1-c">
-      <!--.progress-bar.progress-bar-striped.progress-bar-animated.bg-info(role='progressbar', [aria-valuenow]="progress", aria-valuemin='0', aria-valuemax='20', style='width: 100%')-->
-      <ngb-progressbar [animated]="true" [striped]="true" [value]="progress / totalProgress * 100"></ngb-progressbar>
+    <div id="progressBar">
+      <ngb-progressbar [value]="server.progress / server.totalProgress * 100"
+                       [type]="(server.status==='Test completed') ? 'success' : (server.status==='Creating VM...') ? 'warning' : 'info'"
+                       [striped]="server.status!=='Test completed'"
+                       [animated]="(server.status==='Testing...') || (server.status==='Creating VM...')"></ngb-progressbar>
     </div>
     <app-server-collapse [show]="showCollapse"></app-server-collapse>
   </div>

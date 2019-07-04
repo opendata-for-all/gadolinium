@@ -17,23 +17,17 @@ export class ServerComponent implements OnInit {
   status: string;
   progress: number;
   totalProgress: number;
-  type: string;
+  testType: string;
+  private executionType: string;
 
   constructor(private apiService: APIStatusService) {
   }
 
   ngOnInit() {
-    this.name = this.server.name;
-    this.region = this.server.region;
-    this.location = this.server.location;
-    this.status = this.server.status;
-    this.progress = this.server.progress;
-    this.totalProgress = this.server.totalProgress;
-    this.type = this.server.type;
   }
 
   serverSelected() {
     this.showCollapse = !this.showCollapse;
-    this.apiService.serverSelected(this.name);
+    this.apiService.serverSelected(this.server.name);
   }
 }

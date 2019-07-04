@@ -1,8 +1,8 @@
-<div [className]="show ? 'show' : 'collapse'" id="collapse">
+<div id="collapse" [className]="show ? 'show' : 'collapse'">
   <div class="card-body">
     <div class="row justify-content-around">
       <button class="btn btn-outline-info col-5" disabled="disabled">Download tests</button>
-      <button (click)="deleteServer()" class="btn btn-outline-danger col-5">
+      <button class="btn btn-outline-danger col-5" (click)="deleteServer()">
         <div class="row justify-content-center">
           <div class="col-3">Delete</div>
           <i class="material-icons-round col-1">delete_forever</i></div>

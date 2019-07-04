@@ -1,14 +1,17 @@
-a.list-group-item.list-group-item-warning((click)="serverSelected()", [class.list-group-item-warning]="type==='planned'", [class.list-group-item-danger]="type==='instant'")
+a.list-group-item.list-group-item((click)="serverSelected()", [class.list-group-item-primary]="server.testType==='latency'", [class.list-group-item-info]="server.testType==='uptime'")
   div
     .row
       .col
-        p  {{location}}
+        p  {{server.location}}
       .col
-        p {{status}}
-      .col-1(data-toggle='show', role='button', href='#show', aria-expanded='false', aria-controls='collapseapi-1-southamerica-east1-c')
+        p {{server.status}}
+      .col-1
         i.material-icons-round(onclick='collapseIconClicked(this)') keyboard_arrow_down
-    #progressBarapi-1-southamerica-east1-c
-      //.progress-bar.progress-bar-striped.progress-bar-animated.bg-info(role='progressbar', [aria-valuenow]="progress", aria-valuemin='0', aria-valuemax='20', style='width: 100%')
-      ngb-progressbar([value]="progress / totalProgress * 100", [striped]="true", [animated]="true")
+    #progressBar
+      ngb-progressbar(
+        [value]="server.progress / server.totalProgress * 100",
+        [type]="(server.status==='Test completed') ? 'success' : (server.status==='Creating VM...') ? 'warning' : 'info'",
+        [striped]="server.status!=='Test completed'",
+        [animated]="(server.status==='Testing...') || (server.status==='Creating VM...')")
     app-server-collapse([show]="showCollapse")
 
