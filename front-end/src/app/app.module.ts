@@ -28,10 +28,11 @@ import {UptimeMultipartProgressBarComponent} from './charts/uptime-chart/uptime-
 import {LatencyOperationsTimeByZonesComponent} from './charts/latency-chart/latency-operations-time-by-zones/latency-operations-time-by-zones.component';
 import {LatencyTimeByOperationsOverTimeComponent} from './charts/latency-chart/latency-time-by-operations-over-time/latency-time-by-operations-over-time.component';
 import {LatencyTimeByZonesOverTimeComponent} from './charts/latency-chart/latency-time-by-zones-over-time/latency-time-by-zones-over-time.component';
+import {ServerConfig} from './serverConfig';
 
 const config: SocketIoConfig = {
   // url: 'localhost:8080', options: {
-  url: ':8080/', options: {
+  url: ServerConfig.url, options: {
     query: {
       token: 'webclient'
     }
