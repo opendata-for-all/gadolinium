@@ -3,5 +3,5 @@ div
     .input-group-prepend
       span#spanChoose.input-group-text(#span='') Choose file
     .custom-file
-      label#OpenApiInputLabel.custom-file-label(#label='', [attr.for]='"OpenApiInputInput"') {{file ? file.name : "or drag and drop file here" }}
+      label#OpenApiInputLabel.custom-file-label(#label='', [attr.for]='"OpenApiInputInput"') {{file ? file.serverName : "or drag and drop file here" }}
       input#OpenApiInputInput.custom-file-input(#input='', type='file', aria-describedby='spans')

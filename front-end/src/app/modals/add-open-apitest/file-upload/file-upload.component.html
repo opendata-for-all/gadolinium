@@ -2,7 +2,7 @@
   <div class="input-group mb-3">
     <div class="input-group-prepend"><span class="input-group-text" id="spanChoose" #span="">Choose file</span></div>
     <div class="custom-file"><label class="custom-file-label" id="OpenApiInputLabel" #label=""
-                                    [attr.for]="&quot;OpenApiInputInput&quot;">{{file ? file.name : "or drag and drop file here" }}</label><input
+                                    [attr.for]="&quot;OpenApiInputInput&quot;">{{file ? file.serverName : "or drag and drop file here" }}</label><input
       class="custom-file-input" id="OpenApiInputInput" #input="" type="file" aria-describedby="spans"/></div>
   </div>
 </div>
