@@ -148,6 +148,20 @@ class OpenAPIJSONParser {
 		}
 		return requests;
 	}
+
+	static hardcodedHTTPRequestsForPetStore() {
+
+	}
+
+	static async isValidOpenAPIJson(file) {
+		try {
+			let isValid = await SwaggerParser.validate(file);
+			if(isValid) return true
+		}
+		catch (e) {
+			return false;
+		}
+	}
 }
 
 module.exports = OpenAPIJSONParser;

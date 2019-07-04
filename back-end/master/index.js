@@ -15,7 +15,7 @@ Array.prototype.remove = function (item) {
 	if (index > -1) this.splice(index, 1)
 };
 
-socketServerSlaveManagement.addSlavesThatAreBootingOrTesting();
+socketServerSlaveManagement.updateMapsWithAPIStatus();
 
 let app = expressCreation.createApp(APIStatusFunc.getAPIStatus());
 let httpServer = expressCreation.createHTTPServer(app);
@@ -39,6 +39,7 @@ socketServerCreationAndConnection.createChannel(
 			console.log("callback");
 			services.socketSlaves[slaveName].emit('testApi', {apiId: apiId, api: APIStatus[apiId]});
 		});
+		socketServerWebClientManagement.createOpenApiTestConfiguration(webclient)
 	},
 	(slaveName, socketClient) => {
 		services.socketSlaves[slaveName] = socketClient;
@@ -47,7 +48,6 @@ socketServerCreationAndConnection.createChannel(
 			if (reason === "vmDeleted") {
 				delete services.socketSlaves[slaveName]
 			}
-			;
 		});
 		socketServerSlaveManagement.slaveTesting(socketClient, slaveName);
 	});

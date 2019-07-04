@@ -65,9 +65,9 @@ let createServerInstance = (serverList, apiId, type) => {
 			region: server,
 			zone: zoneName,
 			location: gcpServerList[server].location,
-			status: "Booting up",
-			progress: 1,
-			totalProgress: 1
+			status: "Creating...",
+			progress: 0,
+			totalProgress: 0
 		});
 		GCPFunc.createVM(zoneName, vmName);
 	}
@@ -89,12 +89,22 @@ let createSendTestToSlaves = (webclient, callback) => {
 			callback({apiId: apiId, serverId: serverName}, APIStatus);
 		});
 	})
-}
+};
+
+let createOpenApiTestConfiguration = (webclient) => {
+	webclient.on('openApiTestConfig', data => {
+		APIStatusFunc.addOpenApiTestConfigToApi(data.apiId, data.config);
+		APIStatusFunc.createServerInstanceFromOpenApiTestConfig(data.apiId);
+		socketServerSlaveManagement.updateMapsWithAPIStatus();
+		socketServerFunc.emitAPIStatusUpdate();
+	})
+};
 
 module.exports = {
 	onAPIStatus: onAPIStatus,
 	onAddTestServer: onAddTestServer,
 	onDeleteServer: onDeleteServer,
 	createApiDeletion: createApiDeletion,
-	createPlannedTestForSlaves: createSendTestToSlaves
+	createPlannedTestForSlaves: createSendTestToSlaves,
+	createOpenApiTestConfiguration : createOpenApiTestConfiguration
 };

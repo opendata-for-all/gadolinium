@@ -3,29 +3,36 @@ let socketServerFunc = require('./socketServerCreationAndConnection');
 let GCPFunc = require('../GoogleCloudManagement/functions');
 
 //Variables initialized in case master crashes and has to restart
-let slavesBooting = {};
-let slavesTesting = {};
-let slavesWaiting = {};
-let instantSlaves = {};
-let plannedSlaves = {};
+let slavesCreating = new Map();
+let slavesTesting = new Map();
+let slavesWaiting = new Map();
+let slaveHandledSlaves = new Map();
+let masterHandledSlaves = new Map();
+let latencySlaves = new Map();
+let uptimeSlaves = new Map();
 let slavesToDelete = [];
 
-let addSlavesThatAreBootingOrTesting = () => {
+let updateMapsWithAPIStatus = () => {
 	let APIStatus = APIStatusFunc.getAPIStatus();
 	APIStatus.map((api) => {
 		let servers = api.servers;
 		servers.map((server) => {
-			if (server.type === "instant") {
-				instantSlaves[server.name] = api;
-			} else if (server.type === "planned") {
-				plannedSlaves[server.name] = api;
+			if (server.executionType === "masterHandled") {
+				masterHandledSlaves.set(server.name, api.id);
+			} else if (server.executionType === "slaveHandled") {
+				slaveHandledSlaves.set(server.name, api.id);
 			}
-			if (server.status === "Booting up") {
-				slavesBooting[server.name] = api
-			} else if (server.status === "Testing") {
-				slavesTesting[server.name] = api
-			} else if (server.status === "Waiting for tests") {
-				slavesWaiting[server.name] = api
+			if (server.testType === "latency") {
+				latencySlaves.set(server.name, api.id);
+			} else if (server.testType === "uptime") {
+				uptimeSlaves.set(server.name, api.id);
+			}
+			if (server.status === "Creating VM...") {
+				slavesCreating.set(server.name, api.id);
+			} else if (server.status === "Testing...") {
+				slavesTesting.set(server.name, api.id);
+			} else if (server.status === "Test finished") {
+				//TODO
 			}
 			server.status = "Waiting for connection...";
 		})
@@ -33,25 +40,39 @@ let addSlavesThatAreBootingOrTesting = () => {
 };
 
 let slaveConnected = (slaveClient, slaveName) => {
-	let api;
-	if ((api = instantSlaves[slaveName])) {
-		slaveClient.emit('instantTest', {
-			apiId: api.id,
-			slaveName: slaveName,
-			httpRequests: api.httpRequests,
-			progress: 0,
-			totalProgress: api.httpRequests.length
-		});
-		addSlaveToDeleteList(slaveName);
-		APIStatusFunc.updateServerStatus(api.id, slaveName, "Waiting for tests");
-	} else if ((api = plannedSlaves[slaveName])) {
+	if (masterHandledSlaves.has(slaveName)) {
+		// console.log(slaveName + " part of master handled slave test servers");
+		//TODO Launch individual tests depending of its progression
+		if (slavesCreating.has(slaveName)) {
+			//TODO It's the first boot of the slave, launch the first test
+			console.log(slaveName + " part of creating servers");
+			let api = APIStatusFunc.getAPI(masterHandledSlaves.get(slaveName));
+			let testType = latencySlaves.has(slaveName) ? "latency" : uptimeSlaves.has(slaveName) ? "uptime" : "";
+			console.log('Test type will be ' + testType + '.');
+			APIStatusFunc.initializeServerState(api.id, slaveName, testType, "masterHandled");
+			slaveClient.emit('masterHandledTest', {api: api, testType: testType});
+			slavesCreating.delete(slaveName);
+			slavesTesting.set(slaveName, api.id);
+		} else if (slavesTesting.has(slaveName)) {
+			//TODO Not its first test, it booted up after a certain amount of time (span)
+			let api = APIStatusFunc.getAPI(masterHandledSlaves.get(slaveName));
+			let testType = latencySlaves.has(slaveName) ? "latency" : uptimeSlaves.has(slaveName) ? "uptime" : "";
+			slaveClient.emit('masterHandledTest', {api: api, testType: testType})
+		}
+	} else if (slaveHandledSlaves.has(slaveName)) {
+		//TODO Launch the whole load of test
+		if (slavesCreating.has(slaveName)) {
+			//TODO The only state of boot that can happen
+			let api = APIStatusFunc.getAPI(slaveHandledSlaves.get(slaveName));
+			let testType = latencySlaves.has(slaveName) ? "latency" : uptimeSlaves.has(slaveName) ? "uptime" : "";
+			APIStatusFunc.initializeServerState(api.id, slaveName, testType, "slaveHandled");
+			slaveClient.emit('slaveHandledTest', {api: api, testType: testType});
+			slavesCreating.delete(slaveName);
+			slavesTesting.set(slaveName, api.id);
+		} else if (slavesTesting.has(slaveName)) {
+			//TODO If it was a testing slave, it is because the connection crashed between these two;
+		}
 	}
-	if ((api = slavesBooting[slaveName]) || (api = slavesWaiting[slaveName])) {
-		APIStatusFunc.updateServerStatus(api.id, slaveName, "Waiting for tests");
-	} else if ((api = slavesTesting[slaveName])) {
-		APIStatusFunc.updateServerStatus(api.id, slaveName, "Testing");
-	}
-	socketServerFunc.emitAPIStatusUpdate();
 };
 
 let slaveDisconnected = (slaveName, api) => {
@@ -113,6 +134,7 @@ let slaveTesting = (slaveClient, slaveName) => {
 					//It is not the last test, so launch a counter of the correct duration to launch the next test
 					APIStatusFunc.applyFunctionToOneServer(apiId, slaveName, server => {
 						server.repetitionsRemaining--;
+						console.log(server.repetitionsRemaining)
 					});
 					let server = APIStatusFunc.getServer(apiId, slaveName);
 					let interval;
@@ -163,9 +185,7 @@ let slaveTesting = (slaveClient, slaveName) => {
 
 module.exports = {
 	slaveConnected: slaveConnected,
-	addSlaveToBootingSlaveList: addSlaveToBootingSlaveList,
-	addSlaveToTestSlaveList: addSlaveToTestSlaveList,
-	addSlavesThatAreBootingOrTesting: addSlavesThatAreBootingOrTesting,
+	updateMapsWithAPIStatus: updateMapsWithAPIStatus,
 	handleDisconnection: handleDisconnection,
 	slaveTesting: slaveTesting
 };

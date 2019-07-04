@@ -1,5 +1,6 @@
 let fs = require('fs');
 let path = require('path');
+let {Duration} = require('luxon');
 let GCPFunc = require('../GoogleCloudManagement/functions');
 let performPingTest = require('../../slave/performanceTestFunc').performPingTest;
 
@@ -31,6 +32,7 @@ let getNewApiId = (APIStatus) => {
 	for (let i = 0; i <= Math.max(...apiIds) + 1; i++) {
 		if (!apiIds.includes(i)) return i;
 	}
+	return 0;
 };
 
 let getOperationTestsObject = (httpRequests) => {
@@ -74,22 +76,83 @@ let addApi = async (newApi) => {
 		totalProgress: 0,
 		uptimeResults: {},
 	};
-	apiObj["x-Gadolinium"]= await prepareOpenAPIExtensionObject(newApi.host, newApi.httpRequests),
 	APIStatus.push(apiObj);
 	writeAPIStatus(APIStatus);
+	return id;
 };
 
 let deleteApi = (apiId) => {
 	let APIStatus = getAPIStatus();
+	let apiToDelete;
 	APIStatus.forEach((api) => {
 		if (api.id === apiId) {
 			api.servers.forEach((server) => {
 				GCPFunc.deleteVM(server.zone, server.name);
 			});
+			apiToDelete = api;
 		}
 	});
-	APIStatus.remove(APIStatus[apiId]);
+	APIStatus.remove(apiToDelete);
 	writeAPIStatus(APIStatus);
+};
+
+let addOpenApiTestConfigToApi = (apiId, config) => {
+	let APIStatus = getAPIStatus();
+	APIStatus.forEach(api => {
+		if (api.id === apiId) {
+			api.testConfig = config;
+		}
+	});
+	console.log("Config ajoutée");
+	writeAPIStatus(APIStatus);
+};
+
+let createServerInstanceFromOpenApiTestConfig = (apiId) => {
+	let APIStatus = getAPIStatus();
+	APIStatus.forEach((api) => {
+		if (apiId === api.id) {
+			let latencyExecutionType = determineExecutionType(api.testConfig.latency);
+			let uptimeExecutionType = determineExecutionType(api.testConfig.uptime);
+			api.servers.push(...createServerInstance(api.testConfig.latency.zones, apiId, "latency", latencyExecutionType));
+			api.servers.push(...createServerInstance(api.testConfig.uptime.zones, apiId, "uptime", uptimeExecutionType));
+		}
+	});
+	writeAPIStatus(APIStatus);
+};
+
+let determineExecutionType = (config) => {
+	let minuteOfMinimumDelay = 10;
+	let duration = config.interval.iso8601format;
+	let formattedDuration = Duration.fromISO(duration);
+	let milliseconds = formattedDuration.valueOf();
+	if (milliseconds > (minuteOfMinimumDelay * 60000)) {
+		return "masterHandled"
+	} else {
+		return "slaveHandled"
+	}
+};
+
+let createServerInstance = (serverList, apiId, testType, executionType) => {
+	let gcpServerList = GCPFunc.getListOfZones();
+	let servers = [];
+	for (let server of serverList) {
+		let randomZone = gcpServerList[server].zones[Math.floor(Math.random() * gcpServerList[server].zones.length)];
+		let zoneName = `${server}-${randomZone}`;
+		let vmName = `api-${apiId}-${zoneName}-${testType}`;
+		servers.push({
+			name: vmName,
+			testType: testType,
+			executionType: executionType,
+			region: server,
+			zone: zoneName,
+			location: gcpServerList[server].location,
+			status: "Creating VM...",
+			progress: 1,
+			totalProgress: 1
+		});
+		GCPFunc.createVM(zoneName, vmName);
+	}
+	return servers;
 };
 
 let addServers = (apiId, servers) => {
@@ -285,8 +348,21 @@ module.exports = {
 	writeAPIStatus: writeAPIStatus,
 	addApi: addApi,
 	deleteApi: deleteApi,
+	addOpenApiTestConfigToApi: addOpenApiTestConfigToApi,
+	createServerInstanceFromOpenApiTestConfig: createServerInstanceFromOpenApiTestConfig,
 	addServers: addServers,
 	deleteServer: deleteServer,
 	updateServerStatus: updateServerStatus,
-	updateServerInfos, updateServerInfos
+	updateServerInfos: updateServerInfos,
+	initializeServerState: initializeServerState,
+	updateOperationTestResults: updateOperationTestResults,
+	isLastTest: isLastTest,
+	getLatencyInterval: getLatencyInterval,
+	getUptimeInterval: getUptimeInterval,
+	getAPI: getAPI,
+	getServer: getServer,
+	terminateServer: terminateServer,
+	applyFunctionToOneServer: applyFunctionToOneServer,
+	recordAPIUpTime: recordAPIUpTime,
+	getHTTPRequest: getHTTPRequest
 };
