@@ -29,6 +29,7 @@ export class LatencyConfig {
   repetitions: number;
   interval: ISO8601Duration;
   zones: string[];
+  timeoutThreshold: number;
 
   constructor(repetition = null, interval = null) {
     this.repetitions = repetition;

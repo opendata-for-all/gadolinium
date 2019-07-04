@@ -1,4 +1,4 @@
-export class Server {
+export interface Server {
   name: string;
   region: string;
   zone: string;
@@ -6,7 +6,8 @@ export class Server {
   status: string;
   progress: number;
   totalProgress: number;
-  type: string;
+  testType: string;
+  executionType: string;
   regional: any;
 
   // fromAPIStatus(server: any) {
