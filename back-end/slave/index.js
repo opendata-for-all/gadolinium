@@ -2,6 +2,7 @@ let io = require('socket.io-client');
 let performanceTestFunc = require('./performanceTestFunc');
 let region = process.argv[2];
 let instanceName = process.argv[3];
+// let instanceName = "api-0-australia-southeast1-b-uptime";
 let masterConfig = require('./gadolinium-master');
 
 let socket = io(`ws://${masterConfig.ipaddress}:${masterConfig.port}`, {
@@ -21,6 +22,10 @@ socket.on('connect', () => {
 	console.log("Connected to Master");
 });
 
+socket.on('disconnect', () => {
+	console.log('Disconnected from Master');
+});
+
 socket.on('testApi', (data) => {
 	console.log(data);
 	let i = 1;
@@ -30,6 +35,7 @@ socket.on('testApi', (data) => {
 		i++;
 		if (i === 20) clearInterval(interval);
 	}, 5000);
+});
 
 socket.on('masterHandledTest', async ({api, testType}) => {
 	console.log('masterHandledTest');
@@ -42,5 +48,4 @@ socket.on('slaveHandledTest', async ({api, testType}) => {
 	console.log('slaveHandledTest');
 	console.log('Test type : ' + testType);
 	await performanceTestFunc.multipleTests(socket, api, testType);
-
 });
