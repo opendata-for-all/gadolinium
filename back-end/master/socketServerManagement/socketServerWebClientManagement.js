@@ -21,6 +21,7 @@ let onDeleteServer = (webClient, callback) => {
 		let serverName = data.serverName;
 		let zone = data.zone;
 		APIStatusFunc.deleteServer(apiId, serverName);
+		socketServerFunc.disconnectSlave(serverName);
 		socketServerFunc.emitAPIStatusUpdate();
 		callback(serverName);
 	})
@@ -28,6 +29,8 @@ let onDeleteServer = (webClient, callback) => {
 
 let createApiDeletion = (webClient, callback) => {
 	webClient.on('deleteApi', async (apiId) => {
+		console.log('API Deleted');
+		socketServerFunc.apiDeleted(apiId);
 		APIStatusFunc.deleteApi(apiId);
 		socketServerFunc.emitAPIStatusUpdate();
 	})

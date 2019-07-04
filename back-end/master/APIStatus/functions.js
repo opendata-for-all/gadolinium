@@ -104,19 +104,10 @@ let addServers = (apiId, servers) => {
 };
 
 let deleteServer = (apiId, serverName) => {
-	let APIStatus = getAPIStatus();
-	for (let i = 0; i < APIStatus.length; i++) {
-		if (APIStatus[i].id === apiId) {
-			for (let j = 0; j < APIStatus[i].servers.length; j++) {
-				let server = APIStatus[i].servers[j];
-				if (server.name === serverName) {
-					GCPFunc.deleteVM(server.zone, server.name);
-					APIStatus[i].servers.remove(APIStatus[i].servers[j]);
-				}
-			}
-		}
-	}
-	writeAPIStatus(APIStatus);
+	applyFunctionToOneServer(apiId, serverName, (server) => {
+		GCPFunc.deleteVM(server.zone, server.name);
+		server.status = "Deleted";
+	});
 };
 
 let updateServerStatus = (apiId, serverName, status) => {
@@ -147,7 +138,8 @@ let initializeServerState = (apiId, serverName, testType, handlingType) => {
 		if (api.id === apiId) {
 			return api.servers.some((server) => {
 				if (server.name === serverName) {
-					// server.status = "Testing...";
+					//TODO REMETTRE LE TESTING
+					server.status = "Testing...";
 					server.progress = 0;
 					if (server.testType === 'latency') {
 						server.totalProgress = api.httpRequests.length * api.testConfig[server.testType].repetitions;
@@ -170,13 +162,18 @@ let updateOperationTestResults = (apiId, slaveName, httpRequestIndex, testResult
 	APIStatus.some((api) => {
 		if (api.id === apiId) {
 			if (api.httpRequests[httpRequestIndex] && api.httpRequests[httpRequestIndex].testResults) {
+				if (!api.httpRequests[httpRequestIndex].testResults[slaveName]) {
+					api.httpRequests[httpRequestIndex].testResults[slaveName] = {
+						latencyRecords: []
+					}
+				}
 				let testRecords = api.httpRequests[httpRequestIndex].testResults[slaveName];
+				testRecords.avgSuccess = ((testRecords.avgSuccess * testRecords.latencyRecords.length) + testResult.success) / (testRecords.latencyRecords.length + 1);
 				testRecords.latencyRecords.push(...testResult.latencyRecords);
 				testRecords.totalTest = testRecords.latencyRecords.length;
-				// testRecords.avgSuccess = 1;// TODO What is success ?
-				testRecords.meanLatency = testRecords.latencyRecords.reduce((accum, record) => {
+				testRecords.meanLatency = (testRecords.latencyRecords.reduce((accum, record) => {
 					return accum + record.latencyMs;
-				}, 0) / testRecords.totalTest;
+				}, 0) / testRecords.totalTest).toFixed(2);
 			} else {
 				api.httpRequests[httpRequestIndex].testResults = {};
 				api.httpRequests[httpRequestIndex].testResults[slaveName] = testResult;
@@ -276,6 +273,11 @@ let recordAPIUpTime = (apiId, serverName, isApiUp, date) => {
 		}
 	});
 	writeAPIStatus(APIStatus);
+};
+
+let getHTTPRequest = (apiId, httpRequestIndex) => {
+	let APIStatus = getAPIStatus();
+	return APIStatus.filter(api => api.id === apiId).map(api => api.httpRequests[httpRequestIndex])[0]
 };
 
 module.exports = {

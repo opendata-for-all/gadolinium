@@ -30,6 +30,7 @@ let createChannel = (webClientCallback, slaveCallback) => {
 			}
 			if (authorized) {
 				console.log("Slave " + authorizedNames[slaveIndex] + " joined");
+				slavesClient[authorizedNames[slaveIndex]] = client;
 				client.join(authorizedNames[slaveIndex]);
 				slaveCallback(authorizedNames[slaveIndex], client)
 			} else {
@@ -38,6 +39,22 @@ let createChannel = (webClientCallback, slaveCallback) => {
 			}
 		}
 	})
+};
+
+let apiDeleted = (apiId) => {
+	let APIStatus = APIStatusFunc.getAPIStatus();
+	APIStatus.forEach((api) => {
+		if (api.id === apiId) {
+			api.servers.forEach((server) => {
+				disconnectSlave(server.name);
+			});
+		}
+	});
+};
+
+let disconnectSlave = (slaveName) => {
+	if (slavesClient[slaveName]) slavesClient[slaveName].disconnect(true);
+	console.log(`Slave ${slaveName} disconnected by deletion`);
 };
 
 let getAuthorizedNames = () => {
@@ -54,8 +71,39 @@ let emitAPIStatusUpdate = () => {
 	socketServer.to('webclient').emit('APIStatus', APIStatus);
 };
 
+let emitLatencyTestUpdate = (apiId, slaveName, httpRequestIndex, newRecord) => {
+	let APIStatus = APIStatusFunc.getAPIStatus();
+	let httpRequest = APIStatusFunc.getHTTPRequest(apiId, httpRequestIndex);
+	socketServer.to('webclient').emit('LatencyTestUpdate', {
+		APIStatus,
+		apiId,
+		serverName: slaveName,
+		httpRequestIndex,
+		operationId: httpRequest.operationId,
+		testResults: httpRequest.testResults,
+		newRecord
+	})
+};
+
+let emitUptimeTestUpdate = (apiId, slaveName, isApiUp, date) => {
+	let APIStatus = APIStatusFunc.getAPIStatus();
+	console.log('UptimeTestUpdate');
+	socketServer.to('webclient').emit('UptimeTestUpdate', {
+		APIStatus,
+		apiId,
+		serverName: slaveName,
+		isApiUp,
+		date
+	})
+}
+
 module.exports = {
 	createSocketServer: createSocketServer,
 	createChannel: createChannel,
-	emitAPIStatusUpdate: emitAPIStatusUpdate
+	apiDeleted: apiDeleted,
+	disconnectSlave: disconnectSlave,
+	emitAPIStatusUpdate: emitAPIStatusUpdate,
+	emitLatencyTestUpdate: emitLatencyTestUpdate,
+	emitUptimeTestUpdate: emitUptimeTestUpdate,
+
 };

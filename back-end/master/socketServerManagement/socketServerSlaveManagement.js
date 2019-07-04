@@ -84,14 +84,18 @@ let slaveTesting = (slaveClient, slaveName) => {
 				let httpRequestId = results.httpRequestIndex;
 				let testResult = results.testResults;
 				APIStatusFunc.updateOperationTestResults(apiId, slaveName, httpRequestId, testResult);
+				console.log(testResult);
+				let newRecord = results.testResults.latencyRecords[0];
+				socketServerFunc.emitLatencyTestUpdate(apiId, slaveName, httpRequestId, newRecord);
 			} else if (uptimeSlaves.has(slaveName)) {
 				let isApiUp = results.up;
 				let date = results.date;
 				APIStatusFunc.recordAPIUpTime(apiId, slaveName, isApiUp, date);
+				socketServerFunc.emitUptimeTestUpdate(apiId, slaveName, isApiUp, date);
 			}
 			APIStatusFunc.applyFunctionToOneServer(apiId, slaveName, (server) => server.progress++);
 		}
-		socketServerFunc.emitAPIStatusUpdate();
+		// socketServerFunc.emitAPIStatusUpdate();
 
 	});
 
@@ -135,6 +139,7 @@ let slaveTesting = (slaveClient, slaveName) => {
 				//It is not the last test, so launch a counter of the correct duration to launch the next test
 				APIStatusFunc.applyFunctionToOneServer(apiId, slaveName, server => {
 					server.repetitionsRemaining--;
+					console.log(server);
 				});
 				if (latencySlaves.has(slaveName)) {
 					interval = APIStatusFunc.getLatencyInterval(apiId);
