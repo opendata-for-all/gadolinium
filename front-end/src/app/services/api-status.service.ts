@@ -1,25 +1,21 @@
 import {Socket} from 'ngx-socket-io';
 import {Injectable} from '@angular/core';
-import {OpenAPI} from '../models/OpenAPI';
+import {HTTPRequest, OpenAPI} from '../models/OpenAPI';
 import {Subject} from 'rxjs';
 import {Server} from '../models/server';
-import {GCPServers} from '../models/GCPServers';
-import {GCPServer} from '../models/GCPServer';
+import {TestResultsService} from './test-results.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class APIStatusService {
 
-  private apiList: OpenAPI[];
+  apiList: OpenAPI[];
   private selectedApiId: string;
   private selectedApi: OpenAPI;
   private selectedServer: Server;
-  private selectedAddableServers: GCPServer[];
-  private plannedTestServers: Server[];
-  private instantTestServers: Server[];
-  private selectedPlannedTestServers: Server[];
-  private selectedGCPServers: GCPServer[];
+  private latencyResults: { name: string, results: HTTPRequest };
+  private uptimeResults: any;
 
   private apiListSource: Subject<OpenAPI[]> = new Subject();
   apiList$ = this.apiListSource.asObservable();
@@ -27,27 +23,15 @@ export class APIStatusService {
   selectedApi$ = this.selectedApiSource.asObservable();
   private selectedServerSource: Subject<Server> = new Subject();
   selectedServer$ = this.selectedServerSource.asObservable();
-  private selectedAddableServerSource: Subject<GCPServer[]> = new Subject();
-  selectedAddableServers$ = this.selectedAddableServerSource.asObservable();
-  private plannedTestServersSource: Subject<Server[]> = new Subject();
-  plannedTestServers$ = this.plannedTestServersSource.asObservable();
-  private instantTestServersSource: Subject<Server[]> = new Subject();
-  instantTestServers$ = this.instantTestServersSource.asObservable();
-  private selectedPlannedTestServersSource: Subject<Server[]> = new Subject();
-  selectedPlannedTestServers$ = this.selectedPlannedTestServersSource.asObservable();
-  private selectedGCPServersSource: Subject<GCPServer[]> = new Subject();
-  selectedGCPServers$ = this.selectedGCPServersSource.asObservable();
-  private addableGCPServers = GCPServers;
 
-  constructor(private socket: Socket) {
-    this.selectedAddableServers = [];
-    this.selectedPlannedTestServers = [];
-    this.selectedGCPServers = [];
+
+  constructor(
+    private socket: Socket,
+    private testResultsService: TestResultsService,
+  ) {
     this.socket.emit('hello');
     // @ts-ignore
     this.socket.on('APIStatus', (data) => {
-      console.log(data);
-      this.apiList = data;
       this.apiListSource.next(data);
       data.map((api) => {
         if (api.id === this.selectedApiId) {
@@ -55,23 +39,37 @@ export class APIStatusService {
         }
       });
     });
+    this.socket.on('LatencyTestUpdate', (data) => {
+      let {APIStatus, apiId, serverName, httpRequestIndex, testResults, operationId, newRecord} = data;
+      this.apiListSource.next(APIStatus);
+      if (this.selectedApi && apiId === this.selectedApi.id) {
+        this.selectedApiSource.next(APIStatus.filter(api => api.id === this.selectedApi.id)[0]);
+        this.testResultsService.newLatencyTestResult({serverName, httpRequestIndex, testResults, operationId, newRecord});
+      }
+    });
+    this.socket.on('UptimeTestUpdate', (data) => {
+      let {APIStatus, apiId, serverName, isApiUp, date} = data;
+      this.apiListSource.next(APIStatus);
+      if (this.selectedApi && apiId === this.selectedApi.id) {
+        this.selectedApiSource.next(APIStatus.filter(api => api.id === this.selectedApi.id)[0]);
+        this.testResultsService.newUptimeTestResult({serverName, isApiUp, date});
+      }
+    });
+
     this.selectedApi$.subscribe((api) => {
       this.selectedApi = api;
-      this.selectedApiId = api.id;
-      this.plannedTestServersSource.next(
-        this.selectedApi.servers.filter((server) => (server.type === 'planned') && (server.status === 'Waiting for tests')));
-      this.instantTestServersSource.next(
-        this.selectedApi.servers.filter((server) => server.type === 'instant'));
+      if (this.selectedApi) {
+        this.selectedApiId = api.id;
+      }
     });
     this.selectedServer$.subscribe((server) => this.selectedServer = server);
-    this.selectedAddableServers$.subscribe((servers) => this.selectedAddableServers = servers);
-    this.plannedTestServers$.subscribe((servers) => this.plannedTestServers = servers);
-    this.instantTestServers$.subscribe((servers) => this.instantTestServers = servers);
-    this.selectedGCPServers$.subscribe((servers) => this.selectedGCPServers = servers);
+    this.apiList$.subscribe((apiList) => this.apiList = apiList);
   }
 
-  apiSelected(api: OpenAPI) {
-    this.selectedApiSource.next(api);
+  private static extractLatencyResultsFromHTTPRequests(httpRequests: HTTPRequest[]) {
+    return httpRequests.map(httpRequest => {
+      return {name: httpRequest.operationId, results: httpRequest.testResults};
+    });
   }
 
   serverSelected(serverName: string) {
@@ -79,75 +77,26 @@ export class APIStatusService {
     this.selectedServerSource.next(this.getServerFromServerId(serverName));
   }
 
+  apiSelected(apiId: string) {
+    let api = this.apiList.filter(api => api.id === apiId)[0];
+    this.testResultsService.apiSelected(api);
+    this.selectedApiSource.next(api);
+  }
+
   deleteApi(apiId: string) {
-    // this.selectedApiSource.next(null);
+    this.selectedApiSource.next(null);
+    this.selectedApiId = null;
     this.socket.emit('deleteApi', apiId);
+    this.testResultsService.apiSelected(this.selectedApi);
     console.log('OpenAPI deleted');
   }
 
   deleteServer() {
     this.socket.emit('deleteServer', {
-      serverName: this.selectedServer.name,
+      name: this.selectedServer.name,
       apiId: this.selectedApi.id,
       zone: this.selectedServer.zone
     });
-  }
-
-  getAddablePlannedTestServers() {
-    const gcpRegions = this.addableGCPServers.map((server) => server.region);
-    const selectedApiRegions = this.selectedApi.servers.map((server) => server.region);
-    return this.addableGCPServers.filter((server) => !selectedApiRegions.includes(server.region));
-  }
-
-  getGCPServers() {
-    return this.addableGCPServers;
-  }
-
-  addableServerSelected(server: GCPServer) {
-    if (!this.selectedAddableServers.includes(server)) {
-      this.selectedAddableServerSource.next([...this.selectedAddableServers, server]);
-    } else {
-      this.selectedAddableServerSource.next(this.selectedAddableServers.filter((addedServer) => !(addedServer === server)));
-    }
-  }
-
-  plannedTestServerSelected(server: Server) {
-    if (!this.selectedPlannedTestServers.includes(server)) {
-      this.selectedPlannedTestServersSource.next([...this.selectedPlannedTestServers, server]);
-    } else {
-      this.selectedPlannedTestServersSource.next(this.selectedPlannedTestServers.filter((addedServer) => !(addedServer === server)));
-    }
-  }
-
-  createPlannedTestServers() {
-    const data = {
-      apiId: this.selectedApi.id,
-      regions: this.selectedAddableServers.map((server) => server.region),
-      type: 'planned'
-    };
-    this.socket.emit('addTestServer', data);
-    this.selectedAddableServerSource.next([]);
-  }
-
-  createPlannedTest() {
-    const data = {};
-  }
-
-  gcpServerSelected(server: GCPServer) {
-    if (!this.selectedGCPServers.includes(server)) {
-      this.selectedGCPServersSource.next([...this.selectedGCPServers, server]);
-    } else {
-      this.selectedGCPServersSource.next(this.selectedGCPServers.filter((addedServer) => !(addedServer === server)));
-    }
-  }
-
-  createInstantTest() {
-    const data = {
-      apiId: this.selectedApi.id,
-      regions: this.selectedGCPServers.map((server) => server.region),
-      type: 'instant'
-    };
-    this.socket.emit('addTestServer', data);
   }
 
   private getServerFromServerId(serverName: string) {
@@ -156,5 +105,9 @@ export class APIStatusService {
         return server;
       }
     })[0];
+  }
+
+  getSelectedApi() {
+    return this.selectedApi;
   }
 }
