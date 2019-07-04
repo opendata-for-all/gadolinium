@@ -1,0 +1,20 @@
+<ngb-tabset [destroyOnHide]="false" [hidden]="!latencyResultsService.testHasStarted" [justify]="'fill'">
+  <ngb-tab title="Latency time by operations">
+    <ng-template ngbTabContent="ngbTabContent">
+      <app-latency-operations-time-by-zones></app-latency-operations-time-by-zones>
+    </ng-template>
+  </ngb-tab>
+  <ngb-tab title="Latency time by operations over time">
+    <ng-template ngbTabContent="ngbTabContent">
+      <app-latency-time-by-operations-over-time></app-latency-time-by-operations-over-time>
+    </ng-template>
+  </ngb-tab>
+  <ngb-tab title="Latency time by zones over time">
+    <ng-template ngbTabContent="ngbTabContent">
+      <app-latency-time-by-zones-over-time></app-latency-time-by-zones-over-time>
+    </ng-template>
+  </ngb-tab>
+</ngb-tabset>
+<div [hidden]="latencyResultsService.testHasStarted" class="align-self-center">
+  <div class="list-group-item list-group-item-warning">Test haven't started yet, no results to show.</div>
+</div>

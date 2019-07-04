@@ -1,0 +1,13 @@
+ngb-tabset([hidden]="!latencyResultsService.testHasStarted",[justify]="'fill'", [destroyOnHide]="false")
+  ngb-tab(title="Latency time by operations")
+    ng-template(ngbTabContent)
+      app-latency-operations-time-by-zones
+  ngb-tab(title="Latency time by operations over time")
+    ng-template(ngbTabContent)
+      app-latency-time-by-operations-over-time
+  ngb-tab(title="Latency time by zones over time")
+    ng-template(ngbTabContent)
+      app-latency-time-by-zones-over-time
+div.align-self-center([hidden]="latencyResultsService.testHasStarted")
+  .list-group-item.list-group-item-warning
+    | Test haven't started yet, no results to show.

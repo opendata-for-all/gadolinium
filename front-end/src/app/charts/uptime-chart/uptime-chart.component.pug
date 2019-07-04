@@ -1,7 +1,10 @@
-ngb-tabset([justify]="'fill'", [destroyOnHide]="false")
+ngb-tabset([hidden]="!uptimeResultsService.testHasStarted", [justify]="'fill'", [destroyOnHide]="false")
   ngb-tab(title="Global")
     ng-template(ngbTabContent)
       app-uptime-donut-chart
   ngb-tab(title="Per zone")
     ng-template(ngbTabContent)
       app-uptime-multipart-progress-bar
+div.align-self-center([hidden]="uptimeResultsService.testHasStarted")
+  .list-group-item.list-group-item-warning
+    | Test haven't started yet, no results to show.

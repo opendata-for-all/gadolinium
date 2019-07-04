@@ -1,0 +1,41 @@
+.container.mt-3
+  .list-group-item.mb-3
+    .col
+      .row
+      | Period of testing
+      //.row(*ngIf="selectedApi!==null")
+      //  .col Interval between tests : {{ uptimeTestConfig.interval.iso8601format | durationFromIso | durationToFormat:'yyyy, MMMM d, hh:mm:ss'}}
+      //  .col Number of repetitions : {{uptimeTestConfig.repetitions}}
+      //  .col Total duration : {{totalTestDuration}}
+      //.row(*ngIf="!hasTestFinished")
+      //  p From {{testStartingDate | dateTimeFromIso|  dateTimeToFormat:'yyyy, MMMM d, hh:mm:ss'}} to {{testEndingDate | dateTimeToFormat:'yyyy, MMMM d, hh:mm:ss'}}
+      //.row(*ngIf="hasTestFinished")
+      //  p Since {{testStartingDate | dateTimeFromIso | dateTimeToFormat:'yyyy, MMMM d, hh:mm:ss'}}
+      //  p {{testStartingDate}}
+  //.list-group-item.mb-3
+  //  .col
+  //    h3 Global
+  //  .progress(*ngIf="groupedProgressBar.length > 0")
+  //    .progress-bar(
+  //      *ngFor="let progressBarPart of groupedProgressBar",
+  //      role='progressbar',
+  //      [ngStyle]="{'width' : progressPartWidth+'%', 'background-color': progressBarPart.state ? 'green' : 'red'}",
+  //      [attr.aria-valuenow]="progressPartWidth",
+  //      aria-valuemin='0',
+  //      aria-valuemax='100',
+  //      [ngbTooltip]="!progressBarPart.state ? ('From ' + (progressBarPart.dateStart | dateTimeFromIso | dateTimeToFormat: 'yyyy, MMMM d, hh:mm:ss') + ' to ' + (progressBarPart.dateStop | dateTimeFromIso | dateTimeToFormat: 'yyyy, MMMM d, hh:mm:ss')) : ''")
+  .list-group-item.mb-3(*ngFor="let server of singleProgressBars")
+    .row
+      .col
+        h3 {{server.location}}
+      .col
+        p {{server.availability !== "Test hasn't started yet" ? 'Overall availability : ' + server.availability + '%' : server.availability}}
+    .progress
+      .progress-bar(
+        *ngFor="let record of server.records"
+        role='progressbar',
+        [ngStyle]="{'width' : progressPartWidth * record.stateLength+'%', 'background-color': record.state ? 'green' : 'red'}",
+        [attr.aria-valuenow]="progressPartWidth * record.stateLength",
+        aria-valuemin='0',
+        aria-valuemax='100',
+        [ngbTooltip]="!record.state ? 'From ' + (record.startDate | dateTimeFromIso | dateTimeToFormat:'yyyy, MMMM d, hh:mm:ss') + ' to ' + (record.endDate | dateTimeFromIso | dateTimeToFormat:'yyyy, MMMM d, hh:mm:ss') : ''")

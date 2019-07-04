@@ -1,4 +1,4 @@
-<ngb-tabset [justify]="'fill'" [destroyOnHide]="false">
+<ngb-tabset [destroyOnHide]="false" [hidden]="!uptimeResultsService.testHasStarted" [justify]="'fill'">
   <ngb-tab title="Global">
     <ng-template ngbTabContent="ngbTabContent">
       <app-uptime-donut-chart></app-uptime-donut-chart>
@@ -10,3 +10,6 @@
     </ng-template>
   </ngb-tab>
 </ngb-tabset>
+<div [hidden]="uptimeResultsService.testHasStarted" class="align-self-center">
+  <div class="list-group-item list-group-item-warning">Test haven't started yet, no results to show.</div>
+</div>

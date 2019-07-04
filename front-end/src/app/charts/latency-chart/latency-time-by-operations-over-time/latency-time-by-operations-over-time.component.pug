@@ -1,0 +1,7 @@
+div#latencyTimeByOperationsOverTimeChart
+.container
+  .row.justify-content-center(*ngIf="dataDisplayingIntervalOptions.length > 1")
+    .btn-group.btn-group-toggle(*ngFor="let option of dataDisplayingIntervalOptions" ngbRadioGroup='', name='radioBasic', [(ngModel)]='selectedDataDisplayingInterval')
+      label.btn-primary(ngbButtonLabel='')
+        input(ngbButton='', type='radio', [value]='option', (click)="selectedDataDisplayingIntervalChanged(option)" )
+        |  {{option}}

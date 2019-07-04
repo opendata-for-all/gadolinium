@@ -1,0 +1,33 @@
+<div class="container mt-3">
+  <div class="list-group-item mb-3">
+    <div class="col">
+      <div class="row"></div>
+      Period of testing<!--.row(*ngIf="selectedApi!==null")-->
+      <!--  .col Interval between tests : {{ uptimeTestConfig.interval.iso8601format | durationFromIso | durationToFormat:'yyyy, MMMM d, hh:mm:ss'}}-->
+      <!--  .col Number of repetitions : {{uptimeTestConfig.repetitions}}-->
+      <!--  .col Total duration : {{totalTestDuration}}--><!--.row(*ngIf="!hasTestFinished")-->
+      <!--  p From {{testStartingDate | dateTimeFromIso|  dateTimeToFormat:'yyyy, MMMM d, hh:mm:ss'}} to {{testEndingDate | dateTimeToFormat:'yyyy, MMMM d, hh:mm:ss'}}-->
+      <!--.row(*ngIf="hasTestFinished")-->
+      <!--  p Since {{testStartingDate | dateTimeFromIso | dateTimeToFormat:'yyyy, MMMM d, hh:mm:ss'}}-->
+      <!--  p {{testStartingDate}}--></div>
+  </div><!--.list-group-item.mb-3--><!--  .col--><!--    h3 Global-->
+  <!--  .progress(*ngIf="groupedProgressBar.length > 0")--><!--    .progress-bar(-->
+  <!--      *ngFor="let progressBarPart of groupedProgressBar",--><!--      role='progressbar',-->
+  <!--      [ngStyle]="{'width' : progressPartWidth+'%', 'background-color': progressBarPart.state ? 'green' : 'red'}",-->
+  <!--      [attr.aria-valuenow]="progressPartWidth",--><!--      aria-valuemin='0',--><!--      aria-valuemax='100',-->
+  <!--      [ngbTooltip]="!progressBarPart.state ? ('From ' + (progressBarPart.dateStart | dateTimeFromIso | dateTimeToFormat: 'yyyy, MMMM d, hh:mm:ss') + ' to ' + (progressBarPart.dateStop | dateTimeFromIso | dateTimeToFormat: 'yyyy, MMMM d, hh:mm:ss')) : ''")-->
+  <div *ngFor="let server of singleProgressBars" class="list-group-item mb-3">
+    <div class="row">
+      <div class="col"><h3>{{server.location}}</h3></div>
+      <div class="col">
+        <p>{{server.availability !== "Test hasn't started yet" ? 'Overall availability : ' + server.availability + '%' : server.availability}}</p>
+      </div>
+    </div>
+    <div class="progress">
+      <div *ngFor="let record of server.records" [attr.aria-valuenow]="progressPartWidth * record.stateLength"
+           [ngStyle]="{'width' : progressPartWidth * record.stateLength+'%', 'background-color': record.state ? 'green' : 'red'}"
+           [ngbTooltip]="!record.state ? 'From ' + (record.startDate | dateTimeFromIso | dateTimeToFormat:'yyyy, MMMM d, hh:mm:ss') + ' to ' + (record.endDate | dateTimeFromIso | dateTimeToFormat:'yyyy, MMMM d, hh:mm:ss') : ''"
+           aria-valuemax="100" aria-valuemin="0" class="progress-bar" role="progressbar"></div>
+    </div>
+  </div>
+</div>

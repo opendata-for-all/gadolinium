@@ -1,83 +1,67 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {TestResultsService} from '../../../services/test-results.service';
+import {Component, OnDestroy} from '@angular/core';
 import {Subscription} from 'rxjs';
 import * as c3 from 'c3';
 import {OpenAPI} from '../../../models/OpenAPI';
+import {APIStatusService} from '../../../services/api-status.service';
+import {UptimeResultsService} from '../../../services/uptime-results.service';
 
 @Component({
   selector: 'app-uptime-donut-chart',
   templateUrl: './uptime-donut-chart.component.pug',
   styleUrls: ['./uptime-donut-chart.component.css']
 })
-export class UptimeDonutChartComponent implements OnInit, OnDestroy {
+export class UptimeDonutChartComponent implements OnDestroy {
 
   chart: any;
 
   private selectedApi: OpenAPI;
   private selectedApiSub: Subscription;
 
-  private uptimeResults: any;
   private uptimeResultsSub: Subscription;
 
   constructor(
-    private testResultsService: TestResultsService,
+    private apiStatusService: APIStatusService,
+    private uptimeResultsService: UptimeResultsService,
   ) {
     this.subscriptions();
     this.initializations();
   }
 
-  ngOnInit() {
-  }
-
   ngOnDestroy(): void {
     this.uptimeResultsSub.unsubscribe();
-    this.selectedApiSub.unsubscribe();
   }
 
   private subscriptions() {
-    this.uptimeResultsSub = this.testResultsService.$uptimeResults.subscribe(uptimeResults => {
-      if (this.uptimeResults === null) {
-        this.uptimeResults = uptimeResults;
-        console.log(this.uptimeResults);
-        this.initializeChart();
+    this.uptimeResultsSub = this.uptimeResultsService.$donutChartData.subscribe(data => {
+      if (this.selectedApi && (this.selectedApi.id === data.api.id)) {
+        this.updateChart(data.chartData);
       } else {
-        this.uptimeResults = uptimeResults;
-        this.updateChart();
+        this.selectedApi = data.api;
+        this.initializeChart(data.chartData);
       }
     });
-    this.selectedApiSub = this.testResultsService.selectedApi$.subscribe(api => this.selectedApi = api);
   }
 
-  private initializeChart() {
+  private initializations() {
+    this.selectedApi = this.apiStatusService.getSelectedApi();
+  }
+
+  private initializeChart(data) {
     this.chart = c3.generate({
       bindto: '#uptimeDonutChart',
       data: {
         type: 'donut',
-        columns: this.aggregateUptimeResultsFromAllServers(),
+        columns: data,
       },
       donut: {
-        title: 'Availability of ' + this.selectedApi.name
+        title: 'Availability',
       }
     });
   }
 
-  private updateChart() {
+  private updateChart(data) {
     this.chart.load({
-      columns: this.aggregateUptimeResultsFromAllServers()
+      columns: data
     });
-  }
-
-  private aggregateUptimeResultsFromAllServers() {
-    let uptimeResults = Object.values(this.uptimeResults);
-    let up = [];
-    let down = [];
-    // @ts-ignore
-    uptimeResults.map(uptimeResult => uptimeResult.state ? up.push(uptimeResult.state) : down.push(!uptimeResult.state));
-    return [['Available', ...up], ['Down', ...down]];
-  }
-
-  private initializations() {
-    this.selectedApi = null;
-    this.uptimeResults = null;
   }
 }
