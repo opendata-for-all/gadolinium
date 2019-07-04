@@ -30,8 +30,8 @@ import {LatencyTimeByOperationsOverTimeComponent} from './charts/latency-chart/l
 import {LatencyTimeByZonesOverTimeComponent} from './charts/latency-chart/latency-time-by-zones-over-time/latency-time-by-zones-over-time.component';
 
 const config: SocketIoConfig = {
-  url: 'localhost:8080', options: {
-    // url: ':80/', options: {
+  // url: 'localhost:8080', options: {
+  url: ':8080/', options: {
     query: {
       token: 'webclient'
     }
