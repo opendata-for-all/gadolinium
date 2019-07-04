@@ -3,7 +3,7 @@
     .row.justify-content-around
       button.btn.btn-outline-info.col-3((click)="openCreateTestModal()") Create test
       button.btn.btn-outline-info.col-3(disabled='') Download tests
-      button.btn.btn-outline-danger.col-5((click)="deleteApi()")
+      button.btn.btn-outline-danger.col-5((click)="deleteApi($event)")
         .row.justify-content-center
           .col-3 Delete
           i.material-icons-round.col-1 delete_forever
