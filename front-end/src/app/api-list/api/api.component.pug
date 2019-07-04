@@ -1,5 +1,5 @@
 a.list-group-item.list-group-item-action.list-group-item-success((click)="apiSelected()")
   .col
-    p {{name}}
-  ngb-progressbar([value]="progress / totalProgress * 100", [striped]="true", [animated]="true")
-  app-api-collapse([show]="show", [apiId]="id")
+    p {{api.name}}
+  ngb-progressbar([value]="api.progress / api.totalProgress * 100", [striped]="true", [animated]="true")
+  app-api-collapse([show]="show", [apiId]="api.id")

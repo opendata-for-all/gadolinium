@@ -23,15 +23,17 @@ export class ApiComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.selectedApi$ = this.APIStatus.selectedApi$.subscribe((api) => this.show = (api === this.api));
-    this.id = this.api.id;
-    this.name = this.api.name;
-    this.progress = this.api.progress;
-    this.totalProgress = this.api.totalProgress;
+    this.selectedApi$ = this.APIStatus.selectedApi$.subscribe((api) => {
+      if (api) {
+        this.show = (api.id === this.api.id);
+      } else {
+        this.show = false;
+      }
+    });
   }
 
   apiSelected() {
-    this.APIStatus.apiSelected(this.api);
+    this.APIStatus.apiSelected(this.api.id);
   }
 
   ngOnDestroy(): void {
