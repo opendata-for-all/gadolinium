@@ -35,6 +35,10 @@ export class ApiListComponent implements OnInit, OnDestroy {
   }
 
   isApiSelected(api) {
-    return (api === this.selectedApi);
+    if (this.selectedApi) {
+      return (api.id === this.selectedApi.id);
+    } else {
+      return false;
+    }
   }
 }
