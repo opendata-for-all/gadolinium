@@ -1,10 +1,9 @@
 let io = require('socket.io-client');
 let performanceTestFunc = require('./performanceTestFunc');
-let region = process.argv[2];
-let instanceName = process.argv[3];
+let instanceName = process.argv[2];
 // let instanceName = "api-0-australia-southeast1-b-uptime";
 let masterConfig = require('./gadolinium-master');
-
+console.log(instanceName);
 let socket = io(`ws://${masterConfig.ipaddress}:${masterConfig.port}`, {
 	query : {
 		token : 'slave',
