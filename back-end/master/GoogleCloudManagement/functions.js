@@ -52,6 +52,25 @@ const deleteVM = async (zone, vmName) => {
 		};
 	}
 };
+
+const turnVM = async (on, zone, vmName) => {
+	let {auth, client} = await getGoogleAuth();
+	const projectId = await auth.getProjectId();
+
+	const url = `https://www.googleapis.com/compute/v1/projects/${projectId}/zones/${zone}/instances/${vmName}/${on ? 'start' : 'stop'}`;
+	try {
+		return await client.request({
+			url: url,
+			method: 'post'
+		});
+	} catch (e) {
+		return {
+			status: e.code,
+			errors: e.errors
+		};
+	}
+}
+
 function getListOfZones() {
 	return regionList;
 }
@@ -59,5 +78,6 @@ function getListOfZones() {
 module.exports = {
 	createVM: createVM,
 	deleteVM : deleteVM,
+	turnVM : turnVM,
 	getListOfZones: getListOfZones
 };
