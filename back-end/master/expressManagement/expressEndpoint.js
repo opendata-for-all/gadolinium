@@ -1,3 +1,5 @@
+const fileUpload = require('express-fileupload');
+
 let OpenAPIJSONParser = require('../Parsers/OpenAPIJSONParser');
 let PetStoreParser = require('../Parsers/PetStoreParser');
 let FakeAPIParser = require('../Parsers/FakeAPIParser');
@@ -25,9 +27,8 @@ let createDefaultEndpoint = (app) => {
 };
 
 let createOpenAPIJSONEndpoint = (app) => {
-	app.post('/OpenAPI', async (req, res, next) => {
+	app.post('/OpenAPI', fileUpload(), async (req, res, next) => {
 		let newApi = {};
-		let openAPIJSON = req.body;
 		try {
 			const openAPIJSON = JSON.parse(req.files.file.data.toString('utf8'));
 			let httpRequest;
@@ -45,12 +46,24 @@ let createOpenAPIJSONEndpoint = (app) => {
 			let newApiId = await APIStatusFunc.addApi(newApi);
 			socketFunc.emitAPIStatusUpdate();
 			res.status(200).send({
-				message: "The file is correct"
+				message: "The file is correct",
+				apiId: newApiId
 			});
 		} catch (e) {
-			res.send({status : 400, message : e.message});
+			res.send({status: 400, message: e.message});
 		}
-	})
+	});
+
+	app.post('/OpenAPIJsonValidation', fileUpload(), async (req, res) => {
+		try {
+			const formData = JSON.parse(req.files.file.data.toString('utf8'));
+			res.send({
+				isValid: await OpenAPIJSONParser.isValidOpenAPIJson(formData)
+			})
+		} catch (e) {
+			res.send({isValid: false})
+		}
+	});
 };
 
 module.exports = {
