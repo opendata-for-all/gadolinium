@@ -39,7 +39,7 @@ const deleteVM = async (zone, vmName) => {
 
 	const url = `https://www.googleapis.com/compute/v1/projects/${projectId}/zones/${zone}/instances/${vmName}`;
 
-	try{
+	try {
 		return await client.request({
 			url: url,
 			method: 'delete',
@@ -47,8 +47,8 @@ const deleteVM = async (zone, vmName) => {
 		});
 	} catch (e) {
 		return {
-			status : e.code,
-			errors : e.errors
+			status: e.code,
+			errors: e.errors
 		};
 	}
 };
@@ -56,6 +56,34 @@ const deleteVM = async (zone, vmName) => {
 const turnVM = async (on, zone, vmName) => {
 	let {auth, client} = await getGoogleAuth();
 	const projectId = await auth.getProjectId();
+
+	if (on) {
+		let url = `https://www.googleapis.com/compute/v1/projects/${projectId}/zones/${zone}/instances/${vmName}/setMetadata`;
+		let object = {
+			"items": [
+				{
+					"key": "startup-script",
+					"value": "#!/usr/bin/env bash\n" +
+						"cd gadolinium/back-end/slave\n" +
+						"INSTANCENAME=$(./gcp-metadata/gcp-metadata -n | cut -d ':' -f 2 | cut -d ' ' -f 2)\n" +
+						"node index.js \"$INSTANCENAME\"\n"
+				}
+			]
+		};
+		try{
+			return await client.request({
+				url : url,
+				method : 'post',
+				date : object
+			});
+		}
+		catch (e) {
+			return {
+				status: e.code,
+				errors: e.errors
+			};
+		}
+	}
 
 	const url = `https://www.googleapis.com/compute/v1/projects/${projectId}/zones/${zone}/instances/${vmName}/${on ? 'start' : 'stop'}`;
 	try {
@@ -69,6 +97,7 @@ const turnVM = async (on, zone, vmName) => {
 			errors: e.errors
 		};
 	}
+
 }
 
 function getListOfZones() {
@@ -77,7 +106,7 @@ function getListOfZones() {
 
 module.exports = {
 	createVM: createVM,
-	deleteVM : deleteVM,
-	turnVM : turnVM,
+	deleteVM: deleteVM,
+	turnVM: turnVM,
 	getListOfZones: getListOfZones
 };
