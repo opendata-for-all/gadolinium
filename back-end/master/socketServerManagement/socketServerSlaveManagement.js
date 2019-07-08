@@ -41,7 +41,7 @@ let updateMapsWithAPIStatus = () => {
 
 let slaveConnected = (slaveClient, slaveName) => {
 	if (masterHandledSlaves.has(slaveName)) {
-		// console.log(slaveName + " part of master handled slave test servers");
+		console.log(slaveName + " MASTERHANDLED");
 		//TODO Launch individual tests depending of its progression
 		if (slavesCreating.has(slaveName)) {
 			//TODO It's the first boot of the slave, launch the first test
@@ -60,6 +60,7 @@ let slaveConnected = (slaveClient, slaveName) => {
 			slaveClient.emit('masterHandledTest', {api: api, testType: testType})
 		}
 	} else if (slaveHandledSlaves.has(slaveName)) {
+		console.log(slaveName + " SLAVEHANDLED");
 		//TODO Launch the whole load of test
 		if (slavesCreating.has(slaveName)) {
 			//TODO The only state of boot that can happen
@@ -123,21 +124,25 @@ let slaveTesting = (slaveClient, slaveName) => {
 	slaveClient.on('repetitionFinished', (obj) => {
 		let apiId = obj.apiId;
 		if (masterHandledSlaves.has(slaveName)) {
+			console.log(slaveName + 'as a masterHandled slave');
 			if (slavesTesting.has(slaveName)) {
 				console.log('Repetition finished for ' + slaveName);
 				if (APIStatusFunc.isLastTest(apiId, slaveName)) {
+					console.log('It was last test for ' + slaveName);
 					//It was the last test, so it is time to delete the slave VM.
-					console.log('Test completed for ' + slaveName);
+					slaveClient.emit('masterHandledMessage', 'It was last test');
+					slaveClient.disconnect();
 					slavesTesting.delete(slaveName);
 					APIStatusFunc.terminateServer(apiId, slaveName);
 				} else {
 					//It is not the last test, so launch a counter of the correct duration to launch the next test
 					APIStatusFunc.applyFunctionToOneServer(apiId, slaveName, server => {
 						server.repetitionsRemaining--;
-						console.log(server.repetitionsRemaining)
+						console.log('Tests remaining for ' + slaveName + ' : ' + server.repetitionsRemaining);
 					});
 					let server = APIStatusFunc.getServer(apiId, slaveName);
 					let interval;
+					slaveClient.emit('masterHandledMessage', 'At this time, slave should be turned off');
 					if (latencySlaves.has(slaveName)) {
 						interval = APIStatusFunc.getLatencyInterval(apiId);
 					} else if (uptimeSlaves.has(slaveName)) {
@@ -151,7 +156,9 @@ let slaveTesting = (slaveClient, slaveName) => {
 				}
 			}
 		} else if (slaveHandledSlaves.has(slaveName)) {
+			console.log(slaveName + ' as a slaveHandled slave');
 			if (APIStatusFunc.isLastTest(apiId, slaveName)) {
+				console.log('It was last test for ' + slaveName);
 				//It was the last test, so it is time to delete the slave VM.
 				console.log('Test completed for ' + slaveName);
 				slavesTesting.delete(slaveName);
@@ -168,6 +175,7 @@ let slaveTesting = (slaveClient, slaveName) => {
 				} else if (uptimeSlaves.has(slaveName)) {
 					interval = APIStatusFunc.getUptimeInterval(apiId);
 				}
+				slaveClient.emit('slaveHandledMessage', 'At this time, slave should continue himself to test after the interval');
 				console.log("Slave " + slaveName + " restarting in " + interval / 60000 + ' minutes');
 			}
 		}
@@ -175,6 +183,7 @@ let slaveTesting = (slaveClient, slaveName) => {
 
 	slaveClient.on('completeTestFinished', (obj) => {
 		let apiId = obj.apiId;
+		console.log(slaveName + ' completed all tests');
 		if (slaveHandledSlaves.has(slaveName) && slavesTesting.has(slaveName)) {
 			slavesTesting.delete(slaveName);
 			APIStatusFunc.terminateServer(apiId, slaveName);
