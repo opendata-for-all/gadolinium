@@ -31,7 +31,7 @@ let updateMapsWithAPIStatus = () => {
 				slavesCreating.set(server.name, api.id);
 			} else if (server.status === "Testing...") {
 				slavesTesting.set(server.name, api.id);
-			} else if (server.status === "Test finished") {
+			} else if (server.status === "Test completed") {
 				slavesToDelete.set(server.name, api.id);
 			}
 			server.status = "Waiting for connection...";
@@ -40,7 +40,12 @@ let updateMapsWithAPIStatus = () => {
 };
 
 let slaveConnected = (slaveClient, slaveName) => {
-	if (masterHandledSlaves.has(slaveName)) {
+	if(slavesToDelete.has(slaveName)){
+		slaveClient.disconnect();
+		let apiId = slavesToDelete.get(slaveName).api.id;
+		let server = APIStatusFunc.getServer(apiId, slaveName);
+		GCPFunc.deleteVM(server.zone, slaveName);
+	}else if (masterHandledSlaves.has(slaveName)) {
 		console.log(slaveName + " MASTERHANDLED");
 		//TODO Launch individual tests depending of its progression
 		if (slavesCreating.has(slaveName)) {
@@ -73,11 +78,6 @@ let slaveConnected = (slaveClient, slaveName) => {
 		} else if (slavesTesting.has(slaveName)) {
 			//TODO If it was a testing slave, it is because the connection crashed between these two;
 		}
-	} else if(slavesToDelete.has(slaveName)){
-		slaveClient.disconnect();
-		let apiId = slavesToDelete.get(slaveName).api.id;
-		let server = APIStatusFunc.getServer(apiId, slaveName);
-		GCPFunc.deleteVM(server.zone, slaveName);
 	}
 };
 
