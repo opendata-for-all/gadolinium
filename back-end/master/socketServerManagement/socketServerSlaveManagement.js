@@ -10,7 +10,7 @@ let slaveHandledSlaves = new Map();
 let masterHandledSlaves = new Map();
 let latencySlaves = new Map();
 let uptimeSlaves = new Map();
-let slavesToDelete = [];
+let slavesToDelete = new Map();
 
 let updateMapsWithAPIStatus = () => {
 	let APIStatus = APIStatusFunc.getAPIStatus();
@@ -32,7 +32,7 @@ let updateMapsWithAPIStatus = () => {
 			} else if (server.status === "Testing...") {
 				slavesTesting.set(server.name, api.id);
 			} else if (server.status === "Test finished") {
-				//TODO
+				slavesToDelete.set(server.name, api.id);
 			}
 			server.status = "Waiting for connection...";
 		})
@@ -73,6 +73,11 @@ let slaveConnected = (slaveClient, slaveName) => {
 		} else if (slavesTesting.has(slaveName)) {
 			//TODO If it was a testing slave, it is because the connection crashed between these two;
 		}
+	} else if(slavesToDelete.has(slaveName)){
+		slaveClient.disconnect();
+		let apiId = slavesToDelete.get(slaveName).api.id;
+		let server = APIStatusFunc.getServer(apiId, slaveName);
+		GCPFunc.deleteVM(server.zone, slaveName);
 	}
 };
 
