@@ -121,7 +121,7 @@ let createServerInstanceFromOpenApiTestConfig = (apiId) => {
 };
 
 let determineExecutionType = (config) => {
-	let minuteOfMinimumDelay = 10;
+	let minuteOfMinimumDelay = 1;
 	let duration = config.interval.iso8601format;
 	let formattedDuration = Duration.fromISO(duration);
 	let milliseconds = formattedDuration.valueOf();
