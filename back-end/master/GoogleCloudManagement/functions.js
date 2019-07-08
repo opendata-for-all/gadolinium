@@ -36,6 +36,7 @@ const createVM = async (zone, vmName) => {
 const deleteVM = async (zone, vmName) => {
 	let {auth, client} = await getGoogleAuth();
 	const projectId = await auth.getProjectId();
+	console.log('Deletion of ' + vmName + ' instance on Google Cloud Platform');
 
 	const url = `https://www.googleapis.com/compute/v1/projects/${projectId}/zones/${zone}/instances/${vmName}`;
 
@@ -56,6 +57,8 @@ const deleteVM = async (zone, vmName) => {
 const turnVM = async (on, zone, vmName) => {
 	let {auth, client} = await getGoogleAuth();
 	const projectId = await auth.getProjectId();
+
+	console.log(`Attempt to turn ${on ? 'On' : 'Off'} the ${vmName} instance from Google Cloud Platform`);
 
 	if (on) {
 		let url = `https://www.googleapis.com/compute/v1/projects/${projectId}/zones/${zone}/instances/${vmName}/setMetadata`;
