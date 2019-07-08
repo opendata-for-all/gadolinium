@@ -74,9 +74,16 @@ export class LatencyResultsService {
     });
     this.$dataDisplayingSelection.subscribe(newOption => {
       if (this.selectedDataDisplayingInterval !== newOption) {
+        console.log(newOption);
         this.selectedDataDisplayingInterval = newOption;
-        this.initializeTimeOperationOverTimeResults();
-        this.initializeTimeZoneOverTimeResults();
+        this.initializeMeanOfRequestsByZonesAndMeanOfAllRequests();
+        this.initializeMeanOfRequestsByOperations();
+
+        this.setTimeOperationOverTimeData();
+        this.setTimeZoneOverTimeData();
+
+        this.emitTimeOperationOverTimeToSub();
+        this.emitTimeZonesOverTimeToSub();
       }
     });
   }
@@ -87,6 +94,7 @@ export class LatencyResultsService {
       this.maximumDataDisplayingInterval = this.getMaximumDataDisplayingInterval();
       this.selectedDataDisplayingInterval = this.minimumDataDisplayingInterval;
       this.dataDisplayingIntervalOptions = this.getDataDisplayingIntervalOptions();
+      console.log(this.dataDisplayingIntervalOptions);
 
       this.initializeMeanOfRequestsByZonesAndMeanOfAllRequests();
       this.initializeMeanOfRequestsByOperations();
@@ -441,6 +449,7 @@ export class LatencyResultsService {
 
   private getMinimumDataDisplayingInterval() {
     let interval = Duration.fromISO(this.latencyTestConfig.interval.iso8601format).normalize();
+    console.log(interval.as('hours'));
     if (interval.as('years') > 1) {
       return 'year';
     } else if (interval.as('months') > 1) {
@@ -454,12 +463,15 @@ export class LatencyResultsService {
 
   private getMaximumDataDisplayingInterval() {
     let interval = Duration.fromMillis(Duration.fromISO(this.latencyTestConfig.interval.iso8601format).valueOf() * this.latencyTestConfig.repetitions).normalize();
+    console.log(interval.as('hours'));
     if (interval.as('years') > 1) {
       return 'year';
     } else if (interval.as('months') > 1) {
       return 'month';
     } else if (interval.as('days') > 1) {
       return 'day';
+    } else if (interval.as('hours') > 1) {
+      return 'hour';
     } else {
       return 'minute';
     }
