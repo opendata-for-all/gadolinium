@@ -26,6 +26,7 @@ const createVM = async (zone, vmName) => {
 	const sourceInstanceTemplate = `projects/${projectId}/global/instanceTemplates/${templateName}`;
 	const url = `https://www.googleapis.com/compute/v1/projects/${projectId}/zones/${zone}/instances?sourceInstanceTemplate=${sourceInstanceTemplate}`;
 
+	console.log(`Attempt to create a Google Cloud Platform instance named ${templateName}`);
 	return await client.request({
 		url: url,
 		method: 'post',

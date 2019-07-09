@@ -94,7 +94,7 @@ let multipleTests = async (socketClient, api, testType) => {
 	console.log(repetitions);
 	if (repetitions === 1) {
 		await module.exports[testType].singleTest(socketClient, api);
-		socketClient.emit('test', {apiId: api.id});
+		socketClient.emit('repetition', {apiId: api.id});
 	} else {
 		let intervalVal = Duration.fromISO(api.testConfig[testType].interval.iso8601format).valueOf();
 		for (let i = 0; i < repetitions; i++) {
@@ -104,11 +104,8 @@ let multipleTests = async (socketClient, api, testType) => {
 			} else {
 				setTimeout(async () => {
 					await module.exports[testType].singleTest(socketClient, api);
-					if (i === repetitions - 1) socketClient.emit('test', {apiId: api.id});
-					else {
-						socketClient.emit('repetition', {apiId: api.id});
-						console.log("Slave will restart testing in " + intervalVal / 60000);
-					}
+					socketClient.emit('repetition', {apiId: api.id});
+					console.log("Slave will restart testing in " + intervalVal / 60000);
 				}, intervalVal * (i + 1));
 				socketClient.emit('consoleMessage', `Timer created for in ${intervalVal * (i + 1)}`)
 			}

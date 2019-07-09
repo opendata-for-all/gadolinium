@@ -342,16 +342,6 @@ let slaveTesting = (slaveClient, slaveName) => {
 		// 	}
 		// }
 	});
-
-	slaveClient.on('test', (obj) => {
-		let apiId = obj.apiId;
-		console.log(`${slaveName.bold.underline} : All tests completed`);
-		if (slaveHandledSlaves.has(slaveName) && slavesTesting.has(slaveName)) {
-			slavesTesting.delete(slaveName);
-			APIStatusFunc.terminateServer(apiId, slaveName);
-			socketServerFunc.emitAPIStatusUpdate();
-		}
-	})
 };
 
 module.exports = {
