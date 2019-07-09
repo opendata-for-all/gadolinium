@@ -44,7 +44,7 @@ socketServerCreationAndConnection.createChannel(
 	(slaveName, socketClient) => {
 		services.socketSlaves[slaveName] = socketClient;
 		socketServerSlaveManagement.slaveConnected(socketClient, slaveName);
-		socketServerSlaveManagement.handleDisconnection(socketClient, slaveName, (reason) => {
+		socketServerSlaveManagement.slaveDisconnected(socketClient, slaveName, (reason) => {
 			if (reason === "vmDeleted") {
 				delete services.socketSlaves[slaveName]
 			}

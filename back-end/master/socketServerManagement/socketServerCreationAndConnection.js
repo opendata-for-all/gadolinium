@@ -29,7 +29,6 @@ let createChannel = (webClientCallback, slaveCallback) => {
 				authorized = true;
 			}
 			if (authorized) {
-				console.log("Slave " + authorizedNames[slaveIndex] + " joined");
 				slavesClient[authorizedNames[slaveIndex]] = client;
 				client.join(authorizedNames[slaveIndex]);
 				slaveCallback(authorizedNames[slaveIndex], client)
@@ -54,7 +53,6 @@ let apiDeleted = (apiId) => {
 
 let disconnectSlave = (slaveName) => {
 	if (slavesClient[slaveName]) slavesClient[slaveName].disconnect(true);
-	console.log(`Slave ${slaveName} disconnected by deletion`);
 };
 
 let getAuthorizedNames = () => {

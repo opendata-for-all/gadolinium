@@ -6,6 +6,7 @@ let FakeAPIParser = require('../Parsers/FakeAPIParser');
 let GoogleCloudManagement = require('../GoogleCloudManagement/functions');
 let APIStatusFunc = require('../APIStatus/functions');
 let socketFunc = require('../socketServerManagement/socketServerCreationAndConnection');
+let socketSlaveManagement = require('../socketServerManagement/socketServerSlaveManagement');
 let listOfServers = null;
 
 let getListOfServers = async () => {
@@ -44,6 +45,7 @@ let createOpenAPIJSONEndpoint = (app) => {
 			newApi.host = openAPIJSON.host;
 			newApi.httpRequests = httpRequest;
 			let newApiId = await APIStatusFunc.addApi(newApi);
+			socketSlaveManagement.updateMapsWithAPIStatus();
 			socketFunc.emitAPIStatusUpdate();
 			res.status(200).send({
 				message: "The file is correct",
