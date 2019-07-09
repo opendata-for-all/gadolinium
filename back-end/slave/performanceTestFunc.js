@@ -100,6 +100,7 @@ let multipleTests = async (socketClient, api, testType) => {
 		for (let i = 0; i < repetitions; i++) {
 			if (i === 0) {
 				await module.exports[testType].singleTest(socketClient, api);
+				socketClient.emit('repetition', {apiId: api.id});
 				console.log("Slave will restart testing in " + intervalVal / 60000);
 			} else {
 				setTimeout(async () => {

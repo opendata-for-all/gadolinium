@@ -85,7 +85,6 @@ let emitLatencyTestUpdate = (apiId, slaveName, httpRequestIndex, newRecord) => {
 
 let emitUptimeTestUpdate = (apiId, slaveName, isApiUp, date) => {
 	let APIStatus = APIStatusFunc.getAPIStatus();
-	console.log('UptimeTestUpdate');
 	socketServer.to('webclient').emit('UptimeTestUpdate', {
 		APIStatus,
 		apiId,
