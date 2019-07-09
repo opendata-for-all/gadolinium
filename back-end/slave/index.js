@@ -1,8 +1,8 @@
 let io = require('socket.io-client');
 let performanceTestFunc = require('./performanceTestFunc');
 //TODO
-// let instanceName = process.argv[2];
-let instanceName = require('../master/APIStatus/APIStatus').APIStatus[0].servers[0].name;
+let instanceName = process.argv[2];
+// let instanceName = require('../master/APIStatus/APIStatus').APIStatus[0].servers[0].name;
 let masterConfig = require('./gadolinium-master');
 console.log(instanceName);
 let socket = io(`ws://${masterConfig.ipaddress}:${masterConfig.port}`, {
