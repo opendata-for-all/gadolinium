@@ -113,8 +113,8 @@ let createServerInstanceFromOpenApiTestConfig = (apiId) => {
 		if (apiId === api.id) {
 			let latencyExecutionType = determineExecutionType(api.testConfig.latency);
 			let uptimeExecutionType = determineExecutionType(api.testConfig.uptime);
-			api.servers.push(...createServerInstance(api.testConfig.latency.zones, apiId, "latency", latencyExecutionType));
-			api.servers.push(...createServerInstance(api.testConfig.uptime.zones, apiId, "uptime", uptimeExecutionType));
+			api.servers.push(...createServerInstance(api.testConfig.latency, apiId, "latency", latencyExecutionType));
+			api.servers.push(...createServerInstance(api.testConfig.uptime, apiId, "uptime", uptimeExecutionType));
 		}
 	});
 	writeAPIStatus(APIStatus);
@@ -132,10 +132,10 @@ let determineExecutionType = (config) => {
 	}
 };
 
-let createServerInstance = (serverList, apiId, testType, executionType) => {
+let createServerInstance = (config, apiId, testType, executionType) => {
 	let gcpServerList = GCPFunc.getListOfZones();
 	let servers = [];
-	for (let server of serverList) {
+	for (let server of config.zones) {
 		let randomZone = gcpServerList[server].zones[Math.floor(Math.random() * gcpServerList[server].zones.length)];
 		let zoneName = `${server}-${randomZone}`;
 		let vmName = `api-${apiId}-${zoneName}-${testType}`;
@@ -148,7 +148,8 @@ let createServerInstance = (serverList, apiId, testType, executionType) => {
 			location: gcpServerList[server].location,
 			status: "Creating VM...",
 			progress: 1,
-			totalProgress: 1
+			totalProgress: 1,
+			repetitionsRemaining: config.repetitions
 		});
 		GCPFunc.createVM(zoneName, vmName);
 	}
@@ -209,9 +210,7 @@ let initializeServerState = (apiId, serverName, testType, handlingType) => {
 					} else if (server.testType === 'uptime') {
 						server.totalProgress = api.testConfig[server.testType].repetitions;
 					}
-					if (handlingType === "masterHandled") {
-						server.repetitionsRemaining = api.testConfig[server.testType].repetitions;
-					}
+					server.repetitionsRemaining = api.testConfig[server.testType].repetitions;
 					return true;
 				}
 			});
