@@ -103,12 +103,14 @@ let multipleTests = async (socketClient, api, testType) => {
 				console.log("Slave will restart testing in " + intervalVal / 60000);
 			} else {
 				setTimeout(async () => {
+					await module.exports[testType].singleTest(socketClient, api);
 					if (i === repetitions) socketClient.emit('test', {apiId: api.id});
 					else {
 						socketClient.emit('repetition', {apiId: api.id});
 						console.log("Slave will restart testing in " + intervalVal / 60000);
 					}
 				}, intervalVal * (i + 1));
+				socketClient.emit('consoleMessage', `Timer created for in ${intervalVal * (i + 1)}`)
 			}
 		}
 	}

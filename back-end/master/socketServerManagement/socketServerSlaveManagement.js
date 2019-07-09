@@ -186,6 +186,8 @@ let slaveDisconnected = (slaveClient, slaveName, slaveCallback) => {
 		socketServerFunc.emitAPIStatusUpdate();
 		slaveCallback(reason);
 	})
+
+	slaveClient.on('consoleMessage', data => console.log(data.green));
 };
 
 let saveTheRecord = (slaveName, record) => {
