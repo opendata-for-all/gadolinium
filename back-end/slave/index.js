@@ -1,13 +1,14 @@
 let io = require('socket.io-client');
 let performanceTestFunc = require('./performanceTestFunc');
-let instanceName = process.argv[2];
-// let instanceName = "api-0-australia-southeast1-b-uptime";
+//TODO
+// let instanceName = process.argv[2];
+let instanceName = require('../master/APIStatus/APIStatus').APIStatus[0].servers[0].name;
 let masterConfig = require('./gadolinium-master');
 console.log(instanceName);
 let socket = io(`ws://${masterConfig.ipaddress}:${masterConfig.port}`, {
-	query : {
-		token : 'slave',
-		name : instanceName
+	query: {
+		token: 'slave',
+		name: instanceName
 	}
 });
 // let socket = io(`ws://localhost:8080`, {
@@ -40,11 +41,19 @@ socket.on('masterHandledTest', async ({api, testType}) => {
 	console.log('masterHandledTest');
 	let results = {};
 	results.testResults = await performanceTestFunc[testType].singleTest(socket, api);
-	socket.emit('repetitionFinished', {apiId : api.id});
+	socket.emit('repetition', {apiId: api.id});
 });
 
 socket.on('slaveHandledTest', async ({api, testType}) => {
 	console.log('slaveHandledTest');
 	console.log('Test type : ' + testType);
 	await performanceTestFunc.multipleTests(socket, api, testType);
+});
+
+socket.on('masterHandledMessage', data => {
+	console.log(data);
+});
+
+socket.on('slaveHandledMessage', data => {
+	console.log(data);
 });

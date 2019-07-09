@@ -5,23 +5,11 @@ let dns = require('dns');
 const loadtest = require('loadtest');
 const nodefetch = require('node-fetch');
 
-let performPingTest = async (host) => {
-	return await ping(host)
-		.then(time => true)
-		.catch(() => false);
-};
-
 let individualRequestLatencyTest = async (httpRequest, requestPerSecond, maxRequests, timeoutThreshold) => {
-	// const options = {
-	// 	url: method.url,
-	// 	maxRequests: 10,
-	// };
-	console.log(timeoutThreshold);
 	let method = httpRequest;
 	method.requestsPerSecond = requestPerSecond;
 	method.maxRequests = maxRequests;
 	method.timeout = timeoutThreshold;
-	// console.log(method);
 	return new Promise((resolve) => {
 		loadtest.loadTest(method, function (error, result) {
 			if (error) {
@@ -65,50 +53,21 @@ let createOpenAPIExtensionObject = (httpRequest) => {
 	httpRequest.test.meanLatency = null;
 };
 
-let performTestOnEachPath = async (httpRequests) => {
-	for (let httpRequest of httpRequests) {
-		await individualRequestLatencyTest(httpRequest);
-	}
-};
-
 let sendDataToMaster = (socketClient, channel, data) => {
 	socketClient.emit(channel, data);
-};
-
-let instantTest = async (socketClient, api) => {
-	let httpRequests = api.httpRequests;
-	for (let i = 0; i < httpRequests.length; i++) {
-		let httpRequest = httpRequests[i];
-		createOpenAPIExtensionObject(httpRequest);
-		await individualRequestLatencyTest(httpRequest, 1, 1);
-		api.progress++;
-		if (api.progress === api.totalProgress) {
-			api.progressStatus = "Tests completed"
-		} else {
-			api.progressStatus = "Tests in progress";
-		}
-		sendDataToMaster(socketClient, 'testProgression', api)
-	}
-};
-
-let performTests = async (api) => {
-	createOpenAPIExtensionObject(api.httpRequests);
-	await performTestOnEachPath(api.httpRequests);
-	return api;
 };
 
 let singleLatencyTest = async (socketClient, api) => {
 	let results = {};
 	results.apiId = api.id;
-	results.progress = 1;
+	results.progress = 0;
 	results.httpRequestIndex = 0;
 	results.totalProgress = api.httpRequests.length;
 	for (let httpRequest of api.httpRequests) {
 		createOpenAPIExtensionObject(httpRequest);
-		console.log(api.testConfig);
 		results.testResults = await individualRequestLatencyTest(httpRequest, 0.5, 1, api.testConfig.latency.timeoutThreshold);
-		sendDataToMaster(socketClient, 'testProgression', results);
 		results.progress++;
+		sendDataToMaster(socketClient, 'record', results);
 		results.httpRequestIndex++;
 	}
 };
@@ -127,29 +86,31 @@ let singleUptimeTest = async (socketClient, api) => {
 	}
 	results.date = DateTime.fromJSDate(new Date()).toISO();
 	console.log('Message sent to Master : ' + results.up + ' at ' + results.date.valueOf());
-	sendDataToMaster(socketClient, 'testProgression', results);
+	sendDataToMaster(socketClient, 'record', results);
 };
 
 let multipleTests = async (socketClient, api, testType) => {
-	await module.exports[testType].singleTest(socketClient, api);
-	socketClient.emit('repetitionFinished', {apiId: api.id});
 	let repetitions = parseInt(api.testConfig[testType].repetitions);
-	let intervalCounter = 1;
-	let intervalVal = Duration.fromISO(api.testConfig[testType].interval.iso8601format).valueOf();
-	if (intervalCounter !== repetitions) {
-		let intervalFun = setInterval(async () => {
-			await module.exports[testType].singleTest(socketClient, api);
-			intervalCounter++;
-			console.log('Repetitions = ' + repetitions);
-			console.log('IntervalCounter = ' + intervalCounter);
-			if (intervalCounter === repetitions) {
-				clearInterval(intervalFun);
-				socketClient.emit('completeTestFinished', {apiId: api.id});
-			} else {
-				socketClient.emit('repetitionFinished', {apiId: api.id});
+	console.log(repetitions);
+	if (repetitions === 1) {
+		await module.exports[testType].singleTest(socketClient, api);
+		socketClient.emit('test', {apiId: api.id});
+	} else {
+		let intervalVal = Duration.fromISO(api.testConfig[testType].interval.iso8601format).valueOf();
+		for (let i = 0; i < repetitions; i++) {
+			if (i === 0) {
+				await module.exports[testType].singleTest(socketClient, api);
 				console.log("Slave will restart testing in " + intervalVal / 60000);
+			} else {
+				setTimeout(async () => {
+					if (i === repetitions) socketClient.emit('test', {apiId: api.id});
+					else {
+						socketClient.emit('repetition', {apiId: api.id});
+						console.log("Slave will restart testing in " + intervalVal / 60000);
+					}
+				}, intervalVal * (i + 1));
 			}
-		}, intervalVal);
+		}
 	}
 };
 
@@ -175,8 +136,5 @@ module.exports = {
 	},
 	uptime: {
 		singleTest: singleUptimeTest,
-	},
-	performPingTest: performPingTest,
-	instantTest: instantTest,
-	performTests: performTests,
+	}
 };
