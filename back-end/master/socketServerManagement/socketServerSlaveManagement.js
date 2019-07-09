@@ -227,9 +227,9 @@ let rebootTheVM = (apiId, slaveName) => {
 	GCPFunc.turnVM(false, server.zone, server.name);
 	GCPFunc.setBootUpScript(server.zone, slaveName);
 	setTimeout(() => {
-		GCPFunc.turnVM(true, server.zone, slaveName);
 		slavesWaiting.delete(slaveName);
 		slavesBooting.set(slaveName, apiId);
+		GCPFunc.turnVM(true, server.zone, slaveName);
 	}, millisecondsIntervalUntilNextRepetition);
 	console.log(`${slaveName.bold.underline} : Restarting in ${millisecondsIntervalUntilNextRepetition / 60000} minutes`);
 
@@ -244,6 +244,7 @@ let repetitionFinishedFor = (slaveClient, slaveName, apiId) => {
 		slaveClient.disconnect();
 	} else {
 		APIStatusFunc.applyFunctionToOneServer(apiId, slaveName, server => {
+			console.log(server);
 			server.repetitionsRemaining--;
 			console.log(`${slaveName.bold.underline} : ${server.repetitionsRemaining} tests remaining`);
 		});
