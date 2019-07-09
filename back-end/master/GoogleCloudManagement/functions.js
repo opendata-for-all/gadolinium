@@ -59,7 +59,7 @@ const turnVM = async (on, zone, vmName) => {
 	let {auth, client} = await getGoogleAuth();
 	const projectId = await auth.getProjectId();
 
-	console.log(`Attempt to turn ${on ? 'On' : 'Off'} the ${vmName} instance from Google Cloud Platform`);
+	console.log(`${new Date(Date.now()).toISOString().yellow} : Attempt to turn ${on ? 'on' : 'off'} the ${vmName} instance from Google Cloud Platform`);
 
 	const url = `https://www.googleapis.com/compute/v1/projects/${projectId}/zones/${zone}/instances/${vmName}/${on ? 'start' : 'stop'}`;
 	try {

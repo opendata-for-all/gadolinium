@@ -98,7 +98,7 @@ let slaveConnected = (slaveClient, slaveName) => {
 			slaveConnectedForTheFirstTime(slaveClient, slaveName);
 		} else if (slavesTesting.has(slaveName)) {
 			//The slave is currently testing an API
-			if (slavesWaiting.has(slaveName)) {
+			if (slavesBooting.has(slaveName)) {
 				if (slaveHandledSlaves.has(slaveName)) {
 					slaveHandledSlaveReconnected(slaveClient, slaveName);
 				} else if (masterHandledSlaves.has(slaveName)) {
@@ -107,7 +107,7 @@ let slaveConnected = (slaveClient, slaveName) => {
 					console.log(`${slaveName.bold.underline} : Execution type not handled`.red);
 				}
 			} else {
-				console.log(`${slaveName.bold.underline} : Not waiting`.red);
+				console.log(`${slaveName.bold.underline} : Not booting`.red);
 			}
 		} else {
 			console.log(`${slaveName.bold.underline} : Not in creating or testing maps`.red);
@@ -244,7 +244,6 @@ let repetitionFinishedFor = (slaveClient, slaveName, apiId) => {
 		slaveClient.disconnect();
 	} else {
 		APIStatusFunc.applyFunctionToOneServer(apiId, slaveName, server => {
-			console.log(server);
 			server.repetitionsRemaining--;
 			console.log(`${slaveName.bold.underline} : ${server.repetitionsRemaining} tests remaining`);
 		});
