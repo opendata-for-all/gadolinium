@@ -57,7 +57,7 @@ let getExecutionTypeOfSlave = (slaveName) => {
 let slaveConnectedForTheFirstTime = (slaveClient, slaveName) => {
 	console.log(`${slaveName.bold.underline} : Connected for the first time`);
 
-	let api = APIStatusFunc.getAPI(slaveHandledSlaves.get(slaveName));
+	let api = APIStatusFunc.getAPI(slavesCreating.get(slaveName));
 	let testType = getTestTypeOfSlave(slaveName);
 	let executionType = getExecutionTypeOfSlave(slaveName);
 	APIStatusFunc.initializeServerState(api.id, slaveName, testType, `${executionType}Handled`);
