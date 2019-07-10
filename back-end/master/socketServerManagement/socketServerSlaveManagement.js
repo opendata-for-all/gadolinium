@@ -1,3 +1,5 @@
+let {DateTime, Duration} = require("luxon");
+
 let colors = require('colors');
 let APIStatusFunc = require('../APIStatus/functions');
 let socketServerFunc = require('./socketServerCreationAndConnection');
@@ -22,28 +24,104 @@ let updateMapsWithAPIStatus = () => {
 	APIStatus.map((api) => {
 		let servers = api.servers;
 		servers.map((server) => {
-			if (server.executionType === "masterHandled") {
-				masterHandledSlaves.set(server.name, api.id);
-			} else if (server.executionType === "slaveHandled") {
-				slaveHandledSlaves.set(server.name, api.id);
+			switch (server.executionType) {
+				case 'masterHandled':
+					masterHandledSlaves.set(server.name, api.id);
+					break;
+				case 'slaveHandled' :
+					slaveHandledSlaves.set(server.name, api.id);
+					break;
 			}
-			if (server.testType === "latency") {
-				latencySlaves.set(server.name, api.id);
-			} else if (server.testType === "uptime") {
-				uptimeSlaves.set(server.name, api.id);
+			switch (server.testType) {
+				case 'latency' :
+					latencySlaves.set(server.name, api.id);
+					break;
+				case 'uptime':
+					uptimeSlaves.set(server.name, api.id);
+					break;
 			}
-			if (server.progress === 1 && server.progress === 1) {
-				slavesCreating.set(server.name, api.id);
-			} else if (server.progress < server.totalProgress) {
-				slavesTesting.set(server.name, api.id);
-			} else if (server.progress === server.totalProgress) {
-				slavesCompleted.set(server.name, api.id);
-				slavesToDelete.set(server.name, api.id);
+			switch (server.state) {
+				case 'creating':
+					slavesCreating.set(server.name, api.id);
+					break;
+				case 'testing':
+					slavesTesting.set(server.name, api.id);
+					if (slaveHandledSlaves.has(server.name)) {
+						slavesRecording.set(server.name, api.id);
+					} else if (masterHandledSlaves.has(server.name)) {
+						switch (server.substate) {
+							case 'waiting':
+								slavesWaiting.set(server.name, api.id);
+								restartTimerToRebootVM(api.id, server.name);
+								break;
+							case 'booting' :
+								slavesBooting.set(server.name, api.id);
+								break;
+							case 'recording':
+								slavesRecording.set(server.name, api.id);
+						}
+					}
+					break;
+				case 'completed' :
+					slavesCompleted.set(server.name, api.id);
+					slavesToDelete.set(server.name, api.id);
+					break;
 			}
-			if (server.progress > 1) slavesWaiting.set(server.name, api.id);
 			slavesDisconnected.set(server.name, api.id);
 		})
-	});
+	})
+};
+
+let addSlaveToMaps = (apiId, slaveName) => {
+
+};
+
+let getFirstDateTimeRecordFromAServer = (apiId, server) => {
+	let api = APIStatusFunc.getAPI(apiId);
+	if (server.testType === 'latency') {
+		return DateTime.min(...api.httpRequests.reduce((accum, httpRequest) => {
+			return [accum, ...Object.values(httpRequest.testResults).reduce((accum, results) => {
+				return [accum, ...results.latencyRecords.map(record => DateTime.fromISO(record.date))]
+			}, [])];
+		}, []))
+	} else if (server.testType === 'uptime') {
+		return DateTime.min(...api.uptimeResults[server.name].reduce((accum, serverRecord) => {
+			return [accum, ...serverRecord.map(record => DateTime.fromISO(record.date))];
+		}, []));
+	}
+};
+
+let getNumberOfRepetitionsDone = (apiId, server) => {
+	let api = APIStatusFunc.getAPI(apiId);
+	return api.testConfig[server.testType].repetitions - server.repetitionsRemaining;
+};
+
+let getIntervalBetweenRepetitions = (apiId, server) => {
+	let api = APIStatusFunc.getAPI(apiId);
+	return Duration.fromISO(api.testConfig[server.testType].interval.iso8601format);
+};
+
+let restartTimerToRebootVM = (apiId, slaveName) => {
+	console.log(`${slaveName.bold.underline} : Restart timer lost`);
+	let server = APIStatusFunc.getServer(apiId, slaveName);
+	let firstDateTimeRecord = getFirstDateTimeRecordFromAServer(apiId, server);
+	let nbRepetitionDone = getNumberOfRepetitionsDone(apiId, server);
+	let intervalBetweenRepetitions = getIntervalBetweenRepetitions(apiId, server);
+	let nextDateTimeRecord = firstDateTimeRecord.plus(Duration.fromMillis(nbRepetitionDone * intervalBetweenRepetitions.valueOf()));
+	let millisecondsIntervalUntilNextRepetition = nextDateTimeRecord.diff(Duration.fromMillis(new DateTime(Date.now()).toMillis())).valueOf();
+	if (millisecondsIntervalUntilNextRepetition > 0) {
+		GCPFunc.setBootUpScript(server.zone, slaveName);
+		setTimeout(() => {
+			slavesWaiting.delete(slaveName);
+			slavesBooting.set(slaveName, apiId);
+			APIStatusFunc.applyFunctionToOneServer(apiId, slaveName, server => server.substate = 'booting');
+			GCPFunc.turnVM(true, server.zone, slaveName);
+		}, millisecondsIntervalUntilNextRepetition);
+		console.log(`${slaveName.bold.underline} : Restarting in ${millisecondsIntervalUntilNextRepetition / 60000} minutes`);
+	} else {
+		APIStatusFunc.applyFunctionToOneServer(apiId, slaveName, (server) => server.status = "Test failed, please delete this configuration and create a new one.")
+	}
+
 };
 
 let getTestTypeOfSlave = (slaveName) => {
@@ -64,12 +142,17 @@ let slaveConnectedForTheFirstTime = (slaveClient, slaveName) => {
 	slavesCreating.delete(slaveName);
 	slavesTesting.set(slaveName, api.id);
 	slavesRecording.set(slaveName, api.id);
+	APIStatusFunc.applyFunctionToOneServer(api.id, slaveName, (server) => {
+		server.state = 'testing';
+		server.substate = 'recording'
+	});
 	slaveClient.emit(`${executionType}HandledTest`, {api: api, testType: testType});
 };
 
 let slaveHandledSlaveReconnected = (slaveClient, slaveName) => {
 	console.log(`${slaveName.bold.underline} : Slave handled slave reconnected`);
 	console.log(`Cached records may be received`);
+	slaveClient.emit('reconnection');
 	slavesDisconnected.delete(slaveName);
 };
 
@@ -81,6 +164,7 @@ let masterHandledSlaveReconnected = (slaveClient, slaveName) => {
 	slavesBooting.delete(slaveName);
 	slavesWaiting.delete(slaveName);
 	slavesRecording.set(slaveName, api.id);
+	APIStatusFunc.applyFunctionToOneServer(api.id, slaveName, (server) => server.substate = 'recording');
 	slaveClient.emit('masterHandledTest', {api: api, testType: testType})
 };
 
@@ -98,16 +182,16 @@ let slaveConnected = (slaveClient, slaveName) => {
 			slaveConnectedForTheFirstTime(slaveClient, slaveName);
 		} else if (slavesTesting.has(slaveName)) {
 			//The slave is currently testing an API
-			if (slavesBooting.has(slaveName)) {
-				if (slaveHandledSlaves.has(slaveName)) {
-					slaveHandledSlaveReconnected(slaveClient, slaveName);
-				} else if (masterHandledSlaves.has(slaveName)) {
+			if (slaveHandledSlaves.has(slaveName)) {
+				slaveHandledSlaveReconnected(slaveClient, slaveName);
+			} else if (masterHandledSlaves.has(slaveName)) {
+				if (slavesBooting.has(slaveName)) {
 					masterHandledSlaveReconnected(slaveClient, slaveName);
 				} else {
-					console.log(`${slaveName.bold.underline} : Execution type not handled`.red);
+					console.log(`${slaveName.bold.underline} : Not booting`.red);
 				}
 			} else {
-				console.log(`${slaveName.bold.underline} : Not booting`.red);
+				console.log(`${slaveName.bold.underline} : Execution type not handled`.red);
 			}
 		} else {
 			console.log(`${slaveName.bold.underline} : Not in creating or testing maps`.red);
@@ -116,46 +200,6 @@ let slaveConnected = (slaveClient, slaveName) => {
 		console.log(`${slaveName.bold.underline} : Not disconnected`);
 	}
 	socketServerFunc.emitAPIStatusUpdate();
-
-	// if(slavesToDelete.has(slaveName)){
-	// 	slaveClient.disconnect();
-	// 	let apiId = slavesToDelete.get(slaveName).api.id;
-	// 	let server = APIStatusFunc.getServer(apiId, slaveName);
-	// 	GCPFunc.deleteVM(server.zone, slaveName);
-	// }else if (masterHandledSlaves.has(slaveName)) {
-	// 	console.log(slaveName + " MASTERHANDLED");
-	// 	//TODO Launch individual tests depending of its progression
-	// 	if (slavesCreating.has(slaveName)) {
-	// 		//TODO It's the first boot of the slave, launch the first test
-	// 		console.log(slaveName + " part of creating servers");
-	// 		let api = APIStatusFunc.getAPI(masterHandledSlaves.get(slaveName));
-	// 		let testType = latencySlaves.has(slaveName) ? "latency" : uptimeSlaves.has(slaveName) ? "uptime" : "";
-	// 		console.log('Test type will be ' + testType + '.');
-	// 		APIStatusFunc.initializeServerState(api.id, slaveName, testType, "masterHandled");
-	// 		slaveClient.emit('masterHandledTest', {api: api, testType: testType});
-	// 		slavesCreating.delete(slaveName);
-	// 		slavesTesting.set(slaveName, api.id);
-	// 	} else if (slavesTesting.has(slaveName)) {
-	// 		//TODO Not its first test, it booted up after a certain amount of time (span)
-	// 		let api = APIStatusFunc.getAPI(masterHandledSlaves.get(slaveName));
-	// 		let testType = latencySlaves.has(slaveName) ? "latency" : uptimeSlaves.has(slaveName) ? "uptime" : "";
-	// 		slaveClient.emit('masterHandledTest', {api: api, testType: testType})
-	// 	}
-	// } else if (slaveHandledSlaves.has(slaveName)) {
-	// 	console.log(slaveName + " SLAVEHANDLED");
-	// 	//TODO Launch the whole load of test
-	// 	if (slavesCreating.has(slaveName)) {
-	// 		//TODO The only state of boot that can happen
-	// 		let api = APIStatusFunc.getAPI(slaveHandledSlaves.get(slaveName));
-	// 		let testType = latencySlaves.has(slaveName) ? "latency" : uptimeSlaves.has(slaveName) ? "uptime" : "";
-	// 		APIStatusFunc.initializeServerState(api.id, slaveName, testType, "slaveHandled");
-	// 		slaveClient.emit('slaveHandledTest', {api: api, testType: testType});
-	// 		slavesCreating.delete(slaveName);
-	// 		slavesTesting.set(slaveName, api.id);
-	// 	} else if (slavesTesting.has(slaveName)) {
-	// 		//TODO If it was a testing slave, it is because the connection crashed between these two;
-	// 	}
-	// }
 };
 
 let deleteSlave = (slaveName) => {
@@ -176,6 +220,7 @@ let slaveDisconnected = (slaveClient, slaveName, slaveCallback) => {
 			slavesDisconnected.delete(slaveName);
 		} else if (slavesTesting.has(slaveName)) {
 			reason = "unwantedDisconnection";
+			APIStatusFunc.applyFunctionToOneServer(slavesTesting.get(slaveName), slaveName, server => server.status = 'Disconnected. Trying to reconnected...');
 			slavesDisconnected.set(slaveName, slavesTesting.get(slaveName));
 		} else if (slavesCompleted.has(slaveName)) {
 			console.log(`${slaveName.bold.underline} : Completed all tests and needs to be deleted`);
@@ -186,7 +231,6 @@ let slaveDisconnected = (slaveClient, slaveName, slaveCallback) => {
 		socketServerFunc.emitAPIStatusUpdate();
 		slaveCallback(reason);
 	});
-
 	slaveClient.on('consoleMessage', data => console.log(data.green));
 };
 
@@ -229,6 +273,7 @@ let rebootTheVM = (apiId, slaveName) => {
 	setTimeout(() => {
 		slavesWaiting.delete(slaveName);
 		slavesBooting.set(slaveName, apiId);
+		APIStatusFunc.applyFunctionToOneServer(apiId, slaveName, server => server.substate = 'booting');
 		GCPFunc.turnVM(true, server.zone, slaveName);
 	}, millisecondsIntervalUntilNextRepetition);
 	console.log(`${slaveName.bold.underline} : Restarting in ${millisecondsIntervalUntilNextRepetition / 60000} minutes`);
@@ -238,9 +283,13 @@ let rebootTheVM = (apiId, slaveName) => {
 let repetitionFinishedFor = (slaveClient, slaveName, apiId) => {
 	if (APIStatusFunc.isLastTest(apiId, slaveName)) {
 		console.log(`${slaveName.bold.underline} : It was last repetition.`);
-		APIStatusFunc.applyFunctionToOneServer(apiId, slaveName, server => server.status = "Test completed.");
+		APIStatusFunc.applyFunctionToOneServer(apiId, slaveName, server => {
+			server.status = "Test completed.";
+			server.repetitionsRemaining = 0;
+		});
 		slavesToDelete.set(slaveName, apiId);
 		slavesCompleted.set(slaveName, apiId);
+		APIStatusFunc.applyFunctionToOneServer(apiId, slaveName, server => server.state = 'completed');
 		slaveClient.disconnect();
 	} else {
 		APIStatusFunc.applyFunctionToOneServer(apiId, slaveName, server => {
@@ -277,6 +326,7 @@ let slaveTesting = (slaveClient, slaveName) => {
 				if (masterHandledSlaves.has(slaveName)) {
 					slavesRecording.delete(slaveName);
 					slavesWaiting.set(slaveName, apiId);
+					APIStatusFunc.applyFunctionToOneServer(apiId, slaveName, server => server.substate = 'waiting');
 				}
 			} else {
 				console.log(`${slaveName.bold.underline} : Not recording`.red);
@@ -291,5 +341,6 @@ module.exports = {
 	slaveConnected: slaveConnected,
 	updateMapsWithAPIStatus: updateMapsWithAPIStatus,
 	slaveDisconnected: slaveDisconnected,
-	slaveTesting: slaveTesting
+	slaveTesting: slaveTesting,
+	addSlaveToMaps: addSlaveToMaps
 };
