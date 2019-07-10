@@ -79,14 +79,13 @@ let singleUptimeTest = async (socketClient, api) => {
 	results.totalProgress = api.testConfig.uptime.repetitions;
 	try {
 		let res = await nodefetch('http://' + api.name, {method: 'OPTIONS'});
-		console.log(res);
 		results.up = parseInt(res.status) < 500;
 	} catch (e) {
 		results.up = false;
 	}
 	results.date = DateTime.fromJSDate(new Date()).toISO();
 	console.log('Message sent to Master : ' + results.up + ' at ' + results.date.valueOf());
-	sendDataToMaster(socketClient, 'record', results);
+	sendMessageFunction('record', results);
 };
 
 let multipleTests = async (socketClient, api, testType) => {
