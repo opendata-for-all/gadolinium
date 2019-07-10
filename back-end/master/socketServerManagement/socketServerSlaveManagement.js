@@ -284,63 +284,6 @@ let slaveTesting = (slaveClient, slaveName) => {
 		} else {
 			console.log(`${slaveName.bold.underline} : Not testing`.red);
 		}
-		// let apiId = obj.apiId;
-		// if (masterHandledSlaves.has(slaveName)) {
-		// 	console.log(slaveName + 'as a masterHandled slave');
-		// 	if (slavesTesting.has(slaveName)) {
-		// 		console.log('Repetition finished for ' + slaveName);
-		// 		if (APIStatusFunc.isLastTest(apiId, slaveName)) {
-		// 			console.log('It was last test for ' + slaveName);
-		// 			//It was the last test, so it is time to delete the slave VM.
-		// 			slaveClient.emit('masterHandledMessage', 'It was last test');
-		// 			slaveClient.disconnect();
-		// 			slavesTesting.delete(slaveName);
-		// 			APIStatusFunc.terminateServer(apiId, slaveName);
-		// 		} else {
-		// 			//It is not the last test, so launch a counter of the correct duration to launch the next test
-		// 			APIStatusFunc.applyFunctionToOneServer(apiId, slaveName, server => {
-		// 				server.repetitionsRemaining--;
-		// 				console.log('Tests remaining for ' + slaveName + ' : ' + server.repetitionsRemaining);
-		// 			});
-		// 			let server = APIStatusFunc.getServer(apiId, slaveName);
-		// 			let interval;
-		// 			slaveClient.emit('masterHandledMessage', 'At this time, slave should be turned off');
-		// 			if (latencySlaves.has(slaveName)) {
-		// 				interval = APIStatusFunc.getLatencyInterval(apiId);
-		// 			} else if (uptimeSlaves.has(slaveName)) {
-		// 				interval = APIStatusFunc.getUptimeInterval(apiId);
-		// 			}
-		// 			GCPFunc.turnVM(false, server.zone, server.name);
-		// 			setTimeout(() => {
-		// 				GCPFunc.turnVM(true, server.zone, server.name);
-		// 			}, interval);
-		// 			console.log("Slave " + slaveName + " restarting in " + interval / 60000 + ' minutes');
-		// 		}
-		// 	}
-		// } else if (slaveHandledSlaves.has(slaveName)) {
-		// 	console.log(slaveName + ' as a slaveHandled slave');
-		// 	if (APIStatusFunc.isLastTest(apiId, slaveName)) {
-		// 		console.log('It was last test for ' + slaveName);
-		// 		//It was the last test, so it is time to delete the slave VM.
-		// 		console.log('Test completed for ' + slaveName);
-		// 		slavesTesting.delete(slaveName);
-		// 		APIStatusFunc.terminateServer(apiId, slaveName);
-		// 	} else {
-		// 		let interval;
-		// 		//It is not the last test, so launch a counter of the correct duration to launch the next test
-		// 		APIStatusFunc.applyFunctionToOneServer(apiId, slaveName, server => {
-		// 			server.repetitionsRemaining--;
-		// 			console.log(server);
-		// 		});
-		// 		if (latencySlaves.has(slaveName)) {
-		// 			interval = APIStatusFunc.getLatencyInterval(apiId);
-		// 		} else if (uptimeSlaves.has(slaveName)) {
-		// 			interval = APIStatusFunc.getUptimeInterval(apiId);
-		// 		}
-		// 		slaveClient.emit('slaveHandledMessage', 'At this time, slave should continue himself to test after the interval');
-		// 		console.log("Slave " + slaveName + " restarting in " + interval / 60000 + ' minutes');
-		// 	}
-		// }
 	});
 };
 
