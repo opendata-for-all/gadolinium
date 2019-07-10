@@ -147,6 +147,8 @@ let createServerInstance = (config, apiId, testType, executionType) => {
 			zone: zoneName,
 			location: gcpServerList[server].location,
 			status: "Creating VM...",
+			state: 'creating',
+			substate: 'waiting',
 			progress: 1,
 			totalProgress: 1,
 			repetitionsRemaining: config.repetitions
