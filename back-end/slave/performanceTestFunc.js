@@ -15,7 +15,6 @@ let individualRequestLatencyTest = async (httpRequest, requestPerSecond, maxRequ
 			if (error) {
 				return console.error('Got an error: %s', error);
 			}
-			console.log(result);
 			let latencyRecord = {
 				date: DateTime.fromJSDate(new Date()).toISO()
 			};
@@ -53,11 +52,7 @@ let createOpenAPIExtensionObject = (httpRequest) => {
 	httpRequest.test.meanLatency = null;
 };
 
-let sendDataToMaster = (socketClient, channel, data) => {
-	socketClient.emit(channel, data);
-};
-
-let singleLatencyTest = async (socketClient, api) => {
+let singleLatencyTest = async (sendMessageFunction, api) => {
 	let results = {};
 	results.apiId = api.id;
 	results.progress = 0;
@@ -67,12 +62,13 @@ let singleLatencyTest = async (socketClient, api) => {
 		createOpenAPIExtensionObject(httpRequest);
 		results.testResults = await individualRequestLatencyTest(httpRequest, 0.5, 1, api.testConfig.latency.timeoutThreshold);
 		results.progress++;
-		sendDataToMaster(socketClient, 'record', results);
+		sendMessageFunction('record', results);
 		results.httpRequestIndex++;
 	}
+				sendMessageFunction('repetition', {apiId: api.id});
 };
 
-let singleUptimeTest = async (socketClient, api) => {
+let singleUptimeTest = async (sendMessageFunction, api) => {
 	let results = {};
 	results.apiId = api.id;
 	results.progress = 1;
@@ -88,26 +84,24 @@ let singleUptimeTest = async (socketClient, api) => {
 	sendMessageFunction('record', results);
 };
 
-let multipleTests = async (socketClient, api, testType) => {
+let multipleTests = async (sendMessageFunction, api, testType) => {
 	let repetitions = parseInt(api.testConfig[testType].repetitions);
 	console.log(repetitions);
 	if (repetitions === 1) {
-		await module.exports[testType].singleTest(socketClient, api);
-		socketClient.emit('repetition', {apiId: api.id});
+		await module.exports[testType].singleTest(sendMessageFunction, api);
+		sendMessageFunction('repetition', {apiId: api.id});
 	} else {
 		let intervalVal = Duration.fromISO(api.testConfig[testType].interval.iso8601format).valueOf();
 		for (let i = 0; i < repetitions; i++) {
 			if (i === 0) {
-				await module.exports[testType].singleTest(socketClient, api);
-				socketClient.emit('repetition', {apiId: api.id});
+				module.exports[testType].singleTest(sendMessageFunction, api);
 				console.log("Slave will restart testing in " + intervalVal / 60000);
 			} else {
 				setTimeout(async () => {
-					await module.exports[testType].singleTest(socketClient, api);
-					socketClient.emit('repetition', {apiId: api.id});
+					module.exports[testType].singleTest(sendMessageFunction, api);
 					console.log("Slave will restart testing in " + intervalVal / 60000);
 				}, intervalVal * (i + 1));
-				socketClient.emit('consoleMessage', `Timer created for in ${intervalVal * (i + 1)}`)
+				sendMessageFunction('consoleMessage', `Timer created for in ${intervalVal * (i + 1)}`)
 			}
 		}
 	}
