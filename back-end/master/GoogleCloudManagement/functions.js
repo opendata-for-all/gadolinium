@@ -73,7 +73,6 @@ const turnVM = async (on, zone, vmName) => {
 			errors: e.errors
 		};
 	}
-
 };
 
 const setBootUpScript = async (zone, vmName) => {

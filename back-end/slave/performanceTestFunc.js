@@ -44,7 +44,6 @@ let individualRequestLatencyTest = async (httpRequest, requestPerSecond, maxRequ
 };
 
 let createOpenAPIExtensionObject = (httpRequest) => {
-	//TODO OPEN API EXTENSION PROPOSAL
 	httpRequest.test = {};
 	httpRequest.test.latencyRecords = [];
 	httpRequest.test.totalTest = 1;
@@ -65,7 +64,7 @@ let singleLatencyTest = async (sendMessageFunction, api) => {
 		sendMessageFunction('record', results);
 		results.httpRequestIndex++;
 	}
-				sendMessageFunction('repetition', {apiId: api.id});
+	sendMessageFunction('repetition', {apiId: api.id});
 };
 
 let singleUptimeTest = async (sendMessageFunction, api) => {
@@ -101,7 +100,6 @@ let multipleTests = async (sendMessageFunction, api, testType) => {
 					module.exports[testType].singleTest(sendMessageFunction, api);
 					console.log("Slave will restart testing in " + intervalVal / 60000);
 				}, intervalVal * (i + 1));
-				sendMessageFunction('consoleMessage', `Timer created for in ${intervalVal * (i + 1)}`)
 			}
 		}
 	}

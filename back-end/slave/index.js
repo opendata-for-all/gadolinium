@@ -27,8 +27,6 @@ let sendMessage = (messageType, message) => {
 	} else {
 		pendingMessagesForSocket.set(pendingMessagesForSocket.size + 1, {messageType, message});
 	}
-	console.log('Content of the map'.underline);
-	console.log(pendingMessagesForSocket);
 };
 
 socket.on('reconnection', () => {
@@ -37,8 +35,6 @@ socket.on('reconnection', () => {
 		pendingMessagesForSocket.delete(key);
 		socket.emit(val.messageType, val.message);
 	});
-	console.log('Content of the map'.underline);
-	console.log(pendingMessagesForSocket);
 });
 
 socket.on('connect', () => {

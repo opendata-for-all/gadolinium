@@ -4,13 +4,7 @@ let socketServerFunc = require('./socketServerCreationAndConnection');
 let socketServerSlaveManagement = require('./socketServerSlaveManagement');
 
 let onAPIStatus = (webClient) => {
-	webClient.on('APIStatus', (callback) => { //TODO In test
-		callback(APIStatus.getAPIStatus());
-	});
-};
-
-let createNewAPITestRequest = (webClient) => {
-	webClient.on('newAPITest', (callback) => { //TODO In test
+	webClient.on('APIStatus', (callback) => {
 		callback(APIStatus.getAPIStatus());
 	});
 };
@@ -95,7 +89,7 @@ let createOpenApiTestConfiguration = (webclient) => {
 	webclient.on('openApiTestConfig', data => {
 		APIStatusFunc.addOpenApiTestConfigToApi(data.apiId, data.config);
 		APIStatusFunc.createServerInstanceFromOpenApiTestConfig(data.apiId);
-		socketServerSlaveManagement.updateMapsWithAPIStatus();
+		socketServerSlaveManagement.addNewOpenAPIConfigSlavesToMaps(data.apiId);
 		socketServerFunc.emitAPIStatusUpdate();
 	})
 };
