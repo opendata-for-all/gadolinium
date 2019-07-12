@@ -45,7 +45,6 @@ let createOpenAPIJSONEndpoint = (app) => {
 			newApi.host = openAPIJSON.host;
 			newApi.httpRequests = httpRequest;
 			let newApiId = await APIStatusFunc.addApi(newApi);
-			socketSlaveManagement.updateMapsWithAPIStatus();
 			socketFunc.emitAPIStatusUpdate();
 			res.status(200).send({
 				message: "The file is correct",

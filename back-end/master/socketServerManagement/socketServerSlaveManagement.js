@@ -72,8 +72,28 @@ let updateMapsWithAPIStatus = () => {
 	})
 };
 
-let addSlaveToMaps = (apiId, slaveName) => {
-
+let addNewOpenAPIConfigSlavesToMaps = (apiId) => {
+	let api = APIStatusFunc.getAPI(apiId);
+	api.servers.forEach((server) => {
+		slavesCreating.set(server.name, apiId);
+		slavesDisconnected.set(server.name, api.id);
+		switch (server.executionType) {
+			case 'masterHandled':
+				masterHandledSlaves.set(server.name, api.id);
+				break;
+			case 'slaveHandled' :
+				slaveHandledSlaves.set(server.name, api.id);
+				break;
+		}
+		switch (server.testType) {
+			case 'latency' :
+				latencySlaves.set(server.name, api.id);
+				break;
+			case 'uptime':
+				uptimeSlaves.set(server.name, api.id);
+				break;
+		}
+	});
 };
 
 let getFirstDateTimeRecordFromAServer = (apiId, server) => {
@@ -121,7 +141,6 @@ let restartTimerToRebootVM = (apiId, slaveName) => {
 	} else {
 		APIStatusFunc.applyFunctionToOneServer(apiId, slaveName, (server) => server.status = "Test failed, please delete this configuration and create a new one.")
 	}
-
 };
 
 let getTestTypeOfSlave = (slaveName) => {
@@ -134,7 +153,6 @@ let getExecutionTypeOfSlave = (slaveName) => {
 
 let slaveConnectedForTheFirstTime = (slaveClient, slaveName) => {
 	console.log(`${slaveName.bold.underline} : Connected for the first time`);
-
 	let api = APIStatusFunc.getAPI(slavesCreating.get(slaveName));
 	let testType = getTestTypeOfSlave(slaveName);
 	let executionType = getExecutionTypeOfSlave(slaveName);
@@ -342,5 +360,5 @@ module.exports = {
 	updateMapsWithAPIStatus: updateMapsWithAPIStatus,
 	slaveDisconnected: slaveDisconnected,
 	slaveTesting: slaveTesting,
-	addSlaveToMaps: addSlaveToMaps
+	addNewOpenAPIConfigSlavesToMaps: addNewOpenAPIConfigSlavesToMaps
 };
