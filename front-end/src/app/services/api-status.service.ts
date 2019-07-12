@@ -87,7 +87,7 @@ export class APIStatusService {
     this.selectedApiSource.next(null);
     this.selectedApiId = null;
     this.socket.emit('deleteApi', apiId);
-    this.testResultsService.apiSelected(this.selectedApi);
+    this.testResultsService.apiSelected(null);
     console.log('OpenAPI deleted');
   }
 

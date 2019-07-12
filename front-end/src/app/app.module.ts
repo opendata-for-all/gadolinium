@@ -29,6 +29,7 @@ import {LatencyOperationsTimeByZonesComponent} from './charts/latency-chart/late
 import {LatencyTimeByOperationsOverTimeComponent} from './charts/latency-chart/latency-time-by-operations-over-time/latency-time-by-operations-over-time.component';
 import {LatencyTimeByZonesOverTimeComponent} from './charts/latency-chart/latency-time-by-zones-over-time/latency-time-by-zones-over-time.component';
 import {ServerConfig} from './serverConfig';
+import { DurationPipe } from './duration.pipe';
 
 const config: SocketIoConfig = {
   // url: 'localhost:8080', options: {
@@ -60,6 +61,7 @@ const config: SocketIoConfig = {
     LatencyOperationsTimeByZonesComponent,
     LatencyTimeByOperationsOverTimeComponent,
     LatencyTimeByZonesOverTimeComponent,
+    DurationPipe,
   ],
   imports: [
     SocketIoModule.forRoot(config),

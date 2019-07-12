@@ -1,3 +1,11 @@
+.list-group(*ngIf="selectedApi!==null && selectedApi.testConfig.latency.zones.length > 0")
+  .list-group-item.list-group-item-success
+    .col
+      .row Period of testing
+      .row Interval between tests : {{ selectedApi.testConfig.latency.interval.iso8601format | duration }}
+      .row Number of repetitions : {{selectedApi.testConfig.latency.repetitions}}
+      .row Total duration : {{totalTestDuration | duration}}
+      .row From {{testStartingDate |  date:'short'}} to {{testEndingDate | date:'short'}}
 ngb-tabset([hidden]="!latencyResultsService.testHasStarted",[justify]="'fill'", [destroyOnHide]="false")
   ngb-tab(title="Latency time by operations")
     ng-template(ngbTabContent)
@@ -11,3 +19,9 @@ ngb-tabset([hidden]="!latencyResultsService.testHasStarted",[justify]="'fill'", 
 div.align-self-center([hidden]="latencyResultsService.testHasStarted")
   .list-group-item.list-group-item-warning
     | Test haven't started yet, no results to show.
+.container(*ngIf="selectedApi!==null && selectedApi.testConfig.latency.zones.length > 0")
+  .row.justify-content-center(*ngIf="dataDisplayingIntervalOptions.length > 1")
+    .btn-group.btn-group-toggle(*ngFor="let option of dataDisplayingIntervalOptions" ngbRadioGroup='', name='radioBasic', [(ngModel)]='selectedDataDisplayingInterval')
+      label.btn-primary(ngbButtonLabel='')
+        input(ngbButton='', type='radio', [value]='option', (click)="selectedDataDisplayingIntervalChanged(option)" )
+        |  {{option}}

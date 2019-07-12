@@ -39,6 +39,15 @@ export class LatencyResultsService {
   private meanOfRequestsByZones: any;
   private regionOfRequestsError: any;
 
+  private testStartingDate: DateTime;
+  private testStartingDateSub: Subject<DateTime> = new Subject();
+  $testStartingDate = this.testStartingDateSub.asObservable();
+  private testEndingDate: DateTime;
+  private testEndingDateSub: Subject<DateTime> = new Subject();
+  $testEndingDate = this.testEndingDateSub.asObservable();
+  private dataDisplayingIntervalOptionsSub: Subject<string[]> = new Subject();
+  $dataDisplayingIntervalOptions = this.dataDisplayingIntervalOptionsSub.asObservable();
+
   constructor(
     private testResultsService: TestResultsService
   ) {
@@ -55,8 +64,8 @@ export class LatencyResultsService {
 
   private subscriptions() {
     this.testResultsService.$rawLatencyResults.subscribe(data => {
-      this.latencyTestConfig = data.api.testConfig.latency;
-      if (!this.selectedApi || this.selectedApi.id !== data.api.id) {
+      if (data.api && (!this.selectedApi || this.selectedApi.id !== data.api.id)) {
+        this.latencyTestConfig = data.api.testConfig.latency;
         this.rawLatencyResults = data.rawLatencyResults;
         this.selectedApi = data.api;
         this.testHasStarted = this.hasLatencyTestStarted();
@@ -68,13 +77,16 @@ export class LatencyResultsService {
       }
     });
     this.testResultsService.$newLatencyTestResultSub.subscribe(newTest => {
-      console.log(newTest);
-      this.testHasStarted = true;
-      this.updateAllResultData(newTest);
+      if (this.testHasStarted) {
+        this.updateAllResultData(newTest);
+      } else {
+        this.testHasStarted = true;
+        this.initializeAllResultData();
+        this.updateAllResultData(newTest);
+      }
     });
     this.$dataDisplayingSelection.subscribe(newOption => {
       if (this.selectedDataDisplayingInterval !== newOption) {
-        console.log(newOption);
         this.selectedDataDisplayingInterval = newOption;
         this.initializeMeanOfRequestsByZonesAndMeanOfAllRequests();
         this.initializeMeanOfRequestsByOperations();
@@ -93,8 +105,8 @@ export class LatencyResultsService {
       this.minimumDataDisplayingInterval = this.getMinimumDataDisplayingInterval();
       this.maximumDataDisplayingInterval = this.getMaximumDataDisplayingInterval();
       this.selectedDataDisplayingInterval = this.minimumDataDisplayingInterval;
-      this.dataDisplayingIntervalOptions = this.getDataDisplayingIntervalOptions();
-      console.log(this.dataDisplayingIntervalOptions);
+      this.setDataDisplayingIntervalOptions();
+      this.setStartingAndEndingTestDate();
 
       this.initializeMeanOfRequestsByZonesAndMeanOfAllRequests();
       this.initializeMeanOfRequestsByOperations();
@@ -106,11 +118,13 @@ export class LatencyResultsService {
       this.initializeOperationTimeByZoneResults();
       this.initializeTimeOperationOverTimeResults();
       this.initializeTimeZoneOverTimeResults();
+
     } else {
       this.minimumDataDisplayingInterval = this.getMinimumDataDisplayingInterval();
       this.maximumDataDisplayingInterval = this.getMaximumDataDisplayingInterval();
       this.selectedDataDisplayingInterval = this.minimumDataDisplayingInterval;
-      this.dataDisplayingIntervalOptions = this.getDataDisplayingIntervalOptions();
+      this.setDataDisplayingIntervalOptions();
+      this.setStartingAndEndingTestDate();
 
       this.timeOperationOverTimeData = [];
       this.timeOperationOverTimeAxis = '';
@@ -183,14 +197,12 @@ export class LatencyResultsService {
   private initializeOperationTimeByZoneData() {
     this.operationTimeByZoneData = [];
     this.selectedApi.servers.map(server => {
-      if (server.testType === 'latency' && server.status !== 'Creating VM...') {
+      if (server.testType === 'latency') {
         return this.operationTimeByZoneData.push([server.region,
             ...this.selectedApi.httpRequests
-              .filter(httpRequest => httpRequest.testResults)
+              .filter(httpRequest => httpRequest.testResults && httpRequest.testResults[server.name])
               .map(httpRequest => {
-                if (httpRequest.testResults[server.name]) {
-                  return httpRequest.testResults[server.name].meanLatency;
-                }
+                return httpRequest.testResults[server.name].meanLatency;
               })
           ]
         );
@@ -284,6 +296,7 @@ export class LatencyResultsService {
     this.updateOperationTimeByZoneResults(newTest);
     this.updateTimeOperationOverTimeResults(newTest);
     this.updateTimeZoneOverTimeResults(newTest);
+    this.setStartingAndEndingTestDate();
   }
 
   private updateOperationTimeByZoneResults(newTest) {
@@ -449,7 +462,6 @@ export class LatencyResultsService {
 
   private getMinimumDataDisplayingInterval() {
     let interval = Duration.fromISO(this.latencyTestConfig.interval.iso8601format).normalize();
-    console.log(interval.as('hours'));
     if (interval.as('years') > 1) {
       return 'year';
     } else if (interval.as('months') > 1) {
@@ -463,7 +475,6 @@ export class LatencyResultsService {
 
   private getMaximumDataDisplayingInterval() {
     let interval = Duration.fromMillis(Duration.fromISO(this.latencyTestConfig.interval.iso8601format).valueOf() * this.latencyTestConfig.repetitions).normalize();
-    console.log(interval.as('hours'));
     if (interval.as('years') > 1) {
       return 'year';
     } else if (interval.as('months') > 1) {
@@ -477,7 +488,7 @@ export class LatencyResultsService {
     }
   }
 
-  private getDataDisplayingIntervalOptions(): string[] {
+  private setDataDisplayingIntervalOptions() {
     let options = ['minute', 'hour', 'day', 'month', 'year'];
     let takeItOrNot = false;
     let result = [];
@@ -492,7 +503,8 @@ export class LatencyResultsService {
         takeItOrNot = false;
       }
     });
-    return result;
+    this.dataDisplayingIntervalOptions = result;
+    this.dataDisplayingIntervalOptionsSub.next(this.dataDisplayingIntervalOptions);
 
   }
 
@@ -539,5 +551,20 @@ export class LatencyResultsService {
     } else {
       this.meanOfAllRequests[transformedDate] = {value: newTest.newRecord.latencyMs, count: 1};
     }
+  }
+
+  private setStartingAndEndingTestDate() {
+    if (this.testHasStarted) {
+      console.log(this.selectedApi);
+      let allDates = [];
+      this.selectedApi.httpRequests.filter(httpRequest => httpRequest.testResults).forEach(httpRequest => {
+        // @ts-ignore
+        Object.values(httpRequest.testResults).forEach(serverResult => serverResult.latencyRecords.forEach(record => allDates.push(DateTime.fromISO(record.date))));
+      });
+      this.testEndingDateSub.next(DateTime.max(...allDates));
+      this.testStartingDateSub.next(DateTime.min(...allDates));
+    }
+    // this.testStartingDateSub.next(DateTime.min(...this.singleProgressBars.filter(server => server.availability !== 'Test hasn\'t started yet').map(pg => DateTime.fromISO(pg.records[0].startDate))));
+    // this.testEndingDateSub.next(DateTime.max(...this.singleProgressBars.filter(server => server.availability !== 'Test hasn\'t started yet').map(pg => DateTime.fromISO(pg.records[pg.records.length - 1].endDate))));
   }
 }

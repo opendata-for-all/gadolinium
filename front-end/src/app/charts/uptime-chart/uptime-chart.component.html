@@ -1,15 +1,1 @@
-<ngb-tabset [destroyOnHide]="false" [hidden]="!uptimeResultsService.testHasStarted" [justify]="'fill'">
-  <ngb-tab title="Global">
-    <ng-template ngbTabContent="ngbTabContent">
-      <app-uptime-donut-chart></app-uptime-donut-chart>
-    </ng-template>
-  </ngb-tab>
-  <ngb-tab title="Per zone">
-    <ng-template ngbTabContent="ngbTabContent">
-      <app-uptime-multipart-progress-bar></app-uptime-multipart-progress-bar>
-    </ng-template>
-  </ngb-tab>
-</ngb-tabset>
-<div [hidden]="uptimeResultsService.testHasStarted" class="align-self-center">
-  <div class="list-group-item list-group-item-warning">Test haven't started yet, no results to show.</div>
-</div>
+<div class="list-group" *ngIf="selectedApi!==null &amp;&amp; selectedApi.testConfig.uptime.zones.length &gt; 0"><div class="list-group-item list-group-item-success"><div class="col"><div class="row">Period of testing</div><div class="row">Interval between tests : {{ selectedApi.testConfig.uptime.interval.iso8601format | duration }}</div><div class="row">Number of repetitions : {{selectedApi.testConfig.uptime.repetitions}}</div><div class="row">Total duration : {{totalTestDuration | duration}}</div><div class="row">From {{testStartingDate |  date:'short'}} to {{testEndingDate | date:'short'}}</div></div></div></div><ngb-tabset [hidden]="!uptimeResultsService.testHasStarted" [justify]="'fill'" [destroyOnHide]="false"><ngb-tab title="Global"><ng-template ngbTabContent="ngbTabContent"><app-uptime-donut-chart></app-uptime-donut-chart></ng-template></ngb-tab><ngb-tab title="Per zone"><ng-template ngbTabContent="ngbTabContent"><app-uptime-multipart-progress-bar></app-uptime-multipart-progress-bar></ng-template></ngb-tab></ngb-tabset><div class="align-self-center" [hidden]="uptimeResultsService.testHasStarted"><div class="list-group-item list-group-item-warning">Test haven't started yet, no results to show.</div></div>

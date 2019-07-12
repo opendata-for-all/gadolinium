@@ -5,7 +5,7 @@ import {Subscription} from 'rxjs';
 import {APIStatusService} from '../../../services/api-status.service';
 import {UptimeResultsService} from '../../../services/uptime-results.service';
 import {ProgressBarData} from '../../../models/TestResult';
-import {DateTime} from 'luxon';
+import {DateTime, Duration} from 'luxon';
 
 @Component({
   selector: 'app-uptime-multipart-progress-bar',
@@ -21,11 +21,9 @@ export class UptimeMultipartProgressBarComponent implements OnInit, OnDestroy {
   private singleProgressBars: any[];
   private groupedProgressBar: any[];
   private totalTestDuration: string;
-  private testDuration: string;
   private testStartingDate: DateTime;
   private testEndingDate: DateTime;
   private hasTestStarted: boolean;
-  private hasTestFinished: boolean;
   private multipartProgressBarDataSub: Subscription;
 
   constructor(
@@ -46,9 +44,9 @@ export class UptimeMultipartProgressBarComponent implements OnInit, OnDestroy {
 
   private subscriptions() {
     this.multipartProgressBarDataSub = this.uptimeResultsService.$multipartProgressBarData.subscribe((data: ProgressBarData) => {
-      console.log(data);
       this.selectedApi = data.api;
       if (this.selectedApi) {
+        console.log(data);
         this.setTestInformations(data);
         this.setProgressBars(data);
       }
@@ -62,7 +60,6 @@ export class UptimeMultipartProgressBarComponent implements OnInit, OnDestroy {
     this.singleProgressBars = [];
     this.singleProgressBars = [];
     this.hasTestStarted = false;
-    this.hasTestFinished = false;
   }
 
   private setProgressBars(data: ProgressBarData) {
@@ -74,8 +71,8 @@ export class UptimeMultipartProgressBarComponent implements OnInit, OnDestroy {
     this.uptimeTestConfig = data.uptimeTestConfig;
     this.testStartingDate = data.testStartingDate;
     this.testEndingDate = data.testEndingDate;
+    this.totalTestDuration = Duration.fromMillis(this.uptimeTestConfig.repetitions * Duration.fromISO(this.uptimeTestConfig.interval.iso8601format).valueOf()).toISO();
     this.progressPartWidth = 100 / data.api.testConfig.uptime.repetitions;
     this.hasTestStarted = (Object.keys(data.api.uptimeResults).length > 0);
-    this.hasTestFinished = data.api.servers.filter(server => server.testType === 'uptime').every(server => server.progress === server.totalProgress);
   }
 }

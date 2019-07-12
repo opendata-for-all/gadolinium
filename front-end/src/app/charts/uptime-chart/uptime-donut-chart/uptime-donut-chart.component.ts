@@ -33,7 +33,7 @@ export class UptimeDonutChartComponent implements OnDestroy {
 
   private subscriptions() {
     this.uptimeResultsSub = this.uptimeResultsService.$donutChartData.subscribe(data => {
-      if (this.selectedApi && (this.selectedApi.id === data.api.id)) {
+      if (data.api && (this.selectedApi && (this.selectedApi.id === data.api.id))) {
         this.updateChart(data.chartData);
       } else {
         this.selectedApi = data.api;

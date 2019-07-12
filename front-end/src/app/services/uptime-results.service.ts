@@ -26,7 +26,11 @@ export class UptimeResultsService {
   private singleProgressBars: any[];
   private groupedProgressBar: any[];
   private testStartingDate: DateTime;
+  private testStartingDateSub: Subject<DateTime> = new Subject();
+  $testStartingDate = this.testStartingDateSub.asObservable();
   private testEndingDate: DateTime;
+  private testEndingDateSub: Subject<DateTime> = new Subject();
+  $testEndingDate = this.testEndingDateSub.asObservable();
 
 
   constructor(
@@ -45,28 +49,42 @@ export class UptimeResultsService {
 
   private subscriptions() {
     this.testResultsService.$rawUptimeResults.subscribe(data => {
-      this.uptimeTestConfig = data.api.testConfig.uptime;
-      if (!this.selectedApi || this.selectedApi.id !== data.api.id) {
+      if (data.api && (!this.selectedApi || this.selectedApi.id !== data.api.id)) {
+        this.uptimeTestConfig = data.api.testConfig.uptime;
         this.rawUptimeResults = data.rawUptimeResults;
         this.selectedApi = data.api;
         this.testHasStarted = this.hasUptimeTestStarted();
+        this.initializeAllResultData();
+      } else if (!data.api) {
+        this.selectedApi = data.api;
+        this.testHasStarted = false;
         this.initializeAllResultData();
       }
       this.selectedApi = data.api;
     });
     this.testResultsService.$newUptimeTestResultSub.subscribe(newTest => {
-      this.testHasStarted = true;
-      this.updateAllResultData(newTest);
+      if (this.testHasStarted) {
+        this.updateAllResultData(newTest);
+      } else {
+        this.testHasStarted = true;
+        this.initializeAllResultData();
+        this.updateAllResultData(newTest);
+      }
     });
   }
 
   private initializeAllResultData() {
-    // this.testHasStarted = this.hasTestStarted();
-    // this.testHasStartedSub.next(this.testHasStarted);
-    // if(this.testHasStarted){
-    this.initializeDonutData();
-    this.donutChartDataSub.next({api: this.selectedApi, chartData: this.donutChartData});
-    this.initializeProgressBars();
+    if (this.selectedApi) {
+      this.initializeDonutData();
+      this.donutChartDataSub.next({api: this.selectedApi, chartData: this.donutChartData});
+      this.initializeProgressBars();
+    } else {
+      this.singleProgressBars = [];
+      this.groupedProgressBar = [];
+      this.testEndingDate = null;
+      this.testStartingDate = null;
+      this.uptimeTestConfig = null;
+    }
     this.multipartProgressBarDataSub.next({
       api: this.selectedApi,
       singleProgressBars: this.singleProgressBars,
@@ -93,7 +111,6 @@ export class UptimeResultsService {
         if (this.selectedApi.servers.find(server => server.name === serverName).status !== 'Creating VM...') {
           // let serverName = Object.keys(this.uptimeResults)[i];
           let availability = (this.selectedApi.uptimeResults[serverName].filter((record) => record.state).length / this.selectedApi.uptimeResults[serverName].length * 100).toFixed(2);
-
           let progressBarServer = {
             location: serverLocation,
             name: serverName,
@@ -119,7 +136,7 @@ export class UptimeResultsService {
                   });
                   state = !state;
                   startDate = records[j].date;
-                  stateLength = 0;
+                  stateLength = 1;
                 }
                 if (j === records.length - 1) {
                   let endDate = records[j].date;
@@ -140,12 +157,7 @@ export class UptimeResultsService {
           this.singleProgressBars.push({location: serverLocation, name: serverName, availability: 'Test hasn\'t started yet', records: []});
         }
       }
-      // @ts-ignore
-      this.testStartingDate = DateTime.min(...this.singleProgressBars.filter(server => server.availability !== 'Test hasn\'t started yet').map(pg => pg.records[0].startDate));
-      // @ts-ignore
-      this.testEndingDate = DateTime.max(...this.singleProgressBars.filter(server => server.availability !== 'Test hasn\'t started yet').map(pg => pg.records[pg.records.length - 1].endDate));
-      console.log(this.testStartingDate);
-      console.log(this.testEndingDate);
+      this.setStartingAndEndingTestDate();
     }
   }
 
@@ -179,23 +191,32 @@ export class UptimeResultsService {
   }
 
   private updateProgressBars(newTest: NewUptimeResult) {
-    console.log(newTest);
-    console.log(this.singleProgressBars);
     if (this.singleProgressBars.length > 0) {
       this.singleProgressBars.forEach(singleProgressBar => {
         if (singleProgressBar.name === newTest.serverName) {
-          let lastRecord = singleProgressBar.records[singleProgressBar.records.length - 1];
-          lastRecord.endDate = newTest.date;
-          if (lastRecord.state === newTest.isApiUp) {
-            lastRecord.stateLength++;
+          if (singleProgressBar.records.length > 0) {
+            let lastRecord = singleProgressBar.records[singleProgressBar.records.length - 1];
+            lastRecord.endDate = newTest.date;
+            if (lastRecord.state === newTest.isApiUp) {
+              lastRecord.stateLength++;
+            } else {
+              singleProgressBar.records.push({
+                state: newTest.isApiUp,
+                startDate: newTest.date,
+                endDate: newTest.date,
+                stateLength: 1
+              });
+            }
           } else {
-            singleProgressBar.push({
+            singleProgressBar.records.push({
               state: newTest.isApiUp,
               startDate: newTest.date,
-              endDate: newTest.date
+              endDate: newTest.date,
+              stateLength: 1
             });
           }
         }
+        singleProgressBar.availability = (singleProgressBar.records.filter((record) => record.state).length / singleProgressBar.records.length * 100).toFixed(2);
       });
     } else {
       this.singleProgressBars.push({
@@ -208,9 +229,15 @@ export class UptimeResultsService {
         }]
       });
     }
+    this.setStartingAndEndingTestDate();
   }
 
   private hasUptimeTestStarted() {
     return (Object.keys(this.selectedApi.uptimeResults).length > 0);
+  }
+
+  private setStartingAndEndingTestDate() {
+    this.testStartingDateSub.next(DateTime.min(...this.singleProgressBars.filter(server => server.availability !== 'Test hasn\'t started yet').map(pg => DateTime.fromISO(pg.records[0].startDate))));
+    this.testEndingDateSub.next(DateTime.max(...this.singleProgressBars.filter(server => server.availability !== 'Test hasn\'t started yet').map(pg => DateTime.fromISO(pg.records[pg.records.length - 1].endDate))));
   }
 }

@@ -43,7 +43,7 @@ export class LatencyTimeByOperationsOverTimeComponent implements OnDestroy {
 
   private subscriptions() {
     this.latencyResultsSub = this.latencyResultsService.$timeOperationOverTime.subscribe(data => {
-      if (this.selectedApi && (this.selectedApi.id === data.api.id)) {
+      if (data.api && (this.selectedApi && (this.selectedApi.id === data.api.id))) {
         this.updateChart(data);
       } else {
         this.selectedApi = data.api;
@@ -60,7 +60,6 @@ export class LatencyTimeByOperationsOverTimeComponent implements OnDestroy {
   }
 
   private initializeChart(data) {
-    console.log(data);
     this.chart = c3.generate({
       bindto: '#latencyTimeByOperationsOverTimeChart',
       data: {
@@ -98,16 +97,7 @@ export class LatencyTimeByOperationsOverTimeComponent implements OnDestroy {
       point: {
         show: false
       },
-      // regions : [{
-      //   axis : 'x', start: '2019 07 02 16 47 00', end: '2019 07 02 16 57 00', class: 'testRegion', opacity: 0.1
-      // }]
     });
-
-    // d3.selectAll(".testRegion")
-    //   .append("text")
-    //   .text("Some Text")
-    //   .style("fill-opacity", 1)
-    //   .attr("text-anchor", "start")
   }
 
   private updateChart(data) {

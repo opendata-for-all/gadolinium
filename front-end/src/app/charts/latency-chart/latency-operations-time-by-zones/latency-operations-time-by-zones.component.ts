@@ -38,7 +38,7 @@ export class LatencyOperationsTimeByZonesComponent implements OnDestroy {
 
   private subscriptions() {
     this.latencyResultsSub = this.latencyResultsService.$operationTimeByZone.subscribe(data => {
-      if (this.selectedApi && (this.selectedApi.id === data.api.id)) {
+      if (data.api && (this.selectedApi && (this.selectedApi.id === data.api.id))) {
         this.updateChart(data);
       } else {
         this.selectedApi = data.api;
@@ -52,7 +52,6 @@ export class LatencyOperationsTimeByZonesComponent implements OnDestroy {
   }
 
   private initializeChart(data) {
-    console.log(data);
     this.chart = c3.generate({
       bindto: '#latencyOperationsTimeByZonesChart',
       data: {
@@ -79,6 +78,7 @@ export class LatencyOperationsTimeByZonesComponent implements OnDestroy {
 
   private updateChart(data) {
     console.log(data);
+    data.columns.forEach(column => console.log(column));
     this.chart.load({
       columns: data.columns,
       categories: data.categories

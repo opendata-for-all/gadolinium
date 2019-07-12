@@ -1,3 +1,11 @@
+.list-group(*ngIf="selectedApi!==null && selectedApi.testConfig.uptime.zones.length > 0")
+  .list-group-item.list-group-item-success
+    .col
+      .row Period of testing
+      .row Interval between tests : {{ selectedApi.testConfig.uptime.interval.iso8601format | duration }}
+      .row Number of repetitions : {{selectedApi.testConfig.uptime.repetitions}}
+      .row Total duration : {{totalTestDuration | duration}}
+      .row From {{testStartingDate |  date:'short'}} to {{testEndingDate | date:'short'}}
 ngb-tabset([hidden]="!uptimeResultsService.testHasStarted", [justify]="'fill'", [destroyOnHide]="false")
   ngb-tab(title="Global")
     ng-template(ngbTabContent)

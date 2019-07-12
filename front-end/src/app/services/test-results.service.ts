@@ -28,22 +28,14 @@ export class TestResultsService {
 
   constructor() {
     this.initializations();
-    this.subscriptions();
-  }
-
-  private static extractLatencyResultsFromHTTPRequests(httpRequests: HTTPRequest[]) {
-    return httpRequests.map(httpRequest => {
-      return {name: httpRequest.operationId, results: httpRequest.testResults};
-    });
   }
 
   apiSelected(api: OpenAPI) {
-    if (api) {
-      if (this.selectedApi === null || (this.selectedApi && (this.selectedApi.id !== api.id))) {
-        this.selectedApi = api;
-        this.initializeTestResults();
-      }
+    if (api && (this.selectedApi === null || (this.selectedApi && (this.selectedApi.id !== api.id)))) {
+      this.selectedApi = api;
+      this.initializeTestResults();
     } else {
+      this.selectedApi = api;
       this.eraseTestResults();
     }
   }
@@ -62,33 +54,6 @@ export class TestResultsService {
     this.uptimeTestHaveStarted = null;
   }
 
-  private subscriptions() {
-    // this.$rawUptimeResults.subscribe(uptimeResults => this.uptimeResults = uptimeResults);
-    // this.$latencyResults.subscribe(httpRequests => this.latencyResults = TestResultsService.extractLatencyResultsFromHTTPRequests(httpRequests));
-    // this.apiStatusService.selectedApi$.subscribe(api => {
-    //   if (api !== null) {
-    //     if (this.selectedApi) {
-    //       if (this.selectedApi.name !== api.name) {
-    //         this.selectedApiSub.next(api);
-    //       } else {
-    //         this.latencyTestHaveStarted = api.httpRequests.some(httpRequest => httpRequest.testResults);
-    //         this.uptimeTestHaveStarted = Object.keys(api.uptimeResults).length > 0;
-    //         this.rawUptimeResultsSub.next(api.uptimeResults);
-    //         this.latencyResultsSub.next(api.httpRequests);
-    //       }
-    //     } else {
-    //       this.selectedApiSub.next(api);
-    //       this.latencyTestHaveStarted = api.httpRequests.some(httpRequest => httpRequest.testResults);
-    //       this.uptimeTestHaveStarted = Object.keys(api.uptimeResults).length > 0;
-    //       this.rawUptimeResultsSub.next(api.uptimeResults);
-    //       this.latencyResultsSub.next(api.httpRequests);
-    //     }
-    //   } else {
-    //     this.selectedApiSub.next(api);
-    //   }
-    // });
-  }
-
   private initializeTestResults() {
     this.latencyResultsSub.next({api: this.selectedApi, rawLatencyResults: this.selectedApi.httpRequests});
     this.rawUptimeResultsSub.next({api: this.selectedApi, rawUptimeResults: this.selectedApi.uptimeResults});
@@ -97,7 +62,6 @@ export class TestResultsService {
   }
 
   private eraseTestResults() {
-    console.log('Value set to null');
     this.latencyResultsSub.next({api: this.selectedApi, rawLatencyResults: null});
     this.rawUptimeResultsSub.next({api: this.selectedApi, rawUptimeResults: null});
     this.latencyTestHaveStarted = this.hasLatencyTestStarted();
