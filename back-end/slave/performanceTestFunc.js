@@ -99,7 +99,7 @@ let multipleTests = async (sendMessageFunction, api, testType) => {
 				setTimeout(async () => {
 					module.exports[testType].singleTest(sendMessageFunction, api);
 					console.log("Slave will restart testing in " + intervalVal / 60000);
-				}, intervalVal * (i + 1));
+				}, intervalVal * i);
 			}
 		}
 	}
