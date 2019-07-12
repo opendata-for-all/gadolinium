@@ -121,7 +121,7 @@ let createServerInstanceFromOpenApiTestConfig = (apiId) => {
 };
 
 let determineExecutionType = (config) => {
-	let minuteOfMinimumDelay = 1;
+	let minuteOfMinimumDelay = 10;
 	let duration = config.interval.iso8601format;
 	let formattedDuration = Duration.fromISO(duration);
 	let milliseconds = formattedDuration.valueOf();
@@ -204,7 +204,6 @@ let initializeServerState = (apiId, serverName, testType, handlingType) => {
 		if (api.id === apiId) {
 			return api.servers.some((server) => {
 				if (server.name === serverName) {
-					//TODO REMETTRE LE TESTING
 					server.status = "Testing...";
 					server.progress = 0;
 					if (server.testType === 'latency') {
