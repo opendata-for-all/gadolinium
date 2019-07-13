@@ -67,7 +67,6 @@ export class OpenAPITestService {
     let response = await this.fileUploadService.sendFile(file, '/OpenAPI');
     // @ts-ignore
     let apiId = response.apiId;
-    config.latency.timeoutThreshold = 5000;
     let openApiTestConfig = {
       apiId: apiId,
       config: config

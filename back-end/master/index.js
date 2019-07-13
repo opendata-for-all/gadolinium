@@ -27,7 +27,6 @@ socketServerCreationAndConnection.createChannel(
 	(webclient) => {
 		services.webClients.push(webclient);
 		socketServerWebClientManagement.onAPIStatus(webclient);
-		socketServerWebClientManagement.onAddTestServer(webclient);
 		socketServerWebClientManagement.onDeleteServer(webclient, (response) => {
 			delete services.socketSlaves[response];
 		});

@@ -59,7 +59,7 @@ let singleLatencyTest = async (sendMessageFunction, api) => {
 	results.totalProgress = api.httpRequests.length;
 	for (let httpRequest of api.httpRequests) {
 		createOpenAPIExtensionObject(httpRequest);
-		results.testResults = await individualRequestLatencyTest(httpRequest, 0.5, 1, api.testConfig.latency.timeoutThreshold);
+		results.testResults = await individualRequestLatencyTest(httpRequest, 0.5, 1, api.testConfig.latency['timeout-threshold']);
 		results.progress++;
 		sendMessageFunction('record', results);
 		results.httpRequestIndex++;
@@ -106,21 +106,6 @@ let multipleTests = async (sendMessageFunction, api, testType) => {
 		}
 	}
 };
-
-let options = {
-	url: 'http://localhost:8082/test',
-	maxRequests: 10,
-	timeout: 1000,
-};
-
-// loadtest.loadTest(options, function (error, result) {
-// 	if (error) {
-// 		return console.error('Got an error: %s', error);
-// 	}
-// 	console.log('Tests run successfully');
-// 	console.log(result);
-// });
-// nodefetch('http://localhost:8082/test', {timeout : 1000}).then(res => console.log(res));
 
 module.exports = {
 	multipleTests: multipleTests,

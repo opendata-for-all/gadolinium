@@ -30,44 +30,6 @@ let createApiDeletion = (webClient, callback) => {
 	})
 };
 
-let addTestServer = (region, apiId, type) => {
-
-};
-
-let onAddTestServer = (webclient) => {
-	webclient.on('addTestServer', (data) => {
-		let servers = createServerInstance(data.regions, data.apiId, data.type);
-		APIStatusFunc.addServers(data.apiId, servers);
-		servers.forEach((server) => {
-			socketServerSlaveManagement.addSlaveToBootingSlaveList(server.name, data.apiId);
-			socketServerSlaveManagement.addSlaveToTestSlaveList(server.name, data.apiId, data.type);
-		});
-		socketServerFunc.emitAPIStatusUpdate();
-	})
-};
-
-let createServerInstance = (serverList, apiId, type) => {
-	let gcpServerList = GCPFunc.getListOfZones();
-	let servers = [];
-	for (let server of serverList) {
-		let randomZone = gcpServerList[server].zones[Math.floor(Math.random() * gcpServerList[server].zones.length)];
-		let zoneName = `${server}-${randomZone}`;
-		let vmName = `api-${apiId}-${zoneName}`;
-		servers.push({
-			name: vmName,
-			type: type,
-			region: server,
-			zone: zoneName,
-			location: gcpServerList[server].location,
-			status: "Creating...",
-			progress: 0,
-			totalProgress: 0
-		});
-		GCPFunc.createVM(zoneName, vmName);
-	}
-	return servers;
-};
-
 let createSendTestToSlaves = (webclient, callback) => {
 	webclient.on('testForm', (data) => {
 		console.log(data);
@@ -96,7 +58,6 @@ let createOpenApiTestConfiguration = (webclient) => {
 
 module.exports = {
 	onAPIStatus: onAPIStatus,
-	onAddTestServer: onAddTestServer,
 	onDeleteServer: onDeleteServer,
 	createApiDeletion: createApiDeletion,
 	createPlannedTestForSlaves: createSendTestToSlaves,

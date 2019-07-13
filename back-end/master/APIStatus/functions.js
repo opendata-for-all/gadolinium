@@ -101,6 +101,9 @@ let addOpenApiTestConfigToApi = (apiId, config) => {
 	APIStatus.forEach(api => {
 		if (api.id === apiId) {
 			api.testConfig = config;
+			//TODO THIS IS DEFAULT VALUE THAT MAY BE ASKED TO THE USER FOR A DEFINED ONE IN FUTURE VERSIONS
+			api.testConfig.latency['parameter-definition-strategy'] = "provided";
+			api.testConfig.latency['timeout-threshold'] = 10000;
 		}
 	});
 	console.log("Config ajoutée");
