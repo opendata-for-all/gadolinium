@@ -94,10 +94,12 @@ let multipleTests = async (sendMessageFunction, api, testType) => {
 		for (let i = 0; i < repetitions; i++) {
 			if (i === 0) {
 				module.exports[testType].singleTest(sendMessageFunction, api);
+				sendMessageFunction('repetition', {apiId: api.id});
 				console.log("Slave will restart testing in " + intervalVal / 60000);
 			} else {
 				setTimeout(async () => {
 					module.exports[testType].singleTest(sendMessageFunction, api);
+					sendMessageFunction('repetition', {apiId: api.id});
 					console.log("Slave will restart testing in " + intervalVal / 60000);
 				}, intervalVal * i);
 			}
