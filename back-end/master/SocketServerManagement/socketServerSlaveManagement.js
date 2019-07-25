@@ -156,7 +156,7 @@ let slaveConnectedForTheFirstTime = (slaveClient, slaveName) => {
 	let api = APIStatusFunc.getAPI(slavesCreating.get(slaveName));
 	let testType = getTestTypeOfSlave(slaveName);
 	let executionType = getExecutionTypeOfSlave(slaveName);
-	APIStatusFunc.initializeServerState(api.id, slaveName, testType, `${executionType}Handled`);
+	APIStatusFunc.initializeServerState(api.id, slaveName);
 	slavesCreating.delete(slaveName);
 	slavesTesting.set(slaveName, api.id);
 	slavesRecording.set(slaveName, api.id);
@@ -170,7 +170,7 @@ let slaveConnectedForTheFirstTime = (slaveClient, slaveName) => {
 let slaveHandledSlaveReconnected = (slaveClient, slaveName) => {
 	console.log(`${slaveName.bold.underline} : Slave handled slave reconnected`);
 	console.log(`Cached records may be received`);
-	slaveClient.emit('reconnection');
+	slaveClient.emit('reconnection', slaveHandledSlaves.get(slaveName));
 	slavesDisconnected.delete(slaveName);
 };
 
@@ -227,27 +227,24 @@ let deleteSlave = (slaveName) => {
 	slavesToDelete.delete(slaveName);
 };
 
-let slaveDisconnected = (slaveClient, slaveName, slaveCallback) => {
+let slaveDisconnected = (slaveClient, slaveName) => {
 	slaveClient.on('disconnect', () => {
 		console.log(`${slaveName.bold.underline} : Disconnected`);
-		let reason;
 		if (slavesToDelete.has(slaveName)) {
 			console.log(`${slaveName.bold.underline} : Needs to be deleted`);
 			deleteSlave(slaveName);
-			reason = "vmDeleted";
 			slavesDisconnected.delete(slaveName);
-		} else if (slavesTesting.has(slaveName)) {
-			reason = "unwantedDisconnection";
-			APIStatusFunc.applyFunctionToOneServer(slavesTesting.get(slaveName), slaveName, server => server.status = 'Disconnected. Trying to reconnected...');
-			slavesDisconnected.set(slaveName, slavesTesting.get(slaveName));
+		} else if(slaveHandledSlaves.has(slaveName)){
+			if (slavesTesting.has(slaveName)) {
+				APIStatusFunc.applyFunctionToOneServer(slavesTesting.get(slaveName), slaveName, server => server.status = 'Disconnected. Trying to reconnected...');
+				slavesDisconnected.set(slaveName, slavesTesting.get(slaveName));
+			}
 		} else if (slavesCompleted.has(slaveName)) {
 			console.log(`${slaveName.bold.underline} : Completed all tests and needs to be deleted`);
 			deleteSlave(slaveName);
-			reason = "vmDeleted";
 			slavesCompleted.delete(slaveName);
 		}
 		socketServerFunc.emitAPIStatusUpdate();
-		slaveCallback(reason);
 	});
 	slaveClient.on('consoleMessage', data => console.log(data.green));
 };
@@ -306,6 +303,7 @@ let repetitionFinishedFor = (slaveClient, slaveName, apiId) => {
 			server.repetitionsRemaining = 0;
 		});
 		slavesToDelete.set(slaveName, apiId);
+		slavesTesting.delete(slaveName);
 		slavesCompleted.set(slaveName, apiId);
 		APIStatusFunc.applyFunctionToOneServer(apiId, slaveName, server => server.state = 'completed');
 		slaveClient.disconnect();
