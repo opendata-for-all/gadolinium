@@ -23,9 +23,9 @@ let createEndpoints = (app) => {
 };
 
 let createDefaultEndpoint = (app) => {
-	// app.get('/', async (req, res, next) => {
-	// 	// res.sendFile(path.join(__dirname, 'index.html'));
-	// });
+	app.get('/', async (req, res, next) => {
+		res.sendFile(path.join(__dirname, 'index.html'));
+	});
 };
 
 let createOpenAPIJSONEndpoint = (app) => {
