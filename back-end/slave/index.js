@@ -19,22 +19,27 @@ let socket = io(`ws://${masterConfig.ipaddress}:${masterConfig.port}`, {
 // 	}
 // });
 
-pendingMessagesForSocket = new Map();
+cachedMessages = new Map();
+currentState = 'creating';
 
 let sendMessage = (messageType, message) => {
 	if (socket.connected) {
 		socket.emit(messageType, message)
 	} else {
-		pendingMessagesForSocket.set(pendingMessagesForSocket.size + 1, {messageType, message});
+		cachedMessages.set(cachedMessages.size + 1, {messageType, message});
 	}
 };
 
-socket.on('reconnection', () => {
+socket.on('reconnection', (api) => {
 	// you may want to make sure you resend them in order, or one at a time, etc.
-	pendingMessagesForSocket.forEach((val, key) => {
-		pendingMessagesForSocket.delete(key);
-		socket.emit(val.messageType, val.message);
-	});
+	if (currentState === 'testing') {
+		cachedMessages.forEach((val, key) => {
+			cachedMessages.delete(key);
+			socket.emit(val.messageType, val.message);
+		});
+	} else if (currentState === 'creating') {
+		//TODO FINISH
+	}
 });
 
 socket.on('connect', () => {
@@ -43,17 +48,6 @@ socket.on('connect', () => {
 
 socket.on('disconnect', () => {
 	console.log('Disconnected from Master');
-});
-
-socket.on('testApi', (data) => {
-	console.log(data);
-	let i = 1;
-	let apiId = data.apiId;
-	setInterval(() => {
-		socket.emit('testProgress', {apiId: apiId, slaveName: instanceName, progress: i + 1, totalProgress: 20});
-		i++;
-		if (i === 20) clearInterval(interval);
-	}, 5000);
 });
 
 socket.on('masterHandledTest', async ({api, testType}) => {

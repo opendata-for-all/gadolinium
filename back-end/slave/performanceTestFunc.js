@@ -59,7 +59,7 @@ let singleLatencyTest = async (sendMessageFunction, api) => {
 	results.totalProgress = api.httpRequests.length;
 	for (let httpRequest of api.httpRequests) {
 		createOpenAPIExtensionObject(httpRequest);
-		results.testResults = await individualRequestLatencyTest(httpRequest, 0.5, 1, api.testConfig.latency['timeout-threshold']);
+		results.testResults = await individualRequestLatencyTest(httpRequest, 0.5, 1, api.testConfig.latency['timeoutThreshold']);
 		results.progress++;
 		sendMessageFunction('record', results);
 		results.httpRequestIndex++;
@@ -73,7 +73,7 @@ let singleUptimeTest = async (sendMessageFunction, api) => {
 	results.progress = 1;
 	results.totalProgress = api.testConfig.uptime.repetitions;
 	try {
-		let res = await nodefetch('http://' + api.name, {method: 'OPTIONS'});
+		let res = await nodefetch('https://' + api.name, {method: 'OPTIONS'});
 		results.up = parseInt(res.status) < 500;
 	} catch (e) {
 		results.up = false;
