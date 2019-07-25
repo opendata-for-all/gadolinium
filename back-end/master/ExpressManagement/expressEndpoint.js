@@ -1,12 +1,12 @@
 const fileUpload = require('express-fileupload');
+const path = require('path');
 
 let OpenAPIJSONParser = require('../Parsers/OpenAPIJSONParser');
 let PetStoreParser = require('../Parsers/PetStoreParser');
-let FakeAPIParser = require('../Parsers/FakeAPIParser');
 let GoogleCloudManagement = require('../GoogleCloudManagement/functions');
 let APIStatusFunc = require('../APIStatus/functions');
-let socketFunc = require('../socketServerManagement/socketServerCreationAndConnection');
-let socketSlaveManagement = require('../socketServerManagement/socketServerSlaveManagement');
+let socketFunc = require('../SocketServerManagement/socketServerCreationAndConnection');
+let socketSlaveManagement = require('../SocketServerManagement/socketServerSlaveManagement');
 let listOfServers = null;
 
 let getListOfServers = async () => {
@@ -19,6 +19,7 @@ getListOfServers();
 let createEndpoints = (app) => {
 	createDefaultEndpoint(app);
 	createOpenAPIJSONEndpoint(app);
+	createOpenAPIExportEndpoint(app);
 };
 
 let createDefaultEndpoint = (app) => {
@@ -35,10 +36,6 @@ let createOpenAPIJSONEndpoint = (app) => {
 			let httpRequest;
 			if (openAPIJSON.host === 'petstore.swagger.io') {
 				httpRequest = await PetStoreParser.parse(openAPIJSON);
-			} else if (openAPIJSON.host === 'localhost:8082') {
-				httpRequest = await FakeAPIParser.parse(openAPIJSON);
-			} else if (openAPIJSON.host === 'stevenbucaille.com') {
-				httpRequest = await FakeAPIParser.parse(openAPIJSON);
 			} else {
 				httpRequest = await OpenAPIJSONParser.parse(openAPIJSON);
 			}
@@ -67,6 +64,17 @@ let createOpenAPIJSONEndpoint = (app) => {
 	});
 };
 
+let createOpenAPIExportEndpoint = (app) => {
+	app.get('/APIStatus', (req, res) => {
+		res.sendFile(path.join(__dirname, '../APIStatus/', 'APIStatus.json'));
+	});
+
+	app.get('/OpenAPIExport/:apiId', (req, res) => {
+		let apiId = req.params.apiId;
+		res.sendFile(path.join(__dirname, '../APIStatus/openapi-' + apiId + '.zip'));
+	})
+};
+
 module.exports = {
 	createEndpoints: createEndpoints
-}
+};

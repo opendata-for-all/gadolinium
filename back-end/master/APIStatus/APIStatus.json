@@ -1,214 +1,6 @@
 {
   "APIStatus": [
     {
-      "id": 1,
-      "name": "petstore.swagger.io",
-      "httpRequests": [
-        {
-          "operationId": "addPet",
-          "method": "post",
-          "headers": {
-            "Content-Type": "application/json"
-          },
-          "params": {},
-          "url": "https://petstore.swagger.io/v2/pet",
-          "data": {
-            "name": "79xTTd6dM1uM",
-            "photoUrls": [
-              ""
-            ]
-          }
-        },
-        {
-          "operationId": "updatePet",
-          "method": "put",
-          "headers": {
-            "Content-Type": "application/json"
-          },
-          "params": {},
-          "url": "https://petstore.swagger.io/v2/pet",
-          "data": {
-            "name": "Os1haXn9UZVj",
-            "photoUrls": [
-              ""
-            ]
-          }
-        },
-        {
-          "operationId": "findPetsByStatus",
-          "method": "get",
-          "headers": {},
-          "params": {},
-          "url": "https://petstore.swagger.io/v2/pet/findByStatus"
-        },
-        {
-          "operationId": "findPetsByTags",
-          "method": "get",
-          "headers": {},
-          "params": {},
-          "url": "https://petstore.swagger.io/v2/pet/findByTags"
-        },
-        {
-          "operationId": "getPetById",
-          "method": "get",
-          "headers": {},
-          "params": {},
-          "url": "https://petstore.swagger.io/v2/pet/66"
-        },
-        {
-          "operationId": "updatePetWithForm",
-          "method": "post",
-          "headers": {
-            "Content-Type": "application/x-www-form-urlencoded"
-          },
-          "params": {},
-          "url": "https://petstore.swagger.io/v2/pet/14"
-        },
-        {
-          "operationId": "deletePet",
-          "method": "delete",
-          "headers": {},
-          "params": {},
-          "url": "https://petstore.swagger.io/v2/pet/56"
-        },
-        {
-          "operationId": "uploadFile",
-          "method": "post",
-          "headers": {
-            "Content-Type": "multipart/form-data"
-          },
-          "params": {},
-          "url": "https://petstore.swagger.io/v2/pet/91/uploadImage"
-        },
-        {
-          "operationId": "getInventory",
-          "method": "get",
-          "headers": {},
-          "params": {},
-          "url": "https://petstore.swagger.io/v2/store/inventory"
-        },
-        {
-          "operationId": "placeOrder",
-          "method": "post",
-          "headers": {},
-          "params": {},
-          "url": "https://petstore.swagger.io/v2/store/order",
-          "data": {}
-        },
-        {
-          "operationId": "getOrderById",
-          "method": "get",
-          "headers": {},
-          "params": {},
-          "url": "https://petstore.swagger.io/v2/store/order/9"
-        },
-        {
-          "operationId": "deleteOrder",
-          "method": "delete",
-          "headers": {},
-          "params": {},
-          "url": "https://petstore.swagger.io/v2/store/order/50"
-        },
-        {
-          "operationId": "createUser",
-          "method": "post",
-          "headers": {},
-          "params": {},
-          "url": "https://petstore.swagger.io/v2/user",
-          "data": {}
-        },
-        {
-          "operationId": "createUsersWithArrayInput",
-          "method": "post",
-          "headers": {},
-          "params": {},
-          "url": "https://petstore.swagger.io/v2/user/createWithArray",
-          "data": {}
-        },
-        {
-          "operationId": "createUsersWithListInput",
-          "method": "post",
-          "headers": {},
-          "params": {},
-          "url": "https://petstore.swagger.io/v2/user/createWithList",
-          "data": {}
-        },
-        {
-          "operationId": "loginUser",
-          "method": "get",
-          "headers": {},
-          "params": {
-            "username": "BmX8meQWXX",
-            "password": "dEok56SObP"
-          },
-          "url": "https://petstore.swagger.io/v2/user/login"
-        },
-        {
-          "operationId": "logoutUser",
-          "method": "get",
-          "headers": {},
-          "params": {},
-          "url": "https://petstore.swagger.io/v2/user/logout"
-        },
-        {
-          "operationId": "getUserByName",
-          "method": "get",
-          "headers": {},
-          "params": {},
-          "url": "https://petstore.swagger.io/v2/user/RRF9a1MRig"
-        },
-        {
-          "operationId": "updateUser",
-          "method": "put",
-          "headers": {},
-          "params": {},
-          "url": "https://petstore.swagger.io/v2/user/C3c5prlO37",
-          "data": {}
-        },
-        {
-          "operationId": "deleteUser",
-          "method": "delete",
-          "headers": {},
-          "params": {},
-          "url": "https://petstore.swagger.io/v2/user/kRB4SZBwAO"
-        }
-      ],
-      "servers": [
-        {
-          "name": "api-1-asia-northeast1-a",
-          "type": "instant",
-          "region": "asia-northeast1",
-          "zone": "asia-northeast1-a",
-          "location": "Tokyo, Japan",
-          "status": "Tests completed",
-          "progress": 20,
-          "totalProgress": 20
-        },
-        {
-          "name": "api-1-asia-south1-a",
-          "type": "instant",
-          "region": "asia-south1",
-          "zone": "asia-south1-a",
-          "location": "Mumbai, India",
-          "status": "Booting up",
-          "progress": 1,
-          "totalProgress": 1
-        },
-        {
-          "name": "api-1-australia-southeast1-a",
-          "type": "instant",
-          "region": "australia-southeast1",
-          "zone": "australia-southeast1-a",
-          "location": "Sydney, Australia",
-          "status": "Tests completed",
-          "progress": 20,
-          "totalProgress": 20
-        }
-      ],
-      "progress": 41,
-      "totalProgress": 41
-    },
-    {
       "id": 0,
       "name": "petstore.swagger.io",
       "httpRequests": [
@@ -221,10 +13,62 @@
           "params": {},
           "url": "https://petstore.swagger.io/v2/pet",
           "data": {
-            "name": "9SGLd9D99AOu",
+            "id": 0,
+            "category": {
+              "id": 0,
+              "name": "string"
+            },
+            "name": "doggie",
             "photoUrls": [
-              ""
-            ]
+              "string"
+            ],
+            "tags": [
+              {
+                "id": 0,
+                "name": "string"
+              }
+            ],
+            "status": "available"
+          },
+          "testResults": {
+            "api-0-asia-northeast2-b-latency": {
+              "latencyRecords": [
+                {
+                  "date": "2019-07-23T15:31:45.434+02:00",
+                  "error": false,
+                  "code": "500",
+                  "latencyMs": 793.3
+                },
+                {
+                  "date": "2019-07-23T15:32:15.920+02:00",
+                  "error": false,
+                  "code": "500",
+                  "latencyMs": 1680.9
+                },
+                {
+                  "date": "2019-07-23T15:32:44.808+02:00",
+                  "error": false,
+                  "code": "500",
+                  "latencyMs": 772.1
+                },
+                {
+                  "date": "2019-07-23T15:33:15.274+02:00",
+                  "error": false,
+                  "code": "500",
+                  "latencyMs": 775.9
+                },
+                {
+                  "date": "2019-07-23T15:33:45.485+02:00",
+                  "error": false,
+                  "code": "500",
+                  "latencyMs": 1706.2
+                }
+              ],
+              "totalTest": 5,
+              "avgSuccess": 0.2,
+              "meanLatency": "1145.68",
+              "success": 0
+            }
           }
         },
         {
@@ -236,32 +80,154 @@
           "params": {},
           "url": "https://petstore.swagger.io/v2/pet",
           "data": {
-            "name": "U4vVjvnAZMgC",
+            "id": 0,
+            "category": {
+              "id": 0,
+              "name": "string"
+            },
+            "name": "doggie",
             "photoUrls": [
-              ""
-            ]
+              "string"
+            ],
+            "tags": [
+              {
+                "id": 0,
+                "name": "string"
+              }
+            ],
+            "status": "available"
+          },
+          "testResults": {
+            "api-0-asia-northeast2-b-latency": {
+              "latencyRecords": [
+                {
+                  "date": "2019-07-23T15:31:48.594+02:00",
+                  "error": false,
+                  "code": "500",
+                  "latencyMs": 2328.9
+                },
+                {
+                  "date": "2019-07-23T15:32:16.990+02:00",
+                  "error": false,
+                  "code": "500",
+                  "latencyMs": 657.9
+                },
+                {
+                  "date": "2019-07-23T15:32:45.826+02:00",
+                  "error": false,
+                  "code": "500",
+                  "latencyMs": 678.8
+                },
+                {
+                  "date": "2019-07-23T15:33:16.774+02:00",
+                  "error": false,
+                  "code": "500",
+                  "latencyMs": 759.1
+                },
+                {
+                  "date": "2019-07-23T15:33:46.762+02:00",
+                  "error": false,
+                  "code": "500",
+                  "latencyMs": 803.5
+                }
+              ],
+              "totalTest": 5,
+              "avgSuccess": 0.2,
+              "meanLatency": "1045.64",
+              "success": 0
+            }
           }
         },
         {
           "operationId": "findPetsByStatus",
           "method": "get",
           "headers": {},
-          "params": {},
-          "url": "https://petstore.swagger.io/v2/pet/findByStatus"
-        },
-        {
-          "operationId": "findPetsByTags",
-          "method": "get",
-          "headers": {},
-          "params": {},
-          "url": "https://petstore.swagger.io/v2/pet/findByTags"
+          "params": {
+            "status": "sold"
+          },
+          "url": "https://petstore.swagger.io/v2/pet/findByStatus",
+          "testResults": {
+            "api-0-asia-northeast2-b-latency": {
+              "latencyRecords": [
+                {
+                  "date": "2019-07-23T15:31:50.316+02:00",
+                  "error": false,
+                  "latencyMs": 927.5
+                },
+                {
+                  "date": "2019-07-23T15:32:18.086+02:00",
+                  "error": false,
+                  "latencyMs": 696.7
+                },
+                {
+                  "date": "2019-07-23T15:32:46.686+02:00",
+                  "error": false,
+                  "latencyMs": 642.3
+                },
+                {
+                  "date": "2019-07-23T15:33:18.405+02:00",
+                  "error": false,
+                  "latencyMs": 723.9
+                },
+                {
+                  "date": "2019-07-23T15:33:48.122+02:00",
+                  "error": false,
+                  "latencyMs": 675.6
+                }
+              ],
+              "totalTest": 5,
+              "avgSuccess": 0.2,
+              "meanLatency": "733.20",
+              "success": 0
+            }
+          }
         },
         {
           "operationId": "getPetById",
           "method": "get",
           "headers": {},
           "params": {},
-          "url": "https://petstore.swagger.io/v2/pet/9"
+          "url": "https://petstore.swagger.io/v2/pet/2",
+          "testResults": {
+            "api-0-asia-northeast2-b-latency": {
+              "latencyRecords": [
+                {
+                  "date": "2019-07-23T15:31:51.346+02:00",
+                  "error": false,
+                  "code": "404",
+                  "latencyMs": 644.5
+                },
+                {
+                  "date": "2019-07-23T15:32:19.786+02:00",
+                  "error": false,
+                  "code": "404",
+                  "latencyMs": 935.3
+                },
+                {
+                  "date": "2019-07-23T15:32:47.880+02:00",
+                  "error": false,
+                  "code": "404",
+                  "latencyMs": 674.5
+                },
+                {
+                  "date": "2019-07-23T15:33:19.691+02:00",
+                  "error": false,
+                  "code": "404",
+                  "latencyMs": 639.7
+                },
+                {
+                  "date": "2019-07-23T15:33:48.940+02:00",
+                  "error": false,
+                  "code": "404",
+                  "latencyMs": 721
+                }
+              ],
+              "totalTest": 5,
+              "avgSuccess": 0.2,
+              "meanLatency": "723.00",
+              "success": 0
+            }
+          }
         },
         {
           "operationId": "updatePetWithForm",
@@ -269,31 +235,141 @@
           "headers": {
             "Content-Type": "application/x-www-form-urlencoded"
           },
-          "params": {},
-          "url": "https://petstore.swagger.io/v2/pet/95"
+          "params": {
+            "petId": 2,
+            "name": "Plus trop name 2",
+            "status": "sold"
+          },
+          "url": "https://petstore.swagger.io/v2/pet/87",
+          "testResults": {
+            "api-0-asia-northeast2-b-latency": {
+              "latencyRecords": [
+                {
+                  "date": "2019-07-23T15:31:52.808+02:00",
+                  "error": false,
+                  "code": "404",
+                  "latencyMs": 1070
+                },
+                {
+                  "date": "2019-07-23T15:32:21.290+02:00",
+                  "error": false,
+                  "code": "404",
+                  "latencyMs": 651.3
+                },
+                {
+                  "date": "2019-07-23T15:32:49.259+02:00",
+                  "error": false,
+                  "code": "404",
+                  "latencyMs": 713.5
+                },
+                {
+                  "date": "2019-07-23T15:33:20.688+02:00",
+                  "error": false,
+                  "code": "404",
+                  "latencyMs": 627.9
+                },
+                {
+                  "date": "2019-07-23T15:33:50.057+02:00",
+                  "error": false,
+                  "code": "404",
+                  "latencyMs": 626.1
+                }
+              ],
+              "totalTest": 5,
+              "avgSuccess": 0.2,
+              "meanLatency": "737.76",
+              "success": 0
+            }
+          }
         },
         {
           "operationId": "deletePet",
           "method": "delete",
           "headers": {},
           "params": {},
-          "url": "https://petstore.swagger.io/v2/pet/45"
-        },
-        {
-          "operationId": "uploadFile",
-          "method": "post",
-          "headers": {
-            "Content-Type": "multipart/form-data"
-          },
-          "params": {},
-          "url": "https://petstore.swagger.io/v2/pet/79/uploadImage"
+          "url": "https://petstore.swagger.io/v2/pet/51",
+          "testResults": {
+            "api-0-asia-northeast2-b-latency": {
+              "latencyRecords": [
+                {
+                  "date": "2019-07-23T15:31:53.519+02:00",
+                  "error": false,
+                  "code": "404",
+                  "latencyMs": 705
+                },
+                {
+                  "date": "2019-07-23T15:32:21.947+02:00",
+                  "error": false,
+                  "code": "404",
+                  "latencyMs": 637.1
+                },
+                {
+                  "date": "2019-07-23T15:32:50.405+02:00",
+                  "error": false,
+                  "code": "404",
+                  "latencyMs": 660.8
+                },
+                {
+                  "date": "2019-07-23T15:33:22.185+02:00",
+                  "error": false,
+                  "code": "404",
+                  "latencyMs": 723.5
+                },
+                {
+                  "date": "2019-07-23T15:33:51.282+02:00",
+                  "error": false,
+                  "code": "404",
+                  "latencyMs": 725.8
+                }
+              ],
+              "totalTest": 5,
+              "avgSuccess": 0.2,
+              "meanLatency": "690.44",
+              "success": 0
+            }
+          }
         },
         {
           "operationId": "getInventory",
           "method": "get",
           "headers": {},
           "params": {},
-          "url": "https://petstore.swagger.io/v2/store/inventory"
+          "url": "https://petstore.swagger.io/v2/store/inventory",
+          "testResults": {
+            "api-0-asia-northeast2-b-latency": {
+              "latencyRecords": [
+                {
+                  "date": "2019-07-23T15:31:55.266+02:00",
+                  "error": false,
+                  "latencyMs": 859.5
+                },
+                {
+                  "date": "2019-07-23T15:32:23.154+02:00",
+                  "error": false,
+                  "latencyMs": 960.5
+                },
+                {
+                  "date": "2019-07-23T15:32:51.393+02:00",
+                  "error": false,
+                  "latencyMs": 782.5
+                },
+                {
+                  "date": "2019-07-23T15:33:24.026+02:00",
+                  "error": false,
+                  "latencyMs": 887.7
+                },
+                {
+                  "date": "2019-07-23T15:33:53.441+02:00",
+                  "error": false,
+                  "latencyMs": 1412
+                }
+              ],
+              "totalTest": 5,
+              "avgSuccess": 0.2,
+              "meanLatency": "980.44",
+              "success": 0
+            }
+          }
         },
         {
           "operationId": "placeOrder",
@@ -301,21 +377,146 @@
           "headers": {},
           "params": {},
           "url": "https://petstore.swagger.io/v2/store/order",
-          "data": {}
+          "data": {
+            "id": 0,
+            "petId": 0,
+            "quantity": 0,
+            "shipDate": "2019-06-19T09:57:24.057Z",
+            "status": "placed",
+            "complete": false
+          },
+          "testResults": {
+            "api-0-asia-northeast2-b-latency": {
+              "latencyRecords": [
+                {
+                  "date": "2019-07-23T15:31:56.142+02:00",
+                  "error": false,
+                  "code": "415",
+                  "latencyMs": 759.7
+                },
+                {
+                  "date": "2019-07-23T15:32:24.009+02:00",
+                  "error": false,
+                  "code": "415",
+                  "latencyMs": 639
+                },
+                {
+                  "date": "2019-07-23T15:32:52.596+02:00",
+                  "error": false,
+                  "code": "415",
+                  "latencyMs": 721.9
+                },
+                {
+                  "date": "2019-07-23T15:33:24.996+02:00",
+                  "error": false,
+                  "code": "415",
+                  "latencyMs": 684.2
+                },
+                {
+                  "date": "2019-07-23T15:33:55.331+02:00",
+                  "error": false,
+                  "code": "415",
+                  "latencyMs": 925.7
+                }
+              ],
+              "totalTest": 5,
+              "avgSuccess": 0.2,
+              "meanLatency": "746.10",
+              "success": 0
+            }
+          }
         },
         {
           "operationId": "getOrderById",
           "method": "get",
           "headers": {},
           "params": {},
-          "url": "https://petstore.swagger.io/v2/store/order/5"
+          "url": "https://petstore.swagger.io/v2/store/order/2",
+          "testResults": {
+            "api-0-asia-northeast2-b-latency": {
+              "latencyRecords": [
+                {
+                  "date": "2019-07-23T15:31:57.621+02:00",
+                  "error": false,
+                  "latencyMs": 699.1
+                },
+                {
+                  "date": "2019-07-23T15:32:24.798+02:00",
+                  "error": false,
+                  "code": "404",
+                  "latencyMs": 723.9
+                },
+                {
+                  "date": "2019-07-23T15:32:54.305+02:00",
+                  "error": false,
+                  "code": "404",
+                  "latencyMs": 739.2
+                },
+                {
+                  "date": "2019-07-23T15:33:26.618+02:00",
+                  "error": false,
+                  "code": "404",
+                  "latencyMs": 641.8
+                },
+                {
+                  "date": "2019-07-23T15:33:56.114+02:00",
+                  "error": false,
+                  "code": "404",
+                  "latencyMs": 737.9
+                }
+              ],
+              "totalTest": 5,
+              "avgSuccess": 0.2,
+              "meanLatency": "708.38",
+              "success": 0
+            }
+          }
         },
         {
           "operationId": "deleteOrder",
           "method": "delete",
           "headers": {},
           "params": {},
-          "url": "https://petstore.swagger.io/v2/store/order/37"
+          "url": "https://petstore.swagger.io/v2/store/order/2",
+          "testResults": {
+            "api-0-asia-northeast2-b-latency": {
+              "latencyRecords": [
+                {
+                  "date": "2019-07-23T15:31:58.415+02:00",
+                  "error": false,
+                  "latencyMs": 698.9
+                },
+                {
+                  "date": "2019-07-23T15:32:25.949+02:00",
+                  "error": false,
+                  "code": "404",
+                  "latencyMs": 656.5
+                },
+                {
+                  "date": "2019-07-23T15:32:55.337+02:00",
+                  "error": false,
+                  "code": "404",
+                  "latencyMs": 600.5
+                },
+                {
+                  "date": "2019-07-23T15:33:27.876+02:00",
+                  "error": false,
+                  "code": "404",
+                  "latencyMs": 788.1
+                },
+                {
+                  "date": "2019-07-23T15:33:57.740+02:00",
+                  "error": false,
+                  "code": "404",
+                  "latencyMs": 673.1
+                }
+              ],
+              "totalTest": 5,
+              "avgSuccess": 0.2,
+              "meanLatency": "683.42",
+              "success": 0
+            }
+          }
         },
         {
           "operationId": "createUser",
@@ -323,7 +524,56 @@
           "headers": {},
           "params": {},
           "url": "https://petstore.swagger.io/v2/user",
-          "data": {}
+          "data": {
+            "id": 0,
+            "username": "string",
+            "firstName": "string",
+            "lastName": "string",
+            "email": "string",
+            "password": "string",
+            "phone": "string",
+            "userStatus": 0
+          },
+          "testResults": {
+            "api-0-asia-northeast2-b-latency": {
+              "latencyRecords": [
+                {
+                  "date": "2019-07-23T15:31:59.443+02:00",
+                  "error": false,
+                  "code": "415",
+                  "latencyMs": 970
+                },
+                {
+                  "date": "2019-07-23T15:32:27.809+02:00",
+                  "error": false,
+                  "code": "415",
+                  "latencyMs": 1623.7
+                },
+                {
+                  "date": "2019-07-23T15:32:56.488+02:00",
+                  "error": false,
+                  "code": "415",
+                  "latencyMs": 732.3
+                },
+                {
+                  "date": "2019-07-23T15:33:29.260+02:00",
+                  "error": false,
+                  "code": "415",
+                  "latencyMs": 622.8
+                },
+                {
+                  "date": "2019-07-23T15:33:58.849+02:00",
+                  "error": false,
+                  "code": "415",
+                  "latencyMs": 737.4
+                }
+              ],
+              "totalTest": 5,
+              "avgSuccess": 0.2,
+              "meanLatency": "937.24",
+              "success": 0
+            }
+          }
         },
         {
           "operationId": "createUsersWithArrayInput",
@@ -331,7 +581,58 @@
           "headers": {},
           "params": {},
           "url": "https://petstore.swagger.io/v2/user/createWithArray",
-          "data": {}
+          "data": [
+            {
+              "id": 0,
+              "username": "string",
+              "firstName": "string",
+              "lastName": "string",
+              "email": "string",
+              "password": "string",
+              "phone": "string",
+              "userStatus": 0
+            }
+          ],
+          "testResults": {
+            "api-0-asia-northeast2-b-latency": {
+              "latencyRecords": [
+                {
+                  "date": "2019-07-23T15:32:00.443+02:00",
+                  "error": false,
+                  "code": "415",
+                  "latencyMs": 667.4
+                },
+                {
+                  "date": "2019-07-23T15:32:29.459+02:00",
+                  "error": false,
+                  "code": "415",
+                  "latencyMs": 720.8
+                },
+                {
+                  "date": "2019-07-23T15:32:57.318+02:00",
+                  "error": false,
+                  "code": "415",
+                  "latencyMs": 589.3
+                },
+                {
+                  "date": "2019-07-23T15:33:31.021+02:00",
+                  "error": false,
+                  "code": "415",
+                  "latencyMs": 1098.9
+                },
+                {
+                  "date": "2019-07-23T15:33:59.788+02:00",
+                  "error": false,
+                  "code": "415",
+                  "latencyMs": 681.1
+                }
+              ],
+              "totalTest": 5,
+              "avgSuccess": 0.2,
+              "meanLatency": "751.50",
+              "success": 0
+            }
+          }
         },
         {
           "operationId": "createUsersWithListInput",
@@ -339,228 +640,283 @@
           "headers": {},
           "params": {},
           "url": "https://petstore.swagger.io/v2/user/createWithList",
-          "data": {}
+          "data": [
+            {
+              "id": 0,
+              "username": "string",
+              "firstName": "string",
+              "lastName": "string",
+              "email": "string",
+              "password": "string",
+              "phone": "string",
+              "userStatus": 0
+            }
+          ],
+          "testResults": {
+            "api-0-asia-northeast2-b-latency": {
+              "latencyRecords": [
+                {
+                  "date": "2019-07-23T15:32:01.640+02:00",
+                  "error": false,
+                  "code": "415",
+                  "latencyMs": 929.2
+                },
+                {
+                  "date": "2019-07-23T15:32:31.298+02:00",
+                  "error": false,
+                  "code": "415",
+                  "latencyMs": 853
+                },
+                {
+                  "date": "2019-07-23T15:33:00.279+02:00",
+                  "error": false,
+                  "code": "415",
+                  "latencyMs": 661.2
+                },
+                {
+                  "date": "2019-07-23T15:33:32.043+02:00",
+                  "error": false,
+                  "code": "415",
+                  "latencyMs": 711.2
+                },
+                {
+                  "date": "2019-07-23T15:34:00.514+02:00",
+                  "error": false,
+                  "code": "415",
+                  "latencyMs": 667.7
+                }
+              ],
+              "totalTest": 5,
+              "avgSuccess": 0.2,
+              "meanLatency": "764.46",
+              "success": 0
+            }
+          }
         },
         {
           "operationId": "loginUser",
           "method": "get",
           "headers": {},
           "params": {
-            "username": "SLK4AVwVHi",
-            "password": "G1okICL7KJ"
+            "username": "dsds",
+            "password": "sdqdqs"
           },
-          "url": "https://petstore.swagger.io/v2/user/login"
+          "url": "https://petstore.swagger.io/v2/user/login",
+          "testResults": {
+            "api-0-asia-northeast2-b-latency": {
+              "latencyRecords": [
+                {
+                  "date": "2019-07-23T15:32:02.748+02:00",
+                  "error": false,
+                  "latencyMs": 643.2
+                },
+                {
+                  "date": "2019-07-23T15:32:32.050+02:00",
+                  "error": false,
+                  "latencyMs": 675.9
+                },
+                {
+                  "date": "2019-07-23T15:33:01.825+02:00",
+                  "error": false,
+                  "latencyMs": 717.1
+                },
+                {
+                  "date": "2019-07-23T15:33:33.297+02:00",
+                  "error": false,
+                  "latencyMs": 936.6
+                },
+                {
+                  "date": "2019-07-23T15:34:01.929+02:00",
+                  "error": false,
+                  "latencyMs": 718.6
+                }
+              ],
+              "totalTest": 5,
+              "avgSuccess": 0.2,
+              "meanLatency": "738.28",
+              "success": 0
+            }
+          }
         },
         {
           "operationId": "logoutUser",
           "method": "get",
           "headers": {},
           "params": {},
-          "url": "https://petstore.swagger.io/v2/user/logout"
+          "url": "https://petstore.swagger.io/v2/user/logout",
+          "testResults": {
+            "api-0-asia-northeast2-b-latency": {
+              "latencyRecords": [
+                {
+                  "date": "2019-07-23T15:32:04.220+02:00",
+                  "error": false,
+                  "latencyMs": 666.8
+                },
+                {
+                  "date": "2019-07-23T15:32:33.289+02:00",
+                  "error": false,
+                  "latencyMs": 625.5
+                },
+                {
+                  "date": "2019-07-23T15:33:02.840+02:00",
+                  "error": false,
+                  "latencyMs": 666.4
+                },
+                {
+                  "date": "2019-07-23T15:33:34.456+02:00",
+                  "error": false,
+                  "latencyMs": 582.7
+                },
+                {
+                  "date": "2019-07-23T15:34:02.601+02:00",
+                  "error": false,
+                  "latencyMs": 638.5
+                }
+              ],
+              "totalTest": 5,
+              "avgSuccess": 0.2,
+              "meanLatency": "635.98",
+              "success": 0
+            }
+          }
         },
         {
           "operationId": "getUserByName",
           "method": "get",
           "headers": {},
           "params": {},
-          "url": "https://petstore.swagger.io/v2/user/EH58JLPsj5"
-        },
-        {
-          "operationId": "updateUser",
-          "method": "put",
-          "headers": {},
-          "params": {},
-          "url": "https://petstore.swagger.io/v2/user/sgZgjTBPJy",
-          "data": {}
+          "url": "https://petstore.swagger.io/v2/user/1",
+          "testResults": {
+            "api-0-asia-northeast2-b-latency": {
+              "latencyRecords": [
+                {
+                  "date": "2019-07-23T15:32:05.541+02:00",
+                  "error": false,
+                  "code": "500",
+                  "latencyMs": 917.9
+                },
+                {
+                  "date": "2019-07-23T15:32:34.710+02:00",
+                  "error": false,
+                  "code": "500",
+                  "latencyMs": 687.8
+                },
+                {
+                  "date": "2019-07-23T15:33:04.317+02:00",
+                  "error": false,
+                  "code": "500",
+                  "latencyMs": 752.1
+                },
+                {
+                  "date": "2019-07-23T15:33:35.494+02:00",
+                  "error": false,
+                  "code": "500",
+                  "latencyMs": 706.4
+                },
+                {
+                  "date": "2019-07-23T15:34:06.784+02:00",
+                  "error": false,
+                  "code": "500",
+                  "latencyMs": 1698.3
+                }
+              ],
+              "totalTest": 5,
+              "avgSuccess": 0.2,
+              "meanLatency": "952.50",
+              "success": 0
+            }
+          }
         },
         {
           "operationId": "deleteUser",
           "method": "delete",
           "headers": {},
           "params": {},
-          "url": "https://petstore.swagger.io/v2/user/U3P0vYSuNL"
+          "url": "https://petstore.swagger.io/v2/user/EyFjsrgaXH",
+          "testResults": {
+            "api-0-asia-northeast2-b-latency": {
+              "latencyRecords": [
+                {
+                  "date": "2019-07-23T15:32:06.205+02:00",
+                  "error": false,
+                  "code": "500",
+                  "latencyMs": 589.1
+                },
+                {
+                  "date": "2019-07-23T15:32:36.024+02:00",
+                  "error": false,
+                  "code": "500",
+                  "latencyMs": 649.9
+                },
+                {
+                  "date": "2019-07-23T15:33:05.648+02:00",
+                  "error": false,
+                  "code": "500",
+                  "latencyMs": 831.7
+                },
+                {
+                  "date": "2019-07-23T15:33:36.975+02:00",
+                  "error": false,
+                  "code": "500",
+                  "latencyMs": 890.9
+                },
+                {
+                  "date": "2019-07-23T15:34:07.383+02:00",
+                  "error": false,
+                  "code": "500",
+                  "latencyMs": 583.4
+                }
+              ],
+              "totalTest": 5,
+              "avgSuccess": 0.2,
+              "meanLatency": "709.00",
+              "success": 0
+            }
+          }
         }
       ],
-      "servers": [],
-      "progress": 0,
-      "totalProgress": 0
-    },
-    {
-      "id": 2,
-      "name": "petstore.swagger.io",
-      "httpRequests": [
+      "servers": [
         {
-          "operationId": "addPet",
-          "method": "post",
-          "headers": {
-            "Content-Type": "application/json"
-          },
-          "params": {},
-          "url": "https://petstore.swagger.io/v2/pet",
-          "data": {
-            "name": "IsY6UyWBS6Pi",
-            "photoUrls": [
-              ""
-            ]
-          }
-        },
-        {
-          "operationId": "updatePet",
-          "method": "put",
-          "headers": {
-            "Content-Type": "application/json"
-          },
-          "params": {},
-          "url": "https://petstore.swagger.io/v2/pet",
-          "data": {
-            "name": "LmIBlFjuajIZ",
-            "photoUrls": [
-              ""
-            ]
-          }
-        },
-        {
-          "operationId": "findPetsByStatus",
-          "method": "get",
-          "headers": {},
-          "params": {},
-          "url": "https://petstore.swagger.io/v2/pet/findByStatus"
-        },
-        {
-          "operationId": "findPetsByTags",
-          "method": "get",
-          "headers": {},
-          "params": {},
-          "url": "https://petstore.swagger.io/v2/pet/findByTags"
-        },
-        {
-          "operationId": "getPetById",
-          "method": "get",
-          "headers": {},
-          "params": {},
-          "url": "https://petstore.swagger.io/v2/pet/98"
-        },
-        {
-          "operationId": "updatePetWithForm",
-          "method": "post",
-          "headers": {
-            "Content-Type": "application/x-www-form-urlencoded"
-          },
-          "params": {},
-          "url": "https://petstore.swagger.io/v2/pet/2"
-        },
-        {
-          "operationId": "deletePet",
-          "method": "delete",
-          "headers": {},
-          "params": {},
-          "url": "https://petstore.swagger.io/v2/pet/85"
-        },
-        {
-          "operationId": "uploadFile",
-          "method": "post",
-          "headers": {
-            "Content-Type": "multipart/form-data"
-          },
-          "params": {},
-          "url": "https://petstore.swagger.io/v2/pet/24/uploadImage"
-        },
-        {
-          "operationId": "getInventory",
-          "method": "get",
-          "headers": {},
-          "params": {},
-          "url": "https://petstore.swagger.io/v2/store/inventory"
-        },
-        {
-          "operationId": "placeOrder",
-          "method": "post",
-          "headers": {},
-          "params": {},
-          "url": "https://petstore.swagger.io/v2/store/order",
-          "data": {}
-        },
-        {
-          "operationId": "getOrderById",
-          "method": "get",
-          "headers": {},
-          "params": {},
-          "url": "https://petstore.swagger.io/v2/store/order/8"
-        },
-        {
-          "operationId": "deleteOrder",
-          "method": "delete",
-          "headers": {},
-          "params": {},
-          "url": "https://petstore.swagger.io/v2/store/order/37"
-        },
-        {
-          "operationId": "createUser",
-          "method": "post",
-          "headers": {},
-          "params": {},
-          "url": "https://petstore.swagger.io/v2/user",
-          "data": {}
-        },
-        {
-          "operationId": "createUsersWithArrayInput",
-          "method": "post",
-          "headers": {},
-          "params": {},
-          "url": "https://petstore.swagger.io/v2/user/createWithArray",
-          "data": {}
-        },
-        {
-          "operationId": "createUsersWithListInput",
-          "method": "post",
-          "headers": {},
-          "params": {},
-          "url": "https://petstore.swagger.io/v2/user/createWithList",
-          "data": {}
-        },
-        {
-          "operationId": "loginUser",
-          "method": "get",
-          "headers": {},
-          "params": {
-            "username": "GaSwl8415C",
-            "password": "m0HYYzaObv"
-          },
-          "url": "https://petstore.swagger.io/v2/user/login"
-        },
-        {
-          "operationId": "logoutUser",
-          "method": "get",
-          "headers": {},
-          "params": {},
-          "url": "https://petstore.swagger.io/v2/user/logout"
-        },
-        {
-          "operationId": "getUserByName",
-          "method": "get",
-          "headers": {},
-          "params": {},
-          "url": "https://petstore.swagger.io/v2/user/f3I8dNKp9l"
-        },
-        {
-          "operationId": "updateUser",
-          "method": "put",
-          "headers": {},
-          "params": {},
-          "url": "https://petstore.swagger.io/v2/user/g7Un5gVOcS",
-          "data": {}
-        },
-        {
-          "operationId": "deleteUser",
-          "method": "delete",
-          "headers": {},
-          "params": {},
-          "url": "https://petstore.swagger.io/v2/user/ZYb90vV0qa"
+          "name": "api-0-asia-northeast2-b-latency",
+          "testType": "latency",
+          "executionType": "slaveHandled",
+          "region": "asia-northeast2",
+          "zone": "asia-northeast2-b",
+          "location": "Osaka, Japan",
+          "status": "Test completed.",
+          "state": "completed",
+          "substate": "recording",
+          "progress": 85,
+          "totalProgress": 170,
+          "repetitionsRemaining": 0
         }
       ],
-      "servers": [],
-      "progress": 0,
-      "totalProgress": 0
+      "progress": 85,
+      "totalProgress": 170,
+      "uptimeResults": {},
+      "testConfig": {
+        "latency": {
+          "repetitions": 10,
+          "interval": {
+            "iso8601format": "PT30S"
+          },
+          "dp-seconds": "30",
+          "zones": [
+            "asia-northeast2"
+          ],
+          "parameterDefinitionStrategy": "provided",
+          "timeoutThreshold": 10000
+        },
+        "uptime": {
+          "repetitions": 1,
+          "interval": {
+            "iso8601format": "PT1S"
+          },
+          "dp-seconds": "01",
+          "zones": [],
+          "timeoutThreshold": 10000
+        }
+      }
     }
   ]
 }

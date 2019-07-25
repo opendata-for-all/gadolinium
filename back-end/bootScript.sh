@@ -1,3 +1,4 @@
+#Slave startup script
 #!/usr/bin/env bash
 curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
 sudo apt install nodejs
@@ -11,3 +12,17 @@ cd gadolinium/back-end/
 npm install
 node index.js "slave" "$REGION" "$INSTANCENAME"
 
+#Master startup script
+#!/usr/bin/env bash
+curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+sudo apt install nodejs
+yes | sudo apt-get install git
+yes | sudo apt-get install build-essential
+git clone https://github.com/SOM-Research/gadolinium
+cd gadolinium/front-end/
+npm install
+npm install ng
+ng build
+cd ../back-end/
+npm install
+cd master

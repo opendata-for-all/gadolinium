@@ -2,13 +2,124 @@ let fs = require('fs');
 let path = require('path');
 let {Duration} = require('luxon');
 let GCPFunc = require('../GoogleCloudManagement/functions');
-let performPingTest = require('../../slave/performanceTestFunc').performPingTest;
 
+let EXECUTION_TYPE_TRESHOLD_MINUTE = 10;
+
+/**
+ *********************************
+ * ACCESS APISTATUS INFORMATION
+ *********************************
+ */
+
+
+/**
+ * Read the APIStatus.json file and send the APIStatus attribute
+ * @returns {*}
+ */
 let getAPIStatus = () => {
 	let APIStatus = fs.readFileSync(path.join(__dirname, 'APIStatus.json'));
 	return JSON.parse(APIStatus).APIStatus;
 };
 
+/**
+ * Return an API based on its id
+ * @param apiId
+ * @returns {*}
+ */
+let getAPI = (apiId) => {
+	let APIStatus = getAPIStatus();
+	let apiR;
+	APIStatus.some(api => api.id === apiId ? apiR = api : false);
+	return apiR;
+};
+
+/**
+ * Return a server based on its API's id and its name
+ * @param apiId
+ * @param serverName
+ * @returns {*}
+ */
+let getServer = (apiId, serverName) => {
+	let serverR;
+	let api = getAPI(apiId);
+	api.servers.some((server) => {
+		if (server.name === serverName) {
+			return serverR = server;
+		}
+	});
+	return serverR;
+};
+
+/**
+ * Return an HTTPRequest Object based on its API's id and its index in the HTTPRequest list
+ * @param apiId
+ * @param httpRequestIndex
+ * @returns {*}
+ */
+let getHTTPRequest = (apiId, httpRequestIndex) => {
+	let APIStatus = getAPIStatus();
+	return APIStatus.filter(api => api.id === apiId).map(api => api.httpRequests[httpRequestIndex])[0]
+};
+
+/**
+ * Return the interval of time in Latency OpenAPITestConfiguration, in milliseconds
+ * @param apiId
+ * @returns number
+ */
+let getLatencyInterval = (apiId) => {
+	let intervalInMilli;
+	let APIStatus = getAPIStatus();
+	APIStatus.some((api) => {
+		if (api.id === apiId) {
+			return intervalInMilli = Duration.fromISO(api.testConfig.latency.interval.iso8601format).valueOf();
+		}
+	});
+	return intervalInMilli;
+};
+
+/**
+ * Return the interval of time in Latency OpenAPITestConfiguration, in milliseconds
+ * @param apiId
+ * @returns {*}
+ */
+let getUptimeInterval = (apiId) => {
+	let intervalInMilli;
+	let APIStatus = getAPIStatus();
+	APIStatus.some((api) => {
+		if (api.id === apiId) {
+			return intervalInMilli = Duration.fromISO(api.testConfig.uptime.interval.iso8601format).valueOf();
+		}
+	});
+	return intervalInMilli;
+};
+
+/**
+ * Return whether a server has only one repetition remaining or not
+ * @param apiId
+ * @param serverId
+ * @returns {boolean}
+ */
+let isLastRepetition = (apiId, serverId) => {
+	let isLastTest = false;
+	let APIStatus = getAPIStatus();
+	APIStatus.some((api) => {
+		if (api.id === apiId) {
+			return api.servers.some((server) => {
+				if (server.name === serverId) {
+					isLastTest = (server.repetitionsRemaining === 1);
+				}
+			})
+		}
+	});
+	return isLastTest;
+};
+
+/**
+ * Take a modified APIStatus object,
+ * update all the progresses attributes and
+ * write it in APIStatus.json file, replacing it
+ * @param data an APIStatus object
+ */
 let writeAPIStatus = (data) => {
 	let APIStatus = {APIStatus: data};
 	updateAPIProgress(APIStatus);
@@ -16,6 +127,10 @@ let writeAPIStatus = (data) => {
 	fs.writeFileSync(path.join(__dirname, 'APIStatus.json'), APIStatus);
 };
 
+/**
+ * Browse all API and update their progress attribute by adding all server.progress attributes
+ * @param APIStatus
+ */
 let updateAPIProgress = (APIStatus) => {
 	Object.values(APIStatus.APIStatus).map((api) => {
 		api.progress = (Object.values(api.servers)).reduce((accum, server) => {
@@ -27,6 +142,11 @@ let updateAPIProgress = (APIStatus) => {
 	})
 };
 
+/**
+ * Return a new, unused ID, for a new API
+ * @param APIStatus
+ * @returns {number}
+ */
 let getNewApiId = (APIStatus) => {
 	let apiIds = APIStatus.map((api) => api.id);
 	for (let i = 0; i <= Math.max(...apiIds) + 1; i++) {
@@ -35,35 +155,11 @@ let getNewApiId = (APIStatus) => {
 	return 0;
 };
 
-let getOperationTestsObject = (httpRequests) => {
-	let operationTests = [];
-	httpRequests.reduce((obj, httpRequest) => {
-		return obj.concat([{
-			operationId: httpRequest.operationId,
-			parameters: httpRequest.params
-		}])
-	}, operationTests);
-	return operationTests;
-};
-
-let prepareOpenAPIExtensionObject = async (host, httpRequests) => {
-	let obj = {};
-	let acceptICMP = await performPingTest(host);
-	obj.performance = {
-		testCount: 0,
-		latency: {
-			mean: null,
-			min: null,
-			max: null
-		},
-		operationTests: getOperationTestsObject(httpRequests)
-	};
-	obj.availability = {
-		acceptICMP: acceptICMP
-	};
-	return obj;
-};
-
+/**
+ * Add a new API to APIStatus and initiate its attributes
+ * @param newApi
+ * @returns {Promise<number>}
+ */
 let addApi = async (newApi) => {
 	let APIStatus = getAPIStatus();
 	let id = getNewApiId(APIStatus);
@@ -81,6 +177,10 @@ let addApi = async (newApi) => {
 	return id;
 };
 
+/**
+ * Delete an existing API in APIStatus
+ * @param apiId
+ */
 let deleteApi = (apiId) => {
 	let APIStatus = getAPIStatus();
 	let apiToDelete;
@@ -96,21 +196,62 @@ let deleteApi = (apiId) => {
 	writeAPIStatus(APIStatus);
 };
 
+/**
+ * Build an OpenAPITestConfiguration out of an existing API, according to the OpenAPI Extension Proposal
+ * @param api
+ */
+let createOpenAPIConfigurationFile = (api) => {
+	let exportConfigObject = {};
+	let latency = api.testConfig.latency;
+	let uptime = api.testConfig.uptime;
+	exportConfigObject.latency = {
+		repetitions: latency.repetitions,
+		interval: latency.interval.iso8601format,
+		parameterDefinitionStrategy: latency.parameterDefinitionStrategy,
+		timeoutThreshold: latency.timeoutThreshold
+	};
+	exportConfigObject.latency.zones = latency.zones.map(zone => {
+		//TODO In future, if multiple providers are used, modify this part to fit to the configuration
+		return {regionId: zone, provider: 'GCP'};
+	});
+	exportConfigObject.uptime = {
+		repetitions: api.testConfig.uptime.repetitions,
+		interval: api.testConfig.uptime.interval.iso8601format,
+		timeoutThreshold: latency.timeoutThreshold
+	};
+	exportConfigObject.uptime.zones = uptime.zones.map(zone => {
+		//TODO In future, if multiple providers are used, modify this part to fit to the configuration
+		return {regionId: zone, provider: 'GCP'};
+	});
+	// fs.writeFileSync(path.join(__dirname, 'openapi-' + apiId + 'Configuration.json'), exportConfigObject);
+};
+
+/**
+ *    Assign an OpenAPITestConfiguration to an API
+ * @param apiId
+ * @param config
+ */
 let addOpenApiTestConfigToApi = (apiId, config) => {
 	let APIStatus = getAPIStatus();
 	APIStatus.forEach(api => {
 		if (api.id === apiId) {
 			api.testConfig = config;
 			//TODO THIS IS DEFAULT VALUE THAT MAY BE ASKED TO THE USER FOR A DEFINED ONE IN FUTURE VERSIONS
-			api.testConfig.latency['parameter-definition-strategy'] = "provided";
-			api.testConfig.latency['timeout-threshold'] = 10000;
-			api.testConfig.uptime['timeout-threshold'] = 10000;
+			api.testConfig.latency.parameterDefinitionStrategy = "provided";
+			api.testConfig.latency.timeoutThreshold = 10000;
+			api.testConfig.uptime.timeoutThreshold = 10000;
+			createOpenAPIConfigurationFile(api);
 		}
 	});
+
 	writeAPIStatus(APIStatus);
 };
 
-let createServerInstanceFromOpenApiTestConfig = (apiId) => {
+/**
+ * Create all the Slaves needed for an API, based on its OpenAPITestConfiguration
+ * @param apiId
+ */
+let createServerInstancesFromOpenApiTestConfig = (apiId) => {
 	let APIStatus = getAPIStatus();
 	APIStatus.forEach((api) => {
 		if (apiId === api.id) {
@@ -123,8 +264,13 @@ let createServerInstanceFromOpenApiTestConfig = (apiId) => {
 	writeAPIStatus(APIStatus);
 };
 
+/**
+ * Return whether a Slave should be slaveHandled or masterHandled
+ * @param config
+ * @returns {string}
+ */
 let determineExecutionType = (config) => {
-	let minuteOfMinimumDelay = 10;
+	let minuteOfMinimumDelay = EXECUTION_TYPE_TRESHOLD_MINUTE;
 	let duration = config.interval.iso8601format;
 	let formattedDuration = Duration.fromISO(duration);
 	let milliseconds = formattedDuration.valueOf();
@@ -135,6 +281,14 @@ let determineExecutionType = (config) => {
 	}
 };
 
+/**
+ * Create a Slave on GCP servers based on the OpenAPITestConfiguration, the testType and the executionType.
+ * @param config
+ * @param apiId
+ * @param testType
+ * @param executionType
+ * @returns {Array}
+ */
 let createServerInstance = (config, apiId, testType, executionType) => {
 	let gcpServerList = GCPFunc.getListOfZones();
 	let servers = [];
@@ -161,69 +315,83 @@ let createServerInstance = (config, apiId, testType, executionType) => {
 	return servers;
 };
 
-let addServers = (apiId, servers) => {
+/**
+ * Update server status
+ * @param apiId
+ * @param serverName
+ * @param status
+ */
+let updateServerStatus = (apiId, serverName, status) => {
+	applyFunctionToOneServer(apiId, serverName, (_, server) => server.status = status);
+};
+
+
+/**
+ * Update server status, progress and totalProgress
+ * @param apiId
+ * @param serverName
+ * @param newServer
+ */
+let updateServerInfos = (apiId, serverName, newServer) => {
+	applyFunctionToOneServer(apiId, serverName, (_, server) => {
+		server.status = newServer.status;
+		server.progress = newServer.progress;
+		server.totalProgress = newServer.totalProgress;
+	});
+};
+
+/**
+ * Initialize server information as testing state, according to the OpenAPITestConfiguration
+ * @param apiId
+ * @param serverName
+ */
+let initializeServerInfoForTestingState = (apiId, serverName) => {
+	applyFunctionToOneServer(apiId, serverName, (api, server) => {
+		server.status = "Testing...";
+		server.progress = 0;
+		if (server.testType === 'latency') {
+			server.totalProgress = api.httpRequests.length * api.testConfig[server.testType].repetitions;
+		} else if (server.testType === 'uptime') {
+			server.totalProgress = api.testConfig[server.testType].repetitions;
+		}
+		server.repetitionsRemaining = api.testConfig[server.testType].repetitions;
+	});
+};
+
+
+
+
+/**
+ * Runs a callback function on a particular server, giving the API's id and the server's name
+ * @param apiId
+ * @param serverName
+ * @param fn
+ */
+let applyFunctionToOneServer = (apiId, serverName, fn) => {
 	let APIStatus = getAPIStatus();
-	APIStatus.map((api) => {
+	let newAPIStatus = APIStatus.map(api => {
 		if (api.id === apiId) {
-			api.servers = [...api.servers, ...servers];
+			api.servers.map(server => {
+				if (server.name === serverName) {
+					fn(api, server);
+				}
+				return server;
+			})
 		}
 		return api;
 	});
-	writeAPIStatus(APIStatus);
+	writeAPIStatus(newAPIStatus);
 };
 
-let deleteServer = (apiId, serverName) => {
-	applyFunctionToOneServer(apiId, serverName, (server) => {
-		GCPFunc.deleteVM(server.zone, server.name);
-		server.status = "Deleted";
-	});
-};
 
-let updateServerStatus = (apiId, serverName, status) => {
-	applyFunctionToOneServer(apiId, serverName, server => server.status = status);
-};
-
-let updateServerInfos = (apiId, serverName, newServer) => {
-	let APIStatus = getAPIStatus();
-	APIStatus.some((api) => {
-		if (api.id === apiId) {
-			api.servers.forEach((server) => {
-				if (server.name === serverName) {
-					server.status = newServer.status;
-					server.progress = newServer.progress;
-					server.totalProgress = newServer.totalProgress;
-					return true;
-				}
-			});
-			return true;
-		}
-	});
-	writeAPIStatus(APIStatus)
-};
-
-let initializeServerState = (apiId, serverName, testType, handlingType) => {
-	let APIStatus = getAPIStatus();
-	APIStatus.some((api) => {
-		if (api.id === apiId) {
-			return api.servers.some((server) => {
-				if (server.name === serverName) {
-					server.status = "Testing...";
-					server.progress = 0;
-					if (server.testType === 'latency') {
-						server.totalProgress = api.httpRequests.length * api.testConfig[server.testType].repetitions;
-					} else if (server.testType === 'uptime') {
-						server.totalProgress = api.testConfig[server.testType].repetitions;
-					}
-					server.repetitionsRemaining = api.testConfig[server.testType].repetitions;
-					return true;
-				}
-			});
-		}
-	});
-	writeAPIStatus(APIStatus);
-};
-
-let updateOperationTestResults = (apiId, slaveName, httpRequestIndex, testResult) => {
+/**
+ * Save a new record to the proper operation test results attribute
+ * @param apiId
+ * @param slaveName
+ * @param httpRequestIndex
+ * @param testResult
+ */
+let saveLatencyRecord = (apiId, slaveName, httpRequestIndex, testResult) => {
 	let APIStatus = getAPIStatus();
 	APIStatus.some((api) => {
 		if (api.id === apiId) {
@@ -250,83 +418,14 @@ let updateOperationTestResults = (apiId, slaveName, httpRequestIndex, testResult
 	writeAPIStatus(APIStatus);
 };
 
-let isLastTest = (apiId, serverId) => {
-	let isLastTest = false;
-	let APIStatus = getAPIStatus();
-	APIStatus.some((api) => {
-		if (api.id === apiId) {
-			return api.servers.some((server) => {
-				if (server.name === serverId) {
-					isLastTest = (server.repetitionsRemaining === 1);
-				}
-			})
-		}
-	});
-	writeAPIStatus(APIStatus);
-	return isLastTest;
-};
-
-let getLatencyInterval = (apiId) => {
-	let intervalInMilli;
-	let APIStatus = getAPIStatus();
-	APIStatus.some((api) => {
-		if (api.id === apiId) {
-			return intervalInMilli = Duration.fromISO(api.testConfig.latency.interval.iso8601format).valueOf();
-		}
-	});
-	return intervalInMilli;
-};
-
-let getUptimeInterval = (apiId) => {
-	let intervalInMilli;
-	let APIStatus = getAPIStatus();
-	APIStatus.some((api) => {
-		if (api.id === apiId) {
-			return intervalInMilli = Duration.fromISO(api.testConfig.uptime.interval.iso8601format).valueOf();
-		}
-	});
-	return intervalInMilli;
-};
-
-let getAPI = (apiId) => {
-	let APIStatus = getAPIStatus();
-	let apiR;
-	APIStatus.some(api => api.id === apiId ? apiR = api : false);
-	return apiR;
-};
-
-let getServer = (apiId, serverName) => {
-	let serverR;
-	let api = getAPI(apiId);
-	api.servers.some((server) => {
-		if (server.name === serverName) {
-			return serverR = server;
-		}
-	});
-	return serverR;
-};
-
-let terminateServer = (apiId, serverName) => {
-	applyFunctionToOneServer(apiId, serverName, (server) => {
-		server.status = "Test completed";
-	})
-};
-
-let applyFunctionToOneServer = (apiId, serverName, fn) => {
-	let APIStatus = getAPIStatus();
-	APIStatus.some(api => {
-		if (api.id === apiId) {
-			api.servers.some(server => {
-				if (server.name === serverName) {
-					fn(server);
-				}
-			})
-		}
-	});
-	writeAPIStatus(APIStatus);
-};
-
-let recordAPIUpTime = (apiId, serverName, isApiUp, date) => {
+/**
+ * Save a new Uptime record in proper API
+ * @param apiId
+ * @param serverName
+ * @param isApiUp
+ * @param date
+ */
+let saveUptimeRecord = (apiId, serverName, isApiUp, date) => {
 	let APIStatus = getAPIStatus();
 	APIStatus.some(api => {
 		if (api.id === apiId) {
@@ -341,10 +440,6 @@ let recordAPIUpTime = (apiId, serverName, isApiUp, date) => {
 	writeAPIStatus(APIStatus);
 };
 
-let getHTTPRequest = (apiId, httpRequestIndex) => {
-	let APIStatus = getAPIStatus();
-	return APIStatus.filter(api => api.id === apiId).map(api => api.httpRequests[httpRequestIndex])[0]
-};
 
 module.exports = {
 	getAPIStatus: getAPIStatus,
@@ -352,20 +447,17 @@ module.exports = {
 	addApi: addApi,
 	deleteApi: deleteApi,
 	addOpenApiTestConfigToApi: addOpenApiTestConfigToApi,
-	createServerInstanceFromOpenApiTestConfig: createServerInstanceFromOpenApiTestConfig,
-	addServers: addServers,
-	deleteServer: deleteServer,
+	createServerInstanceFromOpenApiTestConfig: createServerInstancesFromOpenApiTestConfig,
 	updateServerStatus: updateServerStatus,
 	updateServerInfos: updateServerInfos,
-	initializeServerState: initializeServerState,
-	updateOperationTestResults: updateOperationTestResults,
-	isLastTest: isLastTest,
+	initializeServerInfoForTestingState: initializeServerInfoForTestingState,
+	updateOperationTestResults: saveLatencyRecord,
+	isLastTest: isLastRepetition,
 	getLatencyInterval: getLatencyInterval,
 	getUptimeInterval: getUptimeInterval,
 	getAPI: getAPI,
 	getServer: getServer,
-	terminateServer: terminateServer,
 	applyFunctionToOneServer: applyFunctionToOneServer,
-	recordAPIUpTime: recordAPIUpTime,
+	recordAPIUpTime: saveUptimeRecord,
 	getHTTPRequest: getHTTPRequest
 };
