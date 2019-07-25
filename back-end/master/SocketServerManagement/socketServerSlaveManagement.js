@@ -156,7 +156,7 @@ let slaveConnectedForTheFirstTime = (slaveClient, slaveName) => {
 	let api = APIStatusFunc.getAPI(slavesCreating.get(slaveName));
 	let testType = getTestTypeOfSlave(slaveName);
 	let executionType = getExecutionTypeOfSlave(slaveName);
-	APIStatusFunc.initializeServerState(api.id, slaveName);
+	APIStatusFunc.initializeServerInfoForTestingState(api.id, slaveName);
 	slavesCreating.delete(slaveName);
 	slavesTesting.set(slaveName, api.id);
 	slavesRecording.set(slaveName, api.id);
@@ -236,6 +236,7 @@ let slaveDisconnected = (slaveClient, slaveName) => {
 			slavesDisconnected.delete(slaveName);
 		} else if(slaveHandledSlaves.has(slaveName)){
 			if (slavesTesting.has(slaveName)) {
+				console.log(`${slaveName.bold.underline} : SlaveHandled Slave unwanted disconnection`);
 				APIStatusFunc.applyFunctionToOneServer(slavesTesting.get(slaveName), slaveName, server => server.status = 'Disconnected. Trying to reconnected...');
 				slavesDisconnected.set(slaveName, slavesTesting.get(slaveName));
 			}
