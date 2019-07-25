@@ -2,7 +2,7 @@ let {DateTime, Duration} = require("luxon");
 
 let colors = require('colors');
 let APIStatusFunc = require('../APIStatus/functions');
-let socketServerFunc = require('./SocketServerCreationAndConnection');
+let socketServerFunc = require('./socketServerCreationAndConnection');
 let GCPFunc = require('../GoogleCloudManagement/functions');
 
 //Variables initialized in case master crashes and has to restart

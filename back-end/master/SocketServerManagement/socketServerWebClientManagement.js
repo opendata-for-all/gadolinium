@@ -1,6 +1,6 @@
 let APIStatusFunc = require('../APIStatus/functions');
 let GCPFunc = require('../GoogleCloudManagement/functions');
-let socketServerFunc = require('./SocketServerCreationAndConnection');
+let socketServerFunc = require('./socketServerCreationAndConnection');
 let socketServerSlaveManagement = require('./socketServerSlaveManagement');
 
 let onAPIStatus = (webClient) => {
