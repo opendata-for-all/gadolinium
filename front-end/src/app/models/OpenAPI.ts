@@ -16,11 +16,11 @@ export class OpenAPI {
   totalProgress: number;
   httpRequests: HTTPRequest[];
   servers: Server[];
-  testConfig: OpenAPITestConfig;
+  testConfig: OpenAPINFTestConfig;
   uptimeResults: any;
 }
 
-export class OpenAPITestConfig {
+export class OpenAPINFTestConfig {
   latency: LatencyConfig;
   uptime: UpTimeConfig;
 }

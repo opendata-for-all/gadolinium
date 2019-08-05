@@ -7,13 +7,12 @@ import {APIStatusService} from '../../services/api-status.service';
   templateUrl: './server.component.pug',
   styleUrls: ['./server.component.css']
 })
-export class ServerComponent implements OnInit {
+export class ServerComponent {
 
   @Input() server: Server;
   name: string;
   region: string;
   location: string;
-  showCollapse = false;
   status: string;
   progress: number;
   totalProgress: number;
@@ -21,13 +20,5 @@ export class ServerComponent implements OnInit {
   private executionType: string;
 
   constructor(private apiService: APIStatusService) {
-  }
-
-  ngOnInit() {
-  }
-
-  serverSelected() {
-    this.showCollapse = !this.showCollapse;
-    this.apiService.serverSelected(this.server.name);
   }
 }

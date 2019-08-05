@@ -2,24 +2,24 @@ let io = require('socket.io-client');
 let colors = require('colors');
 let performanceTestFunc = require('./performanceTestFunc');
 //TODO
-let instanceName = process.argv[2];
-// let instanceName = require('../master/APIStatus/APIStatus').APIStatus[0].servers[0].name;
+// let instanceName = process.argv[2];
+let instanceName = require('../master/APIStatus/APIStatus').APIStatus[0].servers[0].name;
 let masterConfig = require('./gadolinium-master');
-let socket = io(`ws://${masterConfig.ipaddress}:${masterConfig.port}`, {
-	query: {
-		token: 'slave',
-		name: instanceName
-	}
-});
-// let socket = io(`ws://localhost:8080`, {
+// let socket = io(`ws://${masterConfig.ipaddress}:${masterConfig.port}`, {
 // 	query: {
 // 		token: 'slave',
 // 		name: instanceName
 // 	}
 // });
+let socket = io(`ws://localhost:8080`, {
+	query: {
+		token: 'slave',
+		name: instanceName
+	}
+});
 
-cachedMessages = new Map();
-currentState = 'creating';
+let cachedMessages = new Map();
+let currentState = 'creating';
 
 let sendMessage = (messageType, message) => {
 	if (socket.connected) {
@@ -50,12 +50,13 @@ socket.on('disconnect', () => {
 });
 
 socket.on('masterHandledTest', async ({api, testType}) => {
+	currentState = 'testing';
 	console.log('masterHandledTest');
-	let results = {};
-	results.testResults = await performanceTestFunc[testType].singleTest(sendMessage, api);
+	await performanceTestFunc[testType].singleTest(sendMessage, api);
 });
 
 socket.on('slaveHandledTest', async ({api, testType}) => {
+	currentState = 'testing';
 	console.log('slaveHandledTest');
 	console.log('Test type : ' + testType);
 	await performanceTestFunc.multipleTests(sendMessage, api, testType);

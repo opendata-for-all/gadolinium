@@ -19,7 +19,7 @@ let latencySlaves = new Map();
 let uptimeSlaves = new Map();
 let slavesToDelete = new Map();
 
-let updateMapsWithAPIStatus = () => {
+let initializeMapsWithAPIStatus = () => {
 	let APIStatus = APIStatusFunc.getAPIStatus();
 	APIStatus.map((api) => {
 		let servers = api.servers;
@@ -52,6 +52,8 @@ let updateMapsWithAPIStatus = () => {
 						switch (server.substate) {
 							case 'waiting':
 								slavesWaiting.set(server.name, api.id);
+								// Because of disconnection, we need to set a new timer with the remaining time
+								// until the Slave was supposed to be turned on
 								restartTimerToRebootVM(api.id, server.name);
 								break;
 							case 'booting' :
@@ -72,7 +74,7 @@ let updateMapsWithAPIStatus = () => {
 	})
 };
 
-let addNewOpenAPIConfigSlavesToMaps = (apiId) => {
+let addNewOpenAPITestConfigSlavesToMaps = (apiId) => {
 	let api = APIStatusFunc.getAPI(apiId);
 	api.servers.forEach((server) => {
 		slavesCreating.set(server.name, apiId);
@@ -99,12 +101,14 @@ let addNewOpenAPIConfigSlavesToMaps = (apiId) => {
 let getFirstDateTimeRecordFromAServer = (apiId, server) => {
 	let api = APIStatusFunc.getAPI(apiId);
 	if (server.testType === 'latency') {
+		// Get the minimum from the list of all record dates for all servers.
 		return DateTime.min(...api.httpRequests.reduce((accum, httpRequest) => {
 			return [accum, ...Object.values(httpRequest.testResults).reduce((accum, results) => {
 				return [accum, ...results.latencyRecords.map(record => DateTime.fromISO(record.date))]
 			}, [])];
 		}, []))
 	} else if (server.testType === 'uptime') {
+		// Get the maximum from the list of all record dates for all servers.
 		return DateTime.min(...api.uptimeResults[server.name].reduce((accum, serverRecord) => {
 			return [accum, ...serverRecord.map(record => DateTime.fromISO(record.date))];
 		}, []));
@@ -127,9 +131,12 @@ let restartTimerToRebootVM = (apiId, slaveName) => {
 	let firstDateTimeRecord = getFirstDateTimeRecordFromAServer(apiId, server);
 	let nbRepetitionDone = getNumberOfRepetitionsDone(apiId, server);
 	let intervalBetweenRepetitions = getIntervalBetweenRepetitions(apiId, server);
+	// nextDateTimeRecord = firstDateTime + (nbRepetitionDone * intervalBetweenRepetitions)
 	let nextDateTimeRecord = firstDateTimeRecord.plus(Duration.fromMillis(nbRepetitionDone * intervalBetweenRepetitions.valueOf()));
+	// Convert the time until the next date time record in milliseconds
 	let millisecondsIntervalUntilNextRepetition = nextDateTimeRecord.diff(Duration.fromMillis(new DateTime(Date.now()).toMillis())).valueOf();
 	if (millisecondsIntervalUntilNextRepetition > 0) {
+		// There is still time before the Slave has to turn on
 		GCPFunc.setBootUpScript(server.zone, slaveName);
 		setTimeout(() => {
 			slavesWaiting.delete(slaveName);
@@ -139,17 +146,11 @@ let restartTimerToRebootVM = (apiId, slaveName) => {
 		}, millisecondsIntervalUntilNextRepetition);
 		console.log(`${slaveName.bold.underline} : Restarting in ${millisecondsIntervalUntilNextRepetition / 60000} minutes`);
 	} else {
+		// There is no time remaining before the Slave should have been turned on -> The test is corrupted
 		APIStatusFunc.applyFunctionToOneServer(apiId, slaveName, (server) => server.status = "Test failed, please delete this configuration and create a new one.")
 	}
 };
 
-let getTestTypeOfSlave = (slaveName) => {
-	return latencySlaves.has(slaveName) ? 'latency' : uptimeSlaves.has(slaveName) ? 'uptime' : ''
-};
-
-let getExecutionTypeOfSlave = (slaveName) => {
-	return masterHandledSlaves.has(slaveName) ? 'master' : slaveHandledSlaves.has(slaveName) ? 'slave' : '';
-};
 
 let slaveConnectedForTheFirstTime = (slaveClient, slaveName) => {
 	console.log(`${slaveName.bold.underline} : Connected for the first time`);
@@ -234,8 +235,9 @@ let slaveDisconnected = (slaveClient, slaveName) => {
 			console.log(`${slaveName.bold.underline} : Needs to be deleted`);
 			deleteSlave(slaveName);
 			slavesDisconnected.delete(slaveName);
-		} else if(slaveHandledSlaves.has(slaveName)){
+		} else if (slaveHandledSlaves.has(slaveName)) {
 			if (slavesTesting.has(slaveName)) {
+				// A SlaveHandled Slave shouldn't turn off during its testing period
 				console.log(`${slaveName.bold.underline} : SlaveHandled Slave unwanted disconnection`);
 				APIStatusFunc.applyFunctionToOneServer(slavesTesting.get(slaveName), slaveName, server => server.status = 'Disconnected. Trying to reconnected...');
 				slavesDisconnected.set(slaveName, slavesTesting.get(slaveName));
@@ -252,9 +254,9 @@ let slaveDisconnected = (slaveClient, slaveName) => {
 
 let saveTheRecord = (slaveName, record) => {
 	if (latencySlaves.has(slaveName)) {
-		APIStatusFunc.updateOperationTestResults(record.apiId, slaveName, record.httpRequestIndex, record.testResults);
+		APIStatusFunc.saveLatencyRecord(record.apiId, slaveName, record.httpRequestIndex, record.testResults);
 	} else if (uptimeSlaves.has(slaveName)) {
-		APIStatusFunc.recordAPIUpTime(record.apiId, slaveName, record.up, record.date);
+		APIStatusFunc.saveUptimeRecord(record.apiId, slaveName, record.up, record.date);
 	} else {
 		console.log(`${slaveName.bold.underline} : Neither a latency nor an uptime slave`);
 	}
@@ -286,6 +288,7 @@ let rebootTheVM = (apiId, slaveName) => {
 	}
 	GCPFunc.turnVM(false, server.zone, server.name);
 	GCPFunc.setBootUpScript(server.zone, slaveName);
+	// Set a timer until time to turn on the Slave
 	setTimeout(() => {
 		slavesWaiting.delete(slaveName);
 		slavesBooting.set(slaveName, apiId);
@@ -293,11 +296,11 @@ let rebootTheVM = (apiId, slaveName) => {
 		GCPFunc.turnVM(true, server.zone, slaveName);
 	}, millisecondsIntervalUntilNextRepetition);
 	console.log(`${slaveName.bold.underline} : Restarting in ${millisecondsIntervalUntilNextRepetition / 60000} minutes`);
-
 };
 
 let repetitionFinishedFor = (slaveClient, slaveName, apiId) => {
-	if (APIStatusFunc.isLastTest(apiId, slaveName)) {
+	if (APIStatusFunc.isLastRepetition(apiId, slaveName)) {
+		// This was the last repetition, the Slave finished its testing process, now needs to be deleted
 		console.log(`${slaveName.bold.underline} : It was last repetition.`);
 		APIStatusFunc.applyFunctionToOneServer(apiId, slaveName, server => {
 			server.status = "Test completed.";
@@ -309,6 +312,7 @@ let repetitionFinishedFor = (slaveClient, slaveName, apiId) => {
 		APIStatusFunc.applyFunctionToOneServer(apiId, slaveName, server => server.state = 'completed');
 		slaveClient.disconnect();
 	} else {
+		// This wasn't the last repetition, if it is a MasterHandled Slave, rebootTheVM
 		APIStatusFunc.applyFunctionToOneServer(apiId, slaveName, server => {
 			server.repetitionsRemaining--;
 			console.log(`${slaveName.bold.underline} : ${server.repetitionsRemaining} tests remaining`);
@@ -356,8 +360,16 @@ let slaveTesting = (slaveClient, slaveName) => {
 
 module.exports = {
 	slaveConnected: slaveConnected,
-	updateMapsWithAPIStatus: updateMapsWithAPIStatus,
+	initializeMapsWithAPIStatus: initializeMapsWithAPIStatus,
 	slaveDisconnected: slaveDisconnected,
 	slaveTesting: slaveTesting,
-	addNewOpenAPIConfigSlavesToMaps: addNewOpenAPIConfigSlavesToMaps
+	addNewOpenAPITestConfigSlavesToMaps: addNewOpenAPITestConfigSlavesToMaps
 };
+
+function getTestTypeOfSlave(slaveName) {
+	return latencySlaves.has(slaveName) ? 'latency' : uptimeSlaves.has(slaveName) ? 'uptime' : ''
+}
+
+function getExecutionTypeOfSlave(slaveName) {
+	return masterHandledSlaves.has(slaveName) ? 'master' : slaveHandledSlaves.has(slaveName) ? 'slave' : '';
+}

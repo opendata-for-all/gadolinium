@@ -5,11 +5,12 @@ let dns = require('dns');
 const loadtest = require('loadtest');
 const nodefetch = require('node-fetch');
 
-let individualRequestLatencyTest = async (httpRequest, requestPerSecond, maxRequests, timeoutThreshold) => {
+let singleOperationLatencyTest = async (httpRequest, requestPerSecond, maxRequests, timeoutThreshold) => {
 	let method = httpRequest;
 	method.requestsPerSecond = requestPerSecond;
 	method.maxRequests = maxRequests;
 	method.timeout = timeoutThreshold;
+	// We need to make the old school Promise return because loadtest doesn't support "await" statement
 	return new Promise((resolve) => {
 		loadtest.loadTest(method, function (error, result) {
 			if (error) {
@@ -59,7 +60,7 @@ let singleLatencyTest = async (sendMessageFunction, api) => {
 	results.totalProgress = api.httpRequests.length;
 	for (let httpRequest of api.httpRequests) {
 		createOpenAPIExtensionObject(httpRequest);
-		results.testResults = await individualRequestLatencyTest(httpRequest, 0.5, 1, api.testConfig.latency['timeoutThreshold']);
+		results.testResults = await singleOperationLatencyTest(httpRequest, 0.5, 1, api.testConfig.latency['timeoutThreshold']);
 		results.progress++;
 		sendMessageFunction('record', results);
 		results.httpRequestIndex++;
@@ -74,8 +75,10 @@ let singleUptimeTest = async (sendMessageFunction, api) => {
 	results.totalProgress = api.testConfig.uptime.repetitions;
 	try {
 		let res = await nodefetch('https://' + api.name, {method: 'OPTIONS'});
+		//If the status is < 500 it is considered as being up
 		results.up = parseInt(res.status) < 500;
 	} catch (e) {
+		// If the nodefetch throws an Exception, it is because it could send or didn't receive a response, so it is down
 		results.up = false;
 	}
 	results.date = DateTime.fromJSDate(new Date()).toISO();
@@ -90,18 +93,20 @@ let multipleTests = async (sendMessageFunction, api, testType) => {
 		await module.exports[testType].singleTest(sendMessageFunction, api);
 		sendMessageFunction('repetition', {apiId: api.id});
 	} else {
-		let intervalVal = Duration.fromISO(api.testConfig[testType].interval.iso8601format).valueOf();
+		let intervalInMilliseconds = Duration.fromISO(api.testConfig[testType].interval.iso8601format).valueOf();
 		for (let i = 0; i < repetitions; i++) {
 			if (i === 0) {
+				// If it is the first repetition, just perform it
 				module.exports[testType].singleTest(sendMessageFunction, api);
 				sendMessageFunction('repetition', {apiId: api.id});
-				console.log("Slave will restart testing in " + intervalVal / 60000);
+				console.log("Slave will restart testing in " + intervalInMilliseconds / 60000);
 			} else {
+				// If it is not, set a timer for each future repetitions
 				setTimeout(async () => {
 					module.exports[testType].singleTest(sendMessageFunction, api);
 					sendMessageFunction('repetition', {apiId: api.id});
-					console.log("Slave will restart testing in " + intervalVal / 60000);
-				}, intervalVal * i);
+					console.log("Slave will restart testing in " + intervalInMilliseconds / 60000);
+				}, intervalInMilliseconds * i);
 			}
 		}
 	}

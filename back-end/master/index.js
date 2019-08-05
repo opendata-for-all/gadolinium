@@ -11,7 +11,7 @@ Array.prototype.remove = function (item) {
 	if (index > -1) this.splice(index, 1)
 };
 
-socketServerSlaveManagement.updateMapsWithAPIStatus();
+socketServerSlaveManagement.initializeMapsWithAPIStatus();
 
 let app = expressCreation.createApp();
 expressEndpoint.createEndpoints(app);
@@ -21,8 +21,8 @@ socketServerCreationAndConnection.createSocketServer(httpServer);
 socketServerCreationAndConnection.createChannel(
 	(webclient) => {
 		socketServerWebClientManagement.onAPIStatus(webclient);
-		socketServerWebClientManagement.createApiDeletion(webclient);
-		socketServerWebClientManagement.createOpenApiTestConfiguration(webclient)
+		socketServerWebClientManagement.onApiDeletion(webclient);
+		socketServerWebClientManagement.onOpenApiTestConfiguration(webclient)
 	},
 	(slaveName, socketClient) => {
 		socketServerSlaveManagement.slaveConnected(socketClient, slaveName);

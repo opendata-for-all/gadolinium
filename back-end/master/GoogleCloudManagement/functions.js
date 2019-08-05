@@ -18,6 +18,12 @@ let getGoogleAuth = async () => {
 // 	.then(console.log)
 // 	.catch(console.error);
 
+/**
+ * Create the VM on GCP datacenter
+ * @param zone
+ * @param vmName
+ * @returns {Promise<*>}
+ */
 const createVM = async (zone, vmName) => {
 	let {auth, client} = await getGoogleAuth();
 	const templateName = `gadolinium-template`;
@@ -34,6 +40,12 @@ const createVM = async (zone, vmName) => {
 	});
 };
 
+/**
+ * Delete an instance
+ * @param zone
+ * @param vmName
+ * @returns {Promise<{errors: *, status: *}|*>}
+ */
 const deleteVM = async (zone, vmName) => {
 	let {auth, client} = await getGoogleAuth();
 	const projectId = await auth.getProjectId();
@@ -55,13 +67,20 @@ const deleteVM = async (zone, vmName) => {
 	}
 };
 
-const turnVM = async (on, zone, vmName) => {
+/**
+ * Turn on or off the VM
+ * @param onOrOff
+ * @param zone
+ * @param vmName
+ * @returns {Promise<{errors: *, status: *}|*>}
+ */
+const turnVM = async (onOrOff, zone, vmName) => {
 	let {auth, client} = await getGoogleAuth();
 	const projectId = await auth.getProjectId();
 
-	console.log(`${new Date(Date.now()).toISOString().yellow} : Attempt to turn ${on ? 'on' : 'off'} the ${vmName} instance from Google Cloud Platform`);
+	console.log(`${new Date(Date.now()).toISOString().yellow} : Attempt to turn ${onOrOff ? 'onOrOff' : 'off'} the ${vmName} instance from Google Cloud Platform`);
 
-	const url = `https://www.googleapis.com/compute/v1/projects/${projectId}/zones/${zone}/instances/${vmName}/${on ? 'start' : 'stop'}`;
+	const url = `https://www.googleapis.com/compute/v1/projects/${projectId}/zones/${zone}/instances/${vmName}/${onOrOff ? 'start' : 'stop'}`;
 	try {
 		return await client.request({
 			url: url,
@@ -75,6 +94,12 @@ const turnVM = async (on, zone, vmName) => {
 	}
 };
 
+/**
+ * This new bootup script just start the program which is already installed instead of reinstalling everything
+ * @param zone
+ * @param vmName
+ * @returns {Promise<{errors: *, status: *}|*>}
+ */
 const setBootUpScript = async (zone, vmName) => {
 	let {auth, client} = await getGoogleAuth();
 	const projectId = await auth.getProjectId();

@@ -1,17 +1,14 @@
-a.list-group-item.list-group-item((click)="serverSelected()", [class.list-group-item-primary]="server.testType==='latency'", [class.list-group-item-info]="server.testType==='uptime'")
+a.list-group-item.list-group-item([class.list-group-item-primary]="server.testType==='latency'", [class.list-group-item-info]="server.testType==='uptime'")
   div
     .row
       .col
         p  {{server.location}}
       .col
         p {{server.status}}
-      .col-1
-        i.material-icons-round(onclick='collapseIconClicked(this)') keyboard_arrow_down
     #progressBar
       ngb-progressbar(
         [value]="server.progress / server.totalProgress * 100",
         [type]="(server.status==='Test completed') ? 'success' : (server.status==='Creating VM...') ? 'warning' : 'info'",
         [striped]="server.status!=='Test completed'",
         [animated]="(server.status==='Testing...') || (server.status==='Creating VM...')")
-    app-server-collapse([show]="showCollapse")
 

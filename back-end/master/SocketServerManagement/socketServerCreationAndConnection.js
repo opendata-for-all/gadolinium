@@ -23,7 +23,7 @@ let createChannel = (webClientCallback, slaveCallback) => {
 			emitAPIStatusUpdate();
 			webClientCallback(client);
 		} else if (client.handshake.query.token === "slave") {
-			let authorizedNames = getAuthorizedNames(APIStatus);
+			let authorizedNames = getAuthorizedSlaveNames(APIStatus);
 			let slaveIndex;
 			if ((slaveIndex = authorizedNames.indexOf(client.handshake.query.name)) !== -1) {
 				authorized = true;
@@ -55,13 +55,13 @@ let disconnectSlave = (slaveName) => {
 	if (slavesClient[slaveName]) slavesClient[slaveName].disconnect(true);
 };
 
-let getAuthorizedNames = () => {
-	let authorizedNames = [];
+let getAuthorizedSlaveNames = () => {
+	let authorizedSlaveNames = [];
 	let APIStatus = APIStatusFunc.getAPIStatus();
 	APIStatus.forEach((api) => {
-		api.servers.forEach((server) => authorizedNames.push(server.name));
+		api.servers.forEach((server) => authorizedSlaveNames.push(server.name));
 	});
-	return authorizedNames;
+	return authorizedSlaveNames;
 };
 
 let emitAPIStatusUpdate = () => {

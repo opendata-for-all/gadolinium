@@ -52,6 +52,10 @@ export class UptimeDonutChartComponent implements OnDestroy {
       data: {
         type: 'donut',
         columns: data,
+        colors : {
+          up : '#5df00e',
+          down : '#f00e0e'
+        }
       },
       donut: {
         title: 'Availability',

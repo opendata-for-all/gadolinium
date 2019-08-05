@@ -115,6 +115,23 @@ let isLastRepetition = (apiId, serverId) => {
 };
 
 /**
+ * Return a new, unused ID, for a new API
+ * @param APIStatus
+ * @returns {number}
+ */
+let getNewApiId = (APIStatus) => {
+	let apiIds = APIStatus.map((api) => api.id);
+	for (let i = 0; i <= Math.max(...apiIds) + 1; i++) {
+		if (!apiIds.includes(i)) return i;
+	}
+	return 0;
+};
+
+/**
+ * WRITE ON APISTATUS *******************************************************************************
+ */
+
+/**
  * Take a modified APIStatus object,
  * update all the progresses attributes and
  * write it in APIStatus.json file, replacing it
@@ -140,19 +157,6 @@ let updateAPIProgress = (APIStatus) => {
 			return accum + server.totalProgress;
 		}, 0);
 	})
-};
-
-/**
- * Return a new, unused ID, for a new API
- * @param APIStatus
- * @returns {number}
- */
-let getNewApiId = (APIStatus) => {
-	let apiIds = APIStatus.map((api) => api.id);
-	for (let i = 0; i <= Math.max(...apiIds) + 1; i++) {
-		if (!apiIds.includes(i)) return i;
-	}
-	return 0;
 };
 
 /**
@@ -193,57 +197,6 @@ let deleteApi = (apiId) => {
 		}
 	});
 	APIStatus.remove(apiToDelete);
-	writeAPIStatus(APIStatus);
-};
-
-/**
- * Build an OpenAPITestConfiguration out of an existing API, according to the OpenAPI Extension Proposal
- * @param api
- */
-let createOpenAPIConfigurationFile = (api) => {
-	let exportConfigObject = {};
-	let latency = api.testConfig.latency;
-	let uptime = api.testConfig.uptime;
-	exportConfigObject.latency = {
-		repetitions: latency.repetitions,
-		interval: latency.interval.iso8601format,
-		parameterDefinitionStrategy: latency.parameterDefinitionStrategy,
-		timeoutThreshold: latency.timeoutThreshold
-	};
-	exportConfigObject.latency.zones = latency.zones.map(zone => {
-		//TODO In future, if multiple providers are used, modify this part to fit to the configuration
-		return {regionId: zone, provider: 'GCP'};
-	});
-	exportConfigObject.uptime = {
-		repetitions: api.testConfig.uptime.repetitions,
-		interval: api.testConfig.uptime.interval.iso8601format,
-		timeoutThreshold: latency.timeoutThreshold
-	};
-	exportConfigObject.uptime.zones = uptime.zones.map(zone => {
-		//TODO In future, if multiple providers are used, modify this part to fit to the configuration
-		return {regionId: zone, provider: 'GCP'};
-	});
-	// fs.writeFileSync(path.join(__dirname, 'openapi-' + apiId + 'Configuration.json'), exportConfigObject);
-};
-
-/**
- *    Assign an OpenAPITestConfiguration to an API
- * @param apiId
- * @param config
- */
-let addOpenApiTestConfigToApi = (apiId, config) => {
-	let APIStatus = getAPIStatus();
-	APIStatus.forEach(api => {
-		if (api.id === apiId) {
-			api.testConfig = config;
-			//TODO THIS IS DEFAULT VALUE THAT MAY BE ASKED TO THE USER FOR A DEFINED ONE IN FUTURE VERSIONS
-			api.testConfig.latency.parameterDefinitionStrategy = "provided";
-			api.testConfig.latency.timeoutThreshold = 10000;
-			api.testConfig.uptime.timeoutThreshold = 10000;
-			createOpenAPIConfigurationFile(api);
-		}
-	});
-
 	writeAPIStatus(APIStatus);
 };
 
@@ -440,6 +393,61 @@ let saveUptimeRecord = (apiId, serverName, isApiUp, date) => {
 	writeAPIStatus(APIStatus);
 };
 
+/**
+ * OpenAPITestConfiguration Export *********************************************************
+ */
+
+/**
+ * Build an OpenAPITestConfiguration out of an existing API, according to the OpenAPI Extension Proposal
+ * @param api
+ */
+let createOpenAPIConfigurationFile = (api) => {
+	let exportConfigObject = {};
+	let latency = api.testConfig.latency;
+	let uptime = api.testConfig.uptime;
+	exportConfigObject.latency = {
+		repetitions: latency.repetitions,
+		interval: latency.interval.iso8601format,
+		parameterDefinitionStrategy: latency.parameterDefinitionStrategy,
+		timeoutThreshold: latency.timeoutThreshold
+	};
+	exportConfigObject.latency.zones = latency.zones.map(zone => {
+		//TODO In future, if multiple providers are used, modify this part to fit to the configuration
+		return {regionId: zone, provider: 'GCP'};
+	});
+	exportConfigObject.uptime = {
+		repetitions: api.testConfig.uptime.repetitions,
+		interval: api.testConfig.uptime.interval.iso8601format,
+		timeoutThreshold: latency.timeoutThreshold
+	};
+	exportConfigObject.uptime.zones = uptime.zones.map(zone => {
+		//TODO In future, if multiple providers are used, modify this part to fit to the configuration
+		return {regionId: zone, provider: 'GCP'};
+	});
+	// fs.writeFileSync(path.join(__dirname, 'openapi-' + apiId + 'Configuration.json'), exportConfigObject);
+};
+
+/**
+ *    Assign an OpenAPITestConfiguration to an API
+ * @param apiId
+ * @param config
+ */
+let addOpenApiTestConfigToApi = (apiId, config) => {
+	let APIStatus = getAPIStatus();
+	APIStatus.forEach(api => {
+		if (api.id === apiId) {
+			api.testConfig = config;
+			//TODO THIS IS DEFAULT VALUE THAT MAY BE ASKED TO THE USER FOR A DEFINED ONE IN FUTURE VERSIONS
+			api.testConfig.latency.parameterDefinitionStrategy = "provided";
+			api.testConfig.latency.timeoutThreshold = 10000;
+			api.testConfig.uptime.timeoutThreshold = 10000;
+			createOpenAPIConfigurationFile(api);
+		}
+	});
+
+	writeAPIStatus(APIStatus);
+};
+
 
 module.exports = {
 	getAPIStatus: getAPIStatus,
@@ -451,13 +459,13 @@ module.exports = {
 	updateServerStatus: updateServerStatus,
 	updateServerInfos: updateServerInfos,
 	initializeServerInfoForTestingState: initializeServerInfoForTestingState,
-	updateOperationTestResults: saveLatencyRecord,
-	isLastTest: isLastRepetition,
+	isLastRepetition: isLastRepetition,
 	getLatencyInterval: getLatencyInterval,
 	getUptimeInterval: getUptimeInterval,
 	getAPI: getAPI,
 	getServer: getServer,
 	applyFunctionToOneServer: applyFunctionToOneServer,
-	recordAPIUpTime: saveUptimeRecord,
+	saveLatencyRecord: saveLatencyRecord,
+	saveUptimeRecord: saveUptimeRecord,
 	getHTTPRequest: getHTTPRequest
 };

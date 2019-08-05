@@ -10,14 +10,11 @@ import {Socket} from 'ngx-socket-io';
 })
 export class FileUploadService {
 
-  private isValidFile;
   private isValidFileSub = new Subject<boolean>();
 
   $isValidFile = this.isValidFileSub.asObservable();
 
-  constructor(
-    private http: HttpClient,
-    private socket: Socket) {
+  constructor(private http: HttpClient) {
 
   }
 

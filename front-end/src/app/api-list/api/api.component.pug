@@ -2,4 +2,4 @@ a.list-group-item.list-group-item-action.list-group-item-success((click)="apiSel
   .col
     p {{api.name}}
   ngb-progressbar([value]="api.progress / api.totalProgress * 100", [striped]="true", [animated]="true")
-  app-api-collapse([show]="show", [apiId]="api.id")
+  app-api-collapse([show]="show", [apiId]="api.id", [apiTestIsFinished]="api.progress === api.totalProgress")

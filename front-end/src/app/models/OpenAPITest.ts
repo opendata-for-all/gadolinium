@@ -11,7 +11,7 @@ export interface UpTimeConfiguration {
 
 }
 
-export class OpenAPITestConfiguration {
+export class OpenAPINFTestConfiguration {
   constructor(
     public file: File,
     public latency: LatencyConfiguration,
@@ -27,7 +27,7 @@ export class OpenAPITest {
   public results: object;
 
   constructor(
-    public config: OpenAPITestConfiguration,
+    public config: OpenAPINFTestConfiguration,
   ) {
   }
 }

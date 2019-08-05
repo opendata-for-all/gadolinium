@@ -13,7 +13,6 @@ import {ApiComponent} from './api-list/api/api.component';
 import {ServerListComponent} from './server-list/server-list.component';
 import {ServerComponent} from './server-list/server/server.component';
 import {ApiCollapseComponent} from './api-list/api/api-collapse/api-collapse.component';
-import {ServerCollapseComponent} from './server-list/server/server-collapse/server-collapse.component';
 import {AddOpenAPITestComponent} from './modals/add-open-apitest/add-open-apitest.component';
 import {FileUploadComponent} from './modals/add-open-apitest/file-upload/file-upload.component';
 import {FileUploadService} from './modals/add-open-apitest/file-upload/file-upload.service';
@@ -48,7 +47,6 @@ const config: SocketIoConfig = {
     ApiListComponent,
     ServerListComponent,
     ApiCollapseComponent,
-    ServerCollapseComponent,
     AddOpenAPITestComponent,
     FileUploadComponent,
     InputLatencyComponent,

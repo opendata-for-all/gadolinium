@@ -1,6 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {APIStatusService} from '../../../services/api-status.service';
-import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-api-collapse',
@@ -10,9 +9,12 @@ import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 export class ApiCollapseComponent implements OnInit {
 
   @Input() apiId: string;
+  @Input() apiTestIsFinished: boolean;
   @Input() show: boolean;
 
-  constructor(private apiService: APIStatusService, private modalService: NgbModal) {
+  constructor(
+    private apiService: APIStatusService,
+  ) {
   }
 
   ngOnInit() {
@@ -21,8 +23,5 @@ export class ApiCollapseComponent implements OnInit {
   deleteApi($event: MouseEvent) {
     $event.stopPropagation();
     this.apiService.deleteApi(this.apiId);
-  }
-
-  openCreateTestModal() {
   }
 }

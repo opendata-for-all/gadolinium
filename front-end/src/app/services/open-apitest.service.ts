@@ -3,7 +3,7 @@ import {Socket} from 'ngx-socket-io';
 import {Subject} from 'rxjs';
 import {GCPServer} from '../models/GCPServer';
 import {FileUploadService} from '../modals/add-open-apitest/file-upload/file-upload.service';
-import {OpenAPITestConfig} from '../models/OpenAPI';
+import {OpenAPINFTestConfig} from '../models/OpenAPI';
 
 @Injectable({
   providedIn: 'root'
@@ -63,7 +63,7 @@ export class OpenAPITestService {
     this.isFormCompleteSub.next(false);
   }
 
-  async sendOpenAPIConfiguration(file: File, config: OpenAPITestConfig) {
+  async sendOpenAPIConfiguration(file: File, config: OpenAPINFTestConfig) {
     let response = await this.fileUploadService.sendFile(file, '/OpenAPI');
     // @ts-ignore
     let apiId = response.apiId;

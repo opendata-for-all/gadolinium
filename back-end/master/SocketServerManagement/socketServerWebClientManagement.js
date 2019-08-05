@@ -9,7 +9,7 @@ let onAPIStatus = (webClient) => {
 	});
 };
 
-let createApiDeletion = (webClient) => {
+let onApiDeletion = (webClient) => {
 	webClient.on('deleteApi', async (apiId) => {
 		console.log('API Deleted');
 		socketServerFunc.apiDeleted(apiId);
@@ -18,17 +18,17 @@ let createApiDeletion = (webClient) => {
 	})
 };
 
-let createOpenApiTestConfiguration = (webclient) => {
+let onOpenApiTestConfiguration = (webclient) => {
 	webclient.on('openApiTestConfig', data => {
 		APIStatusFunc.addOpenApiTestConfigToApi(data.apiId, data.config);
 		APIStatusFunc.createServerInstanceFromOpenApiTestConfig(data.apiId);
-		socketServerSlaveManagement.addNewOpenAPIConfigSlavesToMaps(data.apiId);
+		socketServerSlaveManagement.addNewOpenAPITestConfigSlavesToMaps(data.apiId);
 		socketServerFunc.emitAPIStatusUpdate();
 	})
 };
 
 module.exports = {
 	onAPIStatus: onAPIStatus,
-	createApiDeletion: createApiDeletion,
-	createOpenApiTestConfiguration : createOpenApiTestConfiguration
+	onApiDeletion: onApiDeletion,
+	onOpenApiTestConfiguration : onOpenApiTestConfiguration
 };

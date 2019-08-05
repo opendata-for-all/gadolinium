@@ -1,6 +1,1 @@
-<a class="list-group-item list-group-item-action list-group-item-success" (click)="apiSelected()">
-  <div class="col"><p>{{api.name}}</p></div>
-  <ngb-progressbar [value]="api.progress / api.totalProgress * 100" [striped]="true"
-                   [animated]="true"></ngb-progressbar>
-  <app-api-collapse [show]="show" [apiId]="api.id"></app-api-collapse>
-</a>
+<a class="list-group-item list-group-item-action list-group-item-success" (click)="apiSelected()"><div class="col"><p>{{api.name}}</p></div><ngb-progressbar [value]="api.progress / api.totalProgress * 100" [striped]="true" [animated]="true"></ngb-progressbar><app-api-collapse [show]="show" [apiId]="api.id" [apiTestIsFinished]="api.progress === api.totalProgress"></app-api-collapse></a>

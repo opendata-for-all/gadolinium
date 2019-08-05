@@ -76,7 +76,6 @@ export class LatencyTimeByOperationsOverTimeComponent implements OnDestroy {
           tick: {
             rotate: -60,
             multiline: false,
-            // format: this.getAxisFormatFromSelectedDataDisplayingInterval()
             format: data.axis
           }
         },
