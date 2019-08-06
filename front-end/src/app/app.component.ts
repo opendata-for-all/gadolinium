@@ -20,7 +20,6 @@ export class AppComponent {
     this.apiStatusService.selectedApi$.subscribe((api) => {
       this.apiSelected = api;
     });
-    this.apiStatusService.selectedServer$.subscribe((server) => this.serverSelected = server);
   }
 
   openAddApiModal() {

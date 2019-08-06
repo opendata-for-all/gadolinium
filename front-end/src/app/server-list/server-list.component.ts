@@ -29,7 +29,6 @@ export class ServerListComponent implements OnInit, OnDestroy {
         this.serverList = [];
       }
     });
-    this.selectedServer$ = this.apiService.selectedServer$.subscribe((server) => this.selectedServer = server);
   }
 
   ngOnDestroy(): void {

@@ -77,7 +77,6 @@ export class LatencyOperationsTimeByZonesComponent implements OnDestroy {
   }
 
   private updateChart(data) {
-    console.log(data);
     data.columns.forEach(column => console.log(column));
     this.chart.load({
       columns: data.columns,

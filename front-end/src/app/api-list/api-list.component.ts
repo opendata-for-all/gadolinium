@@ -25,7 +25,6 @@ export class ApiListComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.apiList$ = this.APIStatus.apiList$.subscribe((apiList) => this.apiList = apiList);
     this.selectedApi$ = this.APIStatus.selectedApi$.subscribe((api) => this.selectedApi = api);
-    this.selectedServer$ = this.APIStatus.selectedServer$.subscribe((server) => this.selectedServer = server);
   }
 
   ngOnDestroy() {

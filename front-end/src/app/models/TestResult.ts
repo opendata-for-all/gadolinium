@@ -10,9 +10,6 @@ export interface ProgressBarData {
   uptimeTestConfig: UpTimeConfig;
   api: OpenAPI;
   singleProgressBars: any[];
-  groupedProgressBar: any[];
-  testStartingDate: DateTime;
-  testEndingDate: DateTime;
 }
 
 export interface RawUptimeResult {

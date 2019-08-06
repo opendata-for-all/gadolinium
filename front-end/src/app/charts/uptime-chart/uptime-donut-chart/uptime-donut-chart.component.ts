@@ -47,6 +47,7 @@ export class UptimeDonutChartComponent implements OnDestroy {
   }
 
   private initializeChart(data) {
+    console.log(data);
     this.chart = c3.generate({
       bindto: '#uptimeDonutChart',
       data: {

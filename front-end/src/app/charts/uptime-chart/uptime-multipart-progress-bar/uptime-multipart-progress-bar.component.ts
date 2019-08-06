@@ -19,10 +19,7 @@ export class UptimeMultipartProgressBarComponent implements OnInit, OnDestroy {
   private nbTotalTests: number;
   private progressPartWidth: number;
   private singleProgressBars: any[];
-  private groupedProgressBar: any[];
   private totalTestDuration: string;
-  private testStartingDate: DateTime;
-  private testEndingDate: DateTime;
   private hasTestStarted: boolean;
   private multipartProgressBarDataSub: Subscription;
 
@@ -56,7 +53,6 @@ export class UptimeMultipartProgressBarComponent implements OnInit, OnDestroy {
   private initializations() {
     this.selectedApi = null;
     this.nbTotalTests = null;
-    this.groupedProgressBar = [];
     this.singleProgressBars = [];
     this.singleProgressBars = [];
     this.hasTestStarted = false;
@@ -64,13 +60,10 @@ export class UptimeMultipartProgressBarComponent implements OnInit, OnDestroy {
 
   private setProgressBars(data: ProgressBarData) {
     this.singleProgressBars = data.singleProgressBars;
-    this.groupedProgressBar = data.groupedProgressBar;
   }
 
   private setTestInformations(data: ProgressBarData) {
     this.uptimeTestConfig = data.uptimeTestConfig;
-    this.testStartingDate = data.testStartingDate;
-    this.testEndingDate = data.testEndingDate;
     this.totalTestDuration = Duration.fromMillis(this.uptimeTestConfig.repetitions * Duration.fromISO(this.uptimeTestConfig.interval.iso8601format).valueOf()).toISO();
     this.progressPartWidth = 100 / data.api.testConfig.uptime.repetitions;
     this.hasTestStarted = (Object.keys(data.api.uptimeResults).length > 0);

@@ -63,7 +63,6 @@ export class LatencyTimeByZonesOverTimeComponent implements OnDestroy{
       data: {
         xs: data.xs,
         xFormat: '%Y %m %d %H %M %S',
-        // columns: this.getOperationAndTimeData(),
         columns: data.columns,
         type: 'line',
       },
@@ -73,7 +72,6 @@ export class LatencyTimeByZonesOverTimeComponent implements OnDestroy{
           tick: {
             rotate: -60,
             multiline: false,
-            // format: this.getAxisFormatFromSelectedDataDisplayingInterval()
             format: data.axis
           }
         },
