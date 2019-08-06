@@ -29,4 +29,4 @@ socketServerCreationAndConnection.createChannel(
 		socketServerSlaveManagement.slaveDisconnected(socketClient, slaveName);
 		socketServerSlaveManagement.slaveTesting(socketClient, slaveName);
 	});
-expressCreation.launchHTTPServer(httpServer, 8080);
+expressCreation.launchHTTPServer(httpServer, 80);

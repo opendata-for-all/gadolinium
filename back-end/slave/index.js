@@ -3,9 +3,9 @@ let colors = require('colors');
 let performanceTestFunc = require('./performanceTestFunc');
 //TODO
 let instanceName = process.argv[2];
+let ipaddress = process.argv[3];
 // let instanceName = require('../master/APIStatus/APIStatus').APIStatus[0].servers[0].name;
-let masterConfig = require('./gadolinium-master');
-let socket = io(`ws://${masterConfig.ipaddress}:${masterConfig.port}`, {
+let socket = io(`ws://${ipaddress}`, {
 	query: {
 		token: 'slave',
 		name: instanceName
