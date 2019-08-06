@@ -5,18 +5,18 @@ let performanceTestFunc = require('./performanceTestFunc');
 // let instanceName = process.argv[2];
 let instanceName = require('../master/APIStatus/APIStatus').APIStatus[0].servers[0].name;
 let masterConfig = require('./gadolinium-master');
-// let socket = io(`ws://${masterConfig.ipaddress}:${masterConfig.port}`, {
-// 	query: {
-// 		token: 'slave',
-// 		name: instanceName
-// 	}
-// });
-let socket = io(`ws://localhost:8080`, {
+let socket = io(`ws://${masterConfig.ipaddress}:${masterConfig.port}`, {
 	query: {
 		token: 'slave',
 		name: instanceName
 	}
 });
+// let socket = io(`ws://localhost:8080`, {
+// 	query: {
+// 		token: 'slave',
+// 		name: instanceName
+// 	}
+// });
 
 let cachedMessages = new Map();
 let currentState = 'creating';
