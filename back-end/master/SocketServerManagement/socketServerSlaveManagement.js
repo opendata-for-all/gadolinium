@@ -141,13 +141,13 @@ let restartTimerToRebootVM = (apiId, slaveName) => {
 		setTimeout(() => {
 			slavesWaiting.delete(slaveName);
 			slavesBooting.set(slaveName, apiId);
-			APIStatusFunc.applyFunctionToOneServer(apiId, slaveName, server => server.substate = 'booting');
+			APIStatusFunc.applyFunctionToOneServer(apiId, slaveName, (_, server) => server.substate = 'booting');
 			GCPFunc.turnVM(true, server.zone, slaveName);
 		}, millisecondsIntervalUntilNextRepetition);
 		console.log(`${slaveName.bold.underline} : Restarting in ${millisecondsIntervalUntilNextRepetition / 60000} minutes`);
 	} else {
 		// There is no time remaining before the Slave should have been turned on -> The test is corrupted
-		APIStatusFunc.applyFunctionToOneServer(apiId, slaveName, (server) => server.status = "Test failed, please delete this configuration and create a new one.")
+		APIStatusFunc.applyFunctionToOneServer(apiId, slaveName, (_, server) => server.status = "Test failed, please delete this configuration and create a new one.")
 	}
 };
 
@@ -161,7 +161,7 @@ let slaveConnectedForTheFirstTime = (slaveClient, slaveName) => {
 	slavesCreating.delete(slaveName);
 	slavesTesting.set(slaveName, api.id);
 	slavesRecording.set(slaveName, api.id);
-	APIStatusFunc.applyFunctionToOneServer(api.id, slaveName, (server) => {
+	APIStatusFunc.applyFunctionToOneServer(api.id, slaveName, (_, server) => {
 		server.state = 'testing';
 		server.substate = 'recording'
 	});
@@ -183,7 +183,7 @@ let masterHandledSlaveReconnected = (slaveClient, slaveName) => {
 	slavesBooting.delete(slaveName);
 	slavesWaiting.delete(slaveName);
 	slavesRecording.set(slaveName, api.id);
-	APIStatusFunc.applyFunctionToOneServer(api.id, slaveName, (server) => server.substate = 'recording');
+	APIStatusFunc.applyFunctionToOneServer(api.id, slaveName, (_, server) => server.substate = 'recording');
 	slaveClient.emit('masterHandledTest', {api: api, testType: testType})
 };
 
@@ -239,7 +239,7 @@ let slaveDisconnected = (slaveClient, slaveName) => {
 			if (slavesTesting.has(slaveName)) {
 				// A SlaveHandled Slave shouldn't turn off during its testing period
 				console.log(`${slaveName.bold.underline} : SlaveHandled Slave unwanted disconnection`);
-				APIStatusFunc.applyFunctionToOneServer(slavesTesting.get(slaveName), slaveName, server => server.status = 'Disconnected. Trying to reconnected...');
+				APIStatusFunc.applyFunctionToOneServer(slavesTesting.get(slaveName), slaveName, (_, server) => server.status = 'Disconnected. Trying to reconnected...');
 				slavesDisconnected.set(slaveName, slavesTesting.get(slaveName));
 			}
 		} else if (slavesCompleted.has(slaveName)) {
@@ -292,7 +292,7 @@ let rebootTheVM = (apiId, slaveName) => {
 	setTimeout(() => {
 		slavesWaiting.delete(slaveName);
 		slavesBooting.set(slaveName, apiId);
-		APIStatusFunc.applyFunctionToOneServer(apiId, slaveName, server => server.substate = 'booting');
+		APIStatusFunc.applyFunctionToOneServer(apiId, slaveName, (_, server) => server.substate = 'booting');
 		GCPFunc.turnVM(true, server.zone, slaveName);
 	}, millisecondsIntervalUntilNextRepetition);
 	console.log(`${slaveName.bold.underline} : Restarting in ${millisecondsIntervalUntilNextRepetition / 60000} minutes`);
@@ -302,18 +302,18 @@ let repetitionFinishedFor = (slaveClient, slaveName, apiId) => {
 	if (APIStatusFunc.isLastRepetition(apiId, slaveName)) {
 		// This was the last repetition, the Slave finished its testing process, now needs to be deleted
 		console.log(`${slaveName.bold.underline} : It was last repetition.`);
-		APIStatusFunc.applyFunctionToOneServer(apiId, slaveName, server => {
+		APIStatusFunc.applyFunctionToOneServer(apiId, slaveName, (_, server) => {
 			server.status = "Test completed.";
 			server.repetitionsRemaining = 0;
 		});
 		slavesToDelete.set(slaveName, apiId);
 		slavesTesting.delete(slaveName);
 		slavesCompleted.set(slaveName, apiId);
-		APIStatusFunc.applyFunctionToOneServer(apiId, slaveName, server => server.state = 'completed');
+		APIStatusFunc.applyFunctionToOneServer(apiId, slaveName, (_, server) => server.state = 'completed');
 		slaveClient.disconnect();
 	} else {
 		// This wasn't the last repetition, if it is a MasterHandled Slave, rebootTheVM
-		APIStatusFunc.applyFunctionToOneServer(apiId, slaveName, server => {
+		APIStatusFunc.applyFunctionToOneServer(apiId, slaveName, (_, server) => {
 			server.repetitionsRemaining--;
 			console.log(`${slaveName.bold.underline} : ${server.repetitionsRemaining} tests remaining`);
 		});
@@ -327,7 +327,7 @@ let slaveTesting = (slaveClient, slaveName) => {
 		if (slavesTesting.has(slaveName)) {
 			if (slavesRecording.has(slaveName)) {
 				saveTheRecord(slaveName, record);
-				APIStatusFunc.applyFunctionToOneServer(record.apiId, slaveName, (server) => {
+				APIStatusFunc.applyFunctionToOneServer(record.apiId, slaveName, (_, server) => {
 					server.progress++;
 					console.log(`${slaveName.bold.underline} : Record ${server.progress} / ${server.totalProgress}`);
 				});
@@ -347,7 +347,7 @@ let slaveTesting = (slaveClient, slaveName) => {
 				if (masterHandledSlaves.has(slaveName)) {
 					slavesRecording.delete(slaveName);
 					slavesWaiting.set(slaveName, apiId);
-					APIStatusFunc.applyFunctionToOneServer(apiId, slaveName, server => server.substate = 'waiting');
+					APIStatusFunc.applyFunctionToOneServer(apiId, slaveName, (_, server) => server.substate = 'waiting');
 				}
 			} else {
 				console.log(`${slaveName.bold.underline} : Not recording`.red);
