@@ -1,4 +1,3 @@
-
 #MASTER SETUP SCRIPT TO COPY AND PASTE
 #!/usr/bin/env bash
 curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
@@ -16,6 +15,7 @@ cd master
 sudo npm install -g forever
 sudo forever start --uid "gado" -a index.js
 
+#INCLUDE THIS EMPTY LINE JUST ABOVE OR THE LAST LINE OF COMMAND WONT RUN
 
 #SLAVE INSTANCE TEMPLATE STARTUP SCRIPT TO COPY AND PASTE
 #!/usr/bin/env bash
