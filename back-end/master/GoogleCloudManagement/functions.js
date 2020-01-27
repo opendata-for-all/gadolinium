@@ -2,8 +2,8 @@ let path = require('path');
 let regionList = require('./regionList');
 
 let getGoogleAuth = async () => {
-	const {auth} = require('google-auth-library');
-	const client = await auth.getClient({
+	const {GoogleAuth} = require('google-auth-library');
+	const auth = new GoogleAuth({
 		scopes: [
 			'https://www.googleapis.com/auth/cloud-platform',
 			'https://www.googleapis.com/auth/compute',
@@ -11,6 +11,7 @@ let getGoogleAuth = async () => {
 		],
 		keyFilename: path.join(__dirname, 'GCPKeyFile.json')
 	});
+	const client = await auth.getClient();
 	return {auth, client};
 };
 
