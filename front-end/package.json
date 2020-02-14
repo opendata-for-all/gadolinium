@@ -43,7 +43,7 @@
     "ngx-socket-io": "latest",
     "rxjs": "~6.3.3",
     "tslib": "^1.9.0",
-    "yarn": ">=1.17.3",
+    "yarn": ">=1.22.0",
     "zone.js": "~0.8.26"
   },
   "devDependencies": {
