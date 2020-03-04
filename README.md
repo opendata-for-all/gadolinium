@@ -1,6 +1,11 @@
+
 # Overall presentation
 
 Gadolinium is a tool which allows testing non-functional properties of an OpenAPI described API. Test results are displayed in charts and exported in the OpenAPI Specifications file extended by non-functional properties OpenAPI Extension.  
+
+This animated GIF shows you an example of use:
+
+![](https://github.com/opendata-for-all/gadolinium/blob/master/documentation/GadoliniumGIFDemo.gif)
 
 The tool uses a distributed architecture to test APIs. Due to the relevance of testing APIs from different locations of the world, the tool uses a Master-Slave architecture, in which the Master controls and manages the Slaves which are testing the API.  
 
@@ -15,11 +20,11 @@ There are two different parts in this tool, the back-end with all the Slaves and
 # The different actors in Gadolinium's interaction
 
 By the nature of this tool, multiple actors communicate with each other in the process of testing API's, there are :
--	The User, which uses the tool in order to test an API.
--	The Master, which is the server directly communicating with the User and creating the Slaves.
--	The Slaves, which are the servers testing the API and sending the results to the Master.
--	The API, which is tested by the tool and defined by an OpenAPI Specification file.
--	A service provider, which hosts and runs the Master and the Slaves.
+- The User, which uses the tool in order to test an API.
+- The Master, which is the server directly communicating with the User and creating the Slaves.
+- The Slaves, which are the servers testing the API and sending the results to the Master.
+- The API, which is tested by the tool and defined by an OpenAPI Specification file.
+- A service provider, which hosts and runs the Master and the Slaves.
 
 # The Master-Slave architecture
 
