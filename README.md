@@ -1,16 +1,20 @@
 # Overall presentation
 
-Gadolinium is a tool which allows testing non-functional properties of an OpenAPI described API, display in charts and exporting such test results as another OpenAPI Specifications file, extended by the non-functional properties OpenAPI Extension.  
-The particularity of this tool is the architecture employed for the process of testing an API. Because it is relevant to test the API from different part of the world, the tool uses a Master-Slave architecture, in which the Master controls and manages the Slaves which are testing the API.  
-Thus, the tool relies on an external hosting service provider (such as Google Cloud Platform, Azure from Microsoft or Amazon Web Services) which is capable of quickly providing an instance of server in order to run the tool.  
-There is 2 different part in this tool, the back-end with all the Slaves and testing management, coded in NodeJS, and the front-end which displays a dashboard.
+Gadolinium is a tool which allows testing non-functional properties of an OpenAPI described API. Test results are displayed in charts and exported in the OpenAPI Specifications file extended by non-functional properties OpenAPI Extension.  
+
+The tool uses a distributed architecture to test APIs. Due to the relevance of testing APIs from different locations of the world, the tool uses a Master-Slave architecture, in which the Master controls and manages the Slaves which are testing the API.  
+
+Thus, the tool relies on an external hosting Cloud provider (such as Google Cloud Platform, Azure or Amazon Web Services) which is capable of quickly providing instance servers in order to run the tool.  
+
+There are two different parts in this tool, the back-end with all the Slaves and testing management, and the front-end, which displays a dashboard.
 
 ![](https://github.com/opendata-for-all/gadolinium/blob/master/documentation/Figure-1-GadoArchitecture.png)
 
-**For more information and how-to, visit the [wiki](https://github.com/opendata-for-all/gadolinium/wiki) !**
+**For more information and how-to, visit the [wiki](https://github.com/opendata-for-all/gadolinium/wiki)!**
+
 # The different actors in Gadolinium's interaction
 
-By the nature of this tool, multiple actors communicate with each other in the process of testing API’s, there are :
+By the nature of this tool, multiple actors communicate with each other in the process of testing API's, there are :
 -	The User, which uses the tool in order to test an API.
 -	The Master, which is the server directly communicating with the User and creating the Slaves.
 -	The Slaves, which are the servers testing the API and sending the results to the Master.
